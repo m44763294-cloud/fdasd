@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Превью приветствия ATLANTA</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #0b0f16;
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #e9eef4;
+    display: flex;
+    justify-content: center;
+    padding: 28px 16px 40px;
+  }
+  .poster { width: 430px; }
+
+  .label {
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #6ef3b2;
+    font-weight: 800;
+    margin: 0 0 12px 4px;
+  }
+
+  /* ---- Telegram chat ---- */
+  .chat {
+    border-radius: 22px;
+    overflow: hidden;
+    background: #101820;
+    border: 1px solid rgba(255,255,255,.07);
+    box-shadow: 0 24px 60px rgba(0,0,0,.55);
+  }
+  .chat-head {
+    height: 58px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(140deg,#6ef3b2,#49d8ff);
+    display: grid; place-items: center;
+    font-weight: 800; color: #04130c; font-size: 15px;
+  }
+  .chat-head b { display: block; font-size: 14px; }
+  .chat-head span { display: block; font-size: 11px; color: #7d8997; margin-top: 2px; }
+  .chat-body { padding: 18px 12px 14px; background: #0d141b; }
+  .bubble {
+    max-width: 86%;
+    background: #1b2833;
+    border-radius: 14px 14px 14px 4px;
+    padding: 12px 13px 11px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .bubble .line { margin: 0 0 10px; }
+  .bubble .line:last-of-type { margin-bottom: 0; }
+  .inline-btn {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 9px;
+    background: rgba(73,216,255,.10);
+    border: 1px solid rgba(73,216,255,.22);
+    color: #58c9f5;
+    font-weight: 700;
+    text-align: center;
+    font-size: 13px;
+  }
+  .chat-input {
+    height: 50px;
+    margin: 0 12px 12px;
+    border-radius: 22px;
+    background: #18232d;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    color: #667282;
+    font-size: 13px;
+  }
+  .hint {
+    margin: 10px 4px 22px;
+    font-size: 11px;
+    color: #6f7b89;
+    text-align: center;
+  }
+
+  /* ---- Phone with Mini App ---- */
+  .phone {
+    border-radius: 30px;
+    padding: 9px;
+    background: linear-gradient(160deg,#262f3b,#111820);
+    border: 1px solid rgba(255,255,255,.09);
+    box-shadow: 0 26px 70px rgba(0,0,0,.6);
+  }
+  .screen {
+    border-radius: 22px;
+    overflow: hidden;
+    background: #06070b;
+    padding-bottom: 16px;
+  }
+  .mini-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 10px;
+  }
+  .mini-head b { font-size: 12px; letter-spacing: .14em; font-family: "Segoe UI", sans-serif; }
+  .langs { display: flex; gap: 4px; }
+  .langs i {
+    font-style: normal; font-size: 9px; font-weight: 800;
+    padding: 4px 7px; border-radius: 6px;
+    background: rgba(255,255,255,.06); color: #8d96a9;
+  }
+  .langs i.on { background: rgba(110,243,178,.16); color: #6ef3b2; }
+  .hero {
+    margin: 0 12px 12px;
+    padding: 18px 16px 16px;
+    border-radius: 20px;
+    background: linear-gradient(120deg,#9bffcb,#6ef3b2 45%,#49d8ff);
+    color: #04130c;
+  }
+  .badge {
+    display: inline-block; font-size: 8.5px; font-weight: 800;
+    background: rgba(4,19,12,.12); border: 1px solid rgba(4,19,12,.14);
+    border-radius: 999px; padding: 5px 8px; margin-bottom: 12px;
+  }
+  .hero h1 { margin: 0; font-size: 24px; line-height: 1.08; letter-spacing: -.04em; }
+  .hero h1 em { display: block; font-style: normal; font-size: 14px; margin-top: 6px; }
+  .hero p { font-size: 10px; line-height: 1.5; margin: 10px 0 14px; }
+  .cta {
+    display: block; text-align: center; padding: 10px; border-radius: 11px;
+    background: #04130c; color: #9bffcb; font-weight: 800; font-size: 11px;
+  }
+  .stats { display: flex; gap: 8px; margin: 0 12px 14px; }
+  .stat {
+    flex: 1; padding: 10px 8px; border-radius: 12px;
+    background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  }
+  .stat b { display: block; font-size: 14px; color: #6ef3b2; }
+  .stat span { display: block; font-size: 8px; color: #8d96a9; margin-top: 3px; }
+  .sec-title { margin: 0 16px 9px; font-size: 12px; font-weight: 800; }
+  .steps { margin: 0 12px 14px; display: grid; gap: 7px; }
+  .step {
+    padding: 9px 10px; border-radius: 11px;
+    background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.06);
+  }
+  .step b { display: block; font-size: 10px; }
+  .step span { display: block; font-size: 8.5px; color: #8d96a9; margin-top: 3px; line-height: 1.4; }
+
+  /* ---- FAQ under the phone ---- */
+  .faq-wrap { margin-top: 20px; }
+  .faq {
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,.07);
+    background: #0e1119;
+  }
+  .q { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .q:last-child { border-bottom: 0; }
+  .q b { font-size: 11px; font-weight: 700; }
+  .q .body { font-size: 9.5px; color: #8d96a9; line-height: 1.5; margin-top: 7px; display: none; }
+  .q.first .body { display: block; }
+  .q .chev { float: right; color: #6ef3b2; font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="label">Приветственное сообщение в боте</div>
+
+  <div class="chat">
+    <div class="chat-head">
+      <div class="avatar">A</div>
+      <div><b>ATLANTA</b><span>бот</span></div>
+    </div>
+    <div class="chat-body">
+      <div class="bubble">
+        <div class="line">Приветствуем!</div>
+        <div class="line">Перейдите в приложение,<br>чтобы ознакомиться с сервисом</div>
+        <div class="inline-btn">Перейти в приложение</div>
+      </div>
+    </div>
+    <div class="chat-input">Сообщение</div>
+  </div>
+  <div class="hint">Так выглядит /start — без стикера, одна кнопка</div>
+
+  <div class="label">Mini App</div>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="mini-head">
+        <b>ATLANTA</b>
+        <div class="langs"><i class="on">RU</i><i>EN</i></div>
+      </div>
+      <div class="hero">
+        <span class="badge">Безопасные сделки в Telegram · крипта и фиат</span>
+        <h1>Сделки<br>без риска<em>Начните уже сейчас!</em></h1>
+        <p>ATLANTA держит оплату под защитой, пока покупатель не получит товар.</p>
+        <div class="cta">Начать сделку</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>1,5%</b><span>комиссия в крипте</span></div>
+        <div class="stat"><b>0</b><span>за создание сделки</span></div>
+        <div class="stat"><b>24/7</b><span>арбитраж</span></div>
+      </div>
+      <div class="sec-title">Как это работает</div>
+      <div class="steps">
+        <div class="step"><b>Оплата под защитой</b><span>Деньги не уходят продавцу</span></div>
+        <div class="step"><b>Передача</b><span>Продавец фиксирует факт передачи, для решения возможных споров</span></div>
+        <div class="step"><b>Выплата</b><span>После подтверждения покупателем или арбитром</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-wrap">
+    <div class="label">FAQ под Mini App</div>
+    <div class="faq">
+      <div class="q first"><span class="chev">⌄</span><b>Как работает защита оплаты?</b><div class="body">ATLANTA временно держит деньги покупателя. Продавец видит, что оплата есть, и передаёт товар. Деньги уходят продавцу только после подтверждения покупателя.</div></div>
+      <div class="q"><span class="chev">⌄</span><b>Когда продавец получает деньги?</b><div class="body">Сразу после того, как покупатель нажмёт «Подтвердить получение».</div></div>
+      <div class="q"><span class="chev">⌄</span><b>Что делать, если товар не соответствует описанию?</b><div class="body">Не подтверждайте сделку. Откройте спор и опишите проблему — арбитр разберётся.</div></div>
+      <div class="q"><span class="chev">⌄</span><b>Сколько стоит сервис?</b><div class="body">1,5% в крипте и 2,5% в фиате, минимум 0,30 USD. Удерживается только при успешной сделке.</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

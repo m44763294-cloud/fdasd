@@ -1,0 +1,11 @@
+name = "hdfhdfb"
+main = "worker/index.js"
+compatibility_date = "2026-11-26"
+
+[assets]
+directory = "./web"
+binding = "ASSETS"
+
+# BOT_ORIGIN задаётся в Cloudflare Dashboard:
+# Workers & Pages -> hdfhdfb -> Settings -> Variables and Secrets -> Add variable
+# Значение: HTTPS-адрес хоста, где реально запущен Python-бот + FastAPI.

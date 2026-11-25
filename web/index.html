@@ -1,0 +1,445 @@
+﻿<!doctype html>
+<html lang="ru" data-page="landing">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ATLANTA — сделки под контролем</title>
+  <meta name="description" content="ATLANTA — безопасные сделки в Telegram. Покупатель платит, деньги блокируются, продавец получает их только после подтверждения. Крипта и фиат, арбитраж 24/7.">
+  <meta name="theme-color" content="#06070B">
+  <meta property="og:title" content="ATLANTA — сделки под контролем">
+  <meta property="og:description" content="Безопасные сделки в Telegram: деньги под защитой до подтверждения получения. Крипта и фиат, комиссия 1,5%.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="/static/landing.css?v=4">
+  <script src="/static/i18n.js?v=25" defer></script>
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M5 7h14M5 7l-3 6a4 4 0 0 0 6 0L5 7Zm14 0-3 6a4 4 0 0 0 6 0l-3-6Z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h8l-1 8 10-12h-8l1-8Z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13A4 4 0 0 1 16 11"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8M16 4l4 4M14 6l2 2"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7H5"/><path d="M16 13h.01"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4 20-7Z"/><path d="M22 2 11 13"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.7 6.3.9-4.5 4.4 1 6.2-5.5-3-5.5 3 1-6.2L3 9.6l6.3-.9L12 3Z"/></symbol>
+  </svg>
+
+  <div class="noise" aria-hidden="true"></div>
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+  <div class="glow glow-c" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="/" aria-label="ATLANTA — на главную">
+        <span>ATLANTA</span>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#how">Как работает</a>
+        <a href="#features">Возможности</a>
+        <a href="#fees">Комиссии</a>
+        <a href="#security">Безопасность</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="lang-slot" id="langSwitch" data-lang-switch></div>
+        <a class="btn btn-primary btn-sm" data-bot-link href="https://t.me/atlantaotcbot" target="_blank" rel="noopener">
+          Открыть бота
+          <svg class="icon"><use href="#i-arrow"/></svg>
+        </a>
+        <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">
+          <svg class="icon"><use href="#i-menu"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill reveal">
+            <span class="pill-dot"></span>
+            Безопасные сделки в Telegram · крипта и фиат
+          </div>
+          <h1 class="reveal delay-1">
+            Сделки<br>без риска<br>
+            <span class="grad">Начните<br>уже сейчас!</span>
+          </h1>
+          <p class="lead reveal delay-2">
+            <span>ATLANTA держит оплату под защитой, пока покупатель не получит товар.</span>
+            <span>Продавец видит, что деньги уже есть. Покупатель знает, что они уйдут только после подтверждения.</span>
+          </p>
+          <div class="hero-cta reveal delay-3">
+            <a class="btn btn-primary btn-lg" data-bot-link href="https://t.me/atlantaotcbot" target="_blank" rel="noopener">
+              Начать сделку
+              <svg class="icon"><use href="#i-arrow"/></svg>
+            </a>
+            <a class="btn btn-ghost btn-lg" href="#how">Как это работает</a>
+          </div>
+          <div class="hero-trust reveal delay-4">
+            <div><b>1,5%</b><span>комиссия в крипте</span></div>
+            <div class="sep"></div>
+            <div><b>0</b><span>за создание сделки</span></div>
+            <div class="sep"></div>
+            <div><b>24/7</b><span>арбитраж</span></div>
+          </div>
+          <div class="hero-note reveal delay-4">
+            <svg class="icon"><use href="#i-shield"/></svg>
+            Без хранения данных карт · подтверждение вручную · журнал каждого действия
+          </div>
+        </div>
+
+        <div class="hero-visual reveal delay-2">
+          <div class="orb" aria-hidden="true"></div>
+          <div class="phone-wrap">
+            <div class="phone">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="p-top">
+                  <div class="p-brand"><span>ATLANTA</span></div>
+                  <div class="p-dots"><i></i><i></i><i></i></div>
+                </div>
+                <div class="p-label-row">
+                  <span class="p-code">KST-7F3A2B</span>
+                  <span class="p-status"><i></i> Под защитой</span>
+                </div>
+                <div class="p-amount">1 250 <span>USDT</span></div>
+                <div class="p-sub">≈ 1 250 USD · комиссия 1,5%</div>
+                <div class="p-progress" aria-hidden="true">
+                  <span class="done"></span><span class="done"></span><span class="active"></span><span></span>
+                </div>
+                <div class="p-steps"><span>Создана</span><span>Оплачена</span><span>Передача</span><span>Выплата</span></div>
+                <div class="p-card">
+                  <div class="p-row"><span>Покупатель</span><b>@alexey</b></div>
+                  <div class="p-row"><span>Продавец</span><b>@studio</b></div>
+                  <div class="p-row"><span>Товар</span><b>Steam · 50 игр</b></div>
+                </div>
+                <div class="p-timeline">
+                  <div><i class="ok"></i><span>Средства заблокированы</span><time>12:04</time></div>
+                  <div><i class="ok"></i><span>Продавец передал товар</span><time>12:19</time></div>
+                  <div><i class="wait"></i><span>Подтверждение покупателя</span><time>сейчас</time></div>
+                </div>
+                <div class="p-btn">Подтвердить получение</div>
+              </div>
+            </div>
+            <div class="float-card fc-1">
+              <span class="fc-icon"><svg class="icon"><use href="#i-lock"/></svg></span>
+              <div><b>1 250 USDT</b><span>под защитой ATLANTA</span></div>
+            </div>
+            <div class="float-card fc-2">
+              <span class="fc-icon ok"><svg class="icon"><use href="#i-check"/></svg></span>
+              <div><b>Выплата продавцу</b><span>1 231,25 USDT · мгновенно</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="ticker-wrap reveal">
+          <div class="ticker" id="ticker">
+            <span>USDT <i>TRC-20</i></span><span>BTC <i>Bitcoin</i></span><span>ETH <i>Ethereum</i></span>
+            <span>TON <i>Toncoin</i></span><span>USDC <i>TRC-20</i></span><span>RUB <i>СБП</i></span>
+            <span>UAH <i>карта</i></span><span>KZT <i>карта</i></span><span>BYN <i>ЕРИП</i></span>
+            <span>TRY <i>карта</i></span><span>AMD <i>карта</i></span><span>GEL <i>карта</i></span>
+            <span>USD <i>перевод</i></span><span>EUR <i>перевод</i></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="factbar">
+      <div class="container fact-grid">
+        <div class="fact reveal">
+          <div class="fact-icon"><svg class="icon"><use href="#i-globe"/></svg></div>
+          <b>Крипта и фиат</b>
+          <span>USDT, BTC, TON, рубли, тенге, гривны и другие</span>
+        </div>
+        <div class="fact reveal delay-1">
+          <div class="fact-icon"><svg class="icon"><use href="#i-zap"/></svg></div>
+          <b>1,5%</b>
+          <span>прозрачная комиссия, без скрытых сборов</span>
+        </div>
+        <div class="fact reveal delay-2">
+          <div class="fact-icon"><svg class="icon"><use href="#i-scale"/></svg></div>
+          <b>24/7</b>
+          <span>арбитраж по спорным сделкам</span>
+        </div>
+        <div class="fact reveal delay-3">
+          <div class="fact-icon"><svg class="icon"><use href="#i-wallet"/></svg></div>
+          <b>0</b>
+          <span>за создание и отмену сделки</span>
+        </div>
+      </div>
+      <div class="container">
+        <p class="live-line" id="liveLine"><span class="live-dot"></span> Сервис работает · платежи под защитой</p>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Как это работает</span>
+          <h2>Три шага до безопасной сделки</h2>
+          <p>Продавец и покупатель видят один и тот же статус. Деньги двигаются только по правилам сделки.</p>
+        </div>
+        <div class="steps">
+          <article class="step reveal">
+            <h3>Оплата под защитой</h3>
+            <p>Деньги не уходят продавцу.</p>
+          </article>
+          <article class="step reveal delay-1">
+            <h3>Передача</h3>
+            <p>Продавец фиксирует факт передачи, для решения возможных споров.</p>
+          </article>
+          <article class="step reveal delay-2">
+            <h3>Выплата</h3>
+            <p>После подтверждения покупателем или арбитром.</p>
+          </article>
+        </div>
+        <div class="flow-note reveal">
+          <svg class="icon"><use href="#i-shield"/></svg>
+          <p><b>Если что-то пошло не так</b> — любой участник открывает спор. Арбитр изучает условия, историю сделки и доказательства, затем выплачивает средства продавцу или возвращает покупателю.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Возможности</span>
+          <h2>Всё, чтобы сделка дошла до конца</h2>
+          <p>Не просто «перевод с подписью». Полноценный процесс с ролями, статусами и историей.</p>
+        </div>
+        <div class="features">
+          <article class="feature reveal">
+            <div class="feature-icon"><svg class="icon"><use href="#i-shield"/></svg></div>
+            <h3>Защита от недобросовестных сделок</h3>
+            <p>Продавец не получит деньги, пока покупатель не подтвердит результат. Покупатель не останется без товара и денег одновременно.</p>
+          </article>
+          <article class="feature reveal delay-1">
+            <div class="feature-icon"><svg class="icon"><use href="#i-globe"/></svg></div>
+            <h3>Крипта и фиат</h3>
+            <p>USDT, BTC, ETH, TON, USDC, а также рубли, гривны, тенге, доллары, евро и другие фиатные валюты. Курс для оценки показывается сразу.</p>
+          </article>
+          <article class="feature reveal delay-2">
+            <div class="feature-icon"><svg class="icon"><use href="#i-scale"/></svg></div>
+            <h3>Арбитраж</h3>
+            <p>Спор не теряется в переписке: причина, условия и таймлайн собраны в одном месте для решения.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon"><svg class="icon"><use href="#i-key"/></svg></div>
+            <h3>Вход по ссылке</h3>
+            <p>Покупателю не нужно регистрироваться: он открывает ссылку из Telegram и сразу попадает в сделку.</p>
+          </article>
+          <article class="feature reveal delay-1">
+            <div class="feature-icon"><svg class="icon"><use href="#i-clock"/></svg></div>
+            <h3>Журнал действий</h3>
+            <p>Каждый шаг фиксируется: кто, когда и что сделал. История не редактируется участниками.</p>
+          </article>
+          <article class="feature reveal delay-2">
+            <div class="feature-icon"><svg class="icon"><use href="#i-wallet"/></svg></div>
+            <h3>Выплаты на кошелёк</h3>
+            <p>После завершения деньги попадают на баланс ATLANTA. Вывод — на адрес или реквизиты в пару кликов.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="fees">
+      <div class="container fees-grid">
+        <div class="section-head left reveal">
+          <span class="eyebrow">Комиссии</span>
+          <h2>Платите только за результат</h2>
+          <p>Комиссия удерживается из суммы сделки при успешной выплате. Создание, вход и отмена — бесплатно.</p>
+          <div class="fee-cards">
+            <div class="fee-card">
+              <span class="fee-tag">Криптовалюта</span>
+              <b>1,5%</b>
+              <span>USDT · BTC · ETH · TON · USDC</span>
+            </div>
+            <div class="fee-card">
+              <span class="fee-tag">Фиат</span>
+              <b>2,5%</b>
+              <span>RUB · UAH · KZT · BYN · TRY · USD · EUR</span>
+            </div>
+          </div>
+          <p class="fee-min">Минимальная комиссия — 0,30 USD в эквиваленте.</p>
+        </div>
+        <div class="fee-table-card reveal delay-1">
+          <div class="fee-table-head">
+            <h3>Пример расчёта</h3>
+            <span class="badge">крипта · 1,5%</span>
+          </div>
+          <div class="fee-row head"><span>Сумма сделки</span><span>Комиссия</span><span>Продавцу</span></div>
+          <div class="fee-row"><span>100 USDT</span><span>1,50 USDT</span><b>98,50 USDT</b></div>
+          <div class="fee-row"><span>1 000 USDT</span><span>15 USDT</span><b>985 USDT</b></div>
+          <div class="fee-row"><span>0,01 BTC</span><span>0,00015 BTC</span><b>0,00985 BTC</b></div>
+          <div class="fee-row"><span>500 TON</span><span>7,5 TON</span><b>492,5 TON</b></div>
+          <div class="fee-foot">
+            <svg class="icon"><use href="#i-lock"/></svg>
+            Комиссия фиксируется при создании сделки и не меняется задним числом.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="security">
+      <div class="container security-grid">
+        <div class="security-visual reveal">
+          <div class="shield-scene">
+            <div class="ring r1"></div>
+            <div class="ring r2"></div>
+            <div class="ring r3"></div>
+            <div class="shield-core">
+              <svg class="icon"><use href="#i-shield"/></svg>
+            </div>
+            <div class="orbit-chip oc-1"><svg class="icon"><use href="#i-lock"/></svg> Защита</div>
+            <div class="orbit-chip oc-2"><svg class="icon"><use href="#i-scale"/></svg> Арбитраж</div>
+            <div class="orbit-chip oc-3"><svg class="icon"><use href="#i-clock"/></svg> Аудит</div>
+          </div>
+        </div>
+        <div class="security-copy reveal delay-1">
+          <span class="eyebrow">Безопасность</span>
+          <h2>Деньги не у продавца. И не у покупателя.</h2>
+          <p>Пока сделка активна, оплата находится под защитой ATLANTA. Доступ к ней появляется только по правилам, которые обе стороны видели заранее.</p>
+          <ul class="check-list">
+            <li><svg class="icon"><use href="#i-check"/></svg><div><b>Ручное подтверждение</b><span>Покупатель сам подтверждает получение — автоматических списаний нет.</span></div></li>
+            <li><svg class="icon"><use href="#i-check"/></svg><div><b>Независимый арбитр</b><span>Спор рассматривается по условиям сделки и журналу действий.</span></div></li>
+            <li><svg class="icon"><use href="#i-check"/></svg><div><b>Платёжные провайдеры</b><span>Сервис не хранит данные банковских карт и ключи от кошельков.</span></div></li>
+            <li><svg class="icon"><use href="#i-check"/></svg><div><b>Прозрачные статусы</b><span>Обе стороны видят один и тот же статус и историю изменений.</span></div></li>
+          </ul>
+          <div class="security-note">
+            <svg class="icon"><use href="#i-shield"/></svg>
+            Средства на время сделки находятся под защитой. Выплаты выполняются только по правилам, которые видели обе стороны.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container faq-grid">
+        <div class="section-head left reveal">
+          <span class="eyebrow">FAQ</span>
+          <h2>Частые вопросы</h2>
+          <p>Не нашли ответ? Напишите в поддержку — поможем разобраться со сделкой.</p>
+          <a class="btn btn-ghost" id="supportLink" href="https://t.me/atlantaotcbot" target="_blank" rel="noopener">
+            Написать в поддержку
+            <svg class="icon"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
+        <div class="faq-list reveal delay-1">
+          <details class="faq-item" open>
+            <summary>Как работает защита оплаты?<span class="faq-plus"></span></summary>
+            <div class="faq-body">ATLANTA временно держит деньги покупателя. Покупатель платит не продавцу напрямую, а на защищённый счёт сервиса. Продавец видит, что оплата есть, и передаёт товар. Деньги уходят продавцу только после подтверждения покупателя.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Когда продавец получает деньги?<span class="faq-plus"></span></summary>
+            <div class="faq-body">Сразу после того, как покупатель нажмёт «Подтвердить получение». Выплата зачисляется на баланс ATLANTA за вычетом комиссии, после чего её можно вывести на кошелёк или реквизиты.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Что делать, если товар не соответствует описанию?<span class="faq-plus"></span></summary>
+            <div class="faq-body">Не подтверждайте сделку. Откройте спор и опишите проблему: арбитр увидит условия, историю статусов и сообщения сторон. По итогам он выплатит деньги продавцу или вернёт их покупателю.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Какие валюты поддерживаются?<span class="faq-plus"></span></summary>
+            <div class="faq-body">USDT и USDC в сети TRON, BTC, ETH, TON, а также RUB, UAH, KZT, BYN, TRY, AMD, GEL, USD и EUR. Для криптовалют показывается ориентировочная стоимость в долларах, комиссия фиксируется в валюте сделки.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Сколько стоит сервис?<span class="faq-plus"></span></summary>
+            <div class="faq-body">1,5% от суммы сделки в криптовалюте и 2,5% в фиате, минимум 0,30 USD. Комиссия удерживается только при успешном завершении. Создание сделки, вход по ссылке и отмена — бесплатно.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Как покупатель попадает в сделку?<span class="faq-plus"></span></summary>
+            <div class="faq-body">Продавец отправляет ссылку вида t.me/бот?start=deal_KST-XXXXXX. Покупатель открывает её в Telegram, нажимает «Присоединиться» и оплачивает счёт. Регистрация не нужна.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Кто хранит деньги и это законно?<span class="faq-plus"></span></summary>
+            <div class="faq-body">ATLANTA — технологическая платформа: средства на время сделки находятся под защитой и выплачиваются только по правилам сделки. Перед коммерческим запуском нужна юридическая проверка в вашей юрисдикции.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="container">
+        <div class="cta-panel reveal">
+          <div class="cta-glow" aria-hidden="true"></div>
+          <div class="cta-content">
+            <span class="eyebrow">Первый шаг — 30 секунд</span>
+            <h2>Проведите сделку,<br>за которую не страшно</h2>
+            <p>Откройте ATLANTA в Telegram, создайте сделку и отправьте ссылку покупателю.</p>
+            <div class="cta-actions">
+              <a class="btn btn-primary btn-lg" data-bot-link href="https://t.me/atlantaotcbot" target="_blank" rel="noopener">
+                Открыть бота
+                <svg class="icon"><use href="#i-arrow"/></svg>
+              </a>
+              <a class="btn btn-ghost btn-lg" href="/app/" target="_blank" rel="noopener">Посмотреть мини-апп</a>
+            </div>
+            <div class="cta-trust">
+              <span><svg class="icon"><use href="#i-check"/></svg> Без регистрации</span>
+              <span><svg class="icon"><use href="#i-check"/></svg> Крипта и фиат</span>
+              <span><svg class="icon"><use href="#i-check"/></svg> Арбитраж 24/7</span>
+            </div>
+          </div>
+          <div class="cta-art" aria-hidden="true">
+            <div class="cta-ring"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/">
+          <span>ATLANTA</span>
+        </a>
+        <p>Сервис безопасных сделок в Telegram. Деньги под защитой до подтверждения.</p>
+        <span class="footer-copy">© 2026 ATLANTA · Сделки под контролем</span>
+      </div>
+      <div class="footer-col">
+        <h4>Продукт</h4>
+        <a href="#how">Как работает</a>
+        <a href="#features">Возможности</a>
+        <a href="#fees">Комиссии</a>
+        <a href="/app/" target="_blank" rel="noopener">Мини-приложение</a>
+      </div>
+      <div class="footer-col">
+        <h4>Помощь</h4>
+        <a href="#faq">FAQ</a>
+        <a data-bot-link href="https://t.me/atlantaotcbot" target="_blank" rel="noopener">Telegram-бот</a>
+        <a id="footerSupport" href="https://t.me/atlantaotcbot" target="_blank" rel="noopener">Поддержка</a>
+      </div>
+      <div class="footer-col">
+        <h4>Документы</h4>
+        <a href="#security">Безопасность</a>
+        <a href="#fees">Тарифы</a>
+        <span class="footer-muted">Защищённые сделки</span>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>ATLANTA не является банком или инвестиционной платформой. Средства на время сделки находятся под защитой сервиса.</p>
+      <span>Сделано для честных сделок</span>
+    </div>
+  </footer>
+
+  <script src="/static/landing.js?v=2" defer></script>
+</body>
+</html>

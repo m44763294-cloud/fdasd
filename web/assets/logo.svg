@@ -1,0 +1,18 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="atlanta-g" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A8FFD4"/>
+      <stop offset=".46" stop-color="#5CEBC0"/>
+      <stop offset="1" stop-color="#3FC8FF"/>
+    </linearGradient>
+    <linearGradient id="atlanta-inner" x1="16" y1="12" x2="48" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#081018"/>
+      <stop offset="1" stop-color="#0D1A24"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="19" fill="url(#atlanta-g)"/>
+  <rect x="5.2" y="5.2" width="53.6" height="53.6" rx="16" stroke="#071018" stroke-opacity=".18" stroke-width="1.2"/>
+  <path d="M20 47.5 32 15.5l12 32" stroke="url(#atlanta-inner)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M25 37.5h14" stroke="url(#atlanta-inner)" stroke-width="4.4" stroke-linecap="round"/>
+  <circle cx="32" cy="15.5" r="2.4" fill="#071018"/>
+</svg>
