@@ -2,6 +2,23 @@
 
 from __future__ import annotations
 
+# Запуск напрямую (python app/bot.py) поднимает весь сервис: и API, и бота.
+if __package__ in (None, ""):
+    import os as _os
+    import pathlib as _pathlib
+    import sys as _sys
+
+    _sys.path.insert(0, str(_pathlib.Path(__file__).resolve().parent.parent))
+    import uvicorn as _uvicorn
+
+    _uvicorn.run(
+        "app.main:app",
+        host=_os.getenv("HOST", "0.0.0.0"),
+        port=int(_os.getenv("PORT", "3000")),
+        log_level="info",
+    )
+    raise SystemExit(0)
+
 import asyncio
 import html
 import logging
