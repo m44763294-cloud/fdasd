@@ -58,7 +58,8 @@ py run.py
 | Адрес | Что это |
 | --- | --- |
 | http://127.0.0.1:8080/ | Лендинг |
-| http://127.0.0.1:8080/app/ | Мини-приложение |
+| http://127.0.0.1:8080/app/ | Мини-приложение OTC |
+| http://127.0.0.1:8080/market/ | ATLANTA Market |
 | http://127.0.0.1:8080/api/docs | Swagger (только в `DEV_MODE=1`) |
 
 Без `BOT_TOKEN` бот не запускается. В `DEV_MODE=1` сайт и мини-приложение доступны с авторизацией по заголовку `X-Dev-User` — это режим разработки, а не демо-оплата.
@@ -79,13 +80,30 @@ py run.py
 
 ---
 
+## ATLANTA Market
+
+Второй раздел бота — маркет подарков, аренды и анонимных номеров `+888`. Открывается кнопкой **«Маркет»** в меню и командой `/market`; страница живёт на `/market/` того же FastAPI-процесса. OTC-приложение не меняется.
+
+- Каталог и цены — из `web/market/market-data.js` (4 792 лота) и `web/market/numbers.json`. Сумму заказа считает сервер, клиентские суммы игнорируются.
+- Баланс маркета — отдельные таблицы `market_wallets` / `market_ledger` в GRAM. OTC-кошелёк (`wallets`) не затрагивается.
+- Пополнение — реальный счёт Crypto Pay (`PAYMENT_PROVIDER=cryptopay`), минимум `MARKET_MIN_TOPUP` GRAM. Баланс зачисляется по вебхуку после проверки статуса счёта в API Crypto Pay.
+- Покупка и аренда списывают GRAM сразу и создают заказ со статусом `paid` («ожидает выдачи»).
+- Вывод — заявка `pending`: GRAM резервируются, выплата выполняется вручную.
+- Выдача заказов и выплаты — вручную арбитром: `/marketorders`, `/marketdone <id>`, `/marketrefund <id>`, `/marketpayouts`, `/marketpaid <id>` (или кнопками под списком).
+
+Демо-режима в маркете нет: без Telegram `initData` API отвечает `401`, без Crypto Pay пополнение отвечает `503`.
+
+---
+
 ## Структура проекта
 
 ```
 kustos/
 ├─ app/
 │  ├─ main.py        сборка FastAPI, статика, запуск бота
-│  ├─ api.py         REST API и авторизация
+│  ├─ api.py         REST API OTC и авторизация
+│  ├─ auth.py        проверка Telegram initData
+│  ├─ market.py      маркет: каталог, кошелёк GRAM, заказы, Crypto Pay
 │  ├─ bot.py         aiogram-хендлеры
 │  ├─ escrow.py      доменная логика сделок и арбитража
 │  ├─ payments.py    MockProvider и CryptoPayProvider
@@ -98,7 +116,8 @@ kustos/
 ├─ web/
 │  ├─ index.html     лендинг
 │  ├─ static/        стили и скрипты лендинга
-│  ├─ app/           мини-приложение (index.html, app.css, app.js)
+│  ├─ app/           мини-приложение OTC (index.html, app.css, app.js)
+│  ├─ market/        ATLANTA Market (index.html, market-data.js, orders.js, assets/lots)
 │  └─ assets/        логотип, favicon, robots.txt
 ├─ tests/            pytest
 ├─ run.py            точка входа
@@ -118,7 +137,8 @@ kustos/
 | `ADMIN_IDS` | — | Telegram ID арбитров через запятую. |
 | `SUPPORT_USERNAME` | — | Username поддержки для ссылок в интерфейсе. |
 | `PUBLIC_URL` | `http://127.0.0.1:8080` | Публичный адрес сервиса. |
-| `WEBAPP_URL` | `PUBLIC_URL/app/` | Адрес мини-приложения. |
+| `WEBAPP_URL` | `PUBLIC_URL/app/` | Адрес мини-приложения OTC. |
+| `MARKET_URL` | `PUBLIC_URL/market/` | Адрес маркета (кнопка «Маркет»). |
 | `HOST` / `PORT` | `127.0.0.1` / `8080` | Адрес и порт сервера. |
 | `DEV_MODE` | `1` | Вход для разработки через `X-Dev-User`. В продакшене — `0`. |
 | `DB_PATH` | `data/kustos.db` | Путь к SQLite-базе. |
@@ -128,7 +148,13 @@ kustos/
 | `PAYMENT_TTL_MINUTES` | `45` | Время жизни счёта. |
 | `PAYMENT_PROVIDER` | `mock` | `mock` или `cryptopay`. |
 | `CRYPTOPAY_TOKEN` | — | Токен CryptoPay API. |
-| `PAYMENT_WEBHOOK_SECRET` | `dev-webhook-secret` | Секрет HMAC для вебхуков. |
+| `PAYMENT_WEBHOOK_SECRET` | `dev-webhook-secret` | Секрет HMAC для вебхуков OTC. |
+| `TOPUP_ASSET` | `TON` | Валюта счёта Crypto Pay для пополнения маркета. |
+| `GRAM_PER_UNIT` | `1000` | Сколько GRAM зачисляется за 1 единицу `TOPUP_ASSET`. |
+| `MARKET_MIN_TOPUP` | `10` | Минимальное пополнение маркета, GRAM. |
+| `MARKET_MIN_WITHDRAW` | `10` | Минимальный вывод маркета, GRAM. |
+| `GRAM_RECEIVE_ADDRESS` | — | Резервный адрес для ручного пополнения GRAM. |
+| `GIFT_RECEIVE_USERNAME` | — | Служебный аккаунт для приёма подарков. |
 | `RELOAD` | `0` | `1` — автоперезапуск uvicorn при разработке. |
 
 > `DEV_MODE=1` в публичном доступе опасен: любой может представиться любым пользователем через `X-Dev-User`. На продакшене всегда `DEV_MODE=0`.
@@ -159,7 +185,20 @@ kustos/
 | `POST` | `/api/wallet/withdraw` | Заявка на вывод. |
 | `GET` | `/api/admin/disputes` | Открытые споры (арбитр). |
 | `GET` | `/api/admin/deals` | Последние сделки (арбитр). |
-| `POST` | `/api/payments/webhook` | Вебхук платёжного провайдера. |
+| `GET` | `/api/market/config` | Параметры пополнения и лимиты маркета. |
+| `GET` | `/api/market/me` | Профиль, баланс GRAM, история операций и заказы. |
+| `GET` | `/api/market/orders` | Заказы пользователя. |
+| `POST` | `/api/market/orders` | Создать заказ: `gift` / `number`, `buy` / `rent`. |
+| `POST` | `/api/market/topup` | Создать счёт Crypto Pay на пополнение GRAM. |
+| `GET` | `/api/market/topup/{id}` | Статус счёта пополнения. |
+| `POST` | `/api/market/withdraw` | Заявка на вывод GRAM. |
+| `GET` | `/api/market/admin/orders` | Заказы к выдаче (арбитр). |
+| `POST` | `/api/market/admin/orders/{id}/fulfill` | Отметить заказ выданным. |
+| `POST` | `/api/market/admin/orders/{id}/refund` | Вернуть GRAM за заказ. |
+| `GET` | `/api/market/admin/payouts` | Заявки на вывод (арбитр). |
+| `POST` | `/api/market/admin/payouts/{id}` | `paid` или `rejected`. |
+| `POST` | `/api/market/crypto/webhook` | Вебхук Crypto Pay для пополнения маркета. |
+| `POST` | `/api/payments/webhook` | Вебхук платёжного провайдера OTC. |
 
 Пример создания сделки в демо-режиме:
 
@@ -192,9 +231,20 @@ curl -X POST http://127.0.0.1:8080/api/deals `
 5. `docker compose up -d --build`. Caddy сам получит HTTPS-сертификат.
 6. Проверьте `https://example.com/health`, затем `/start` у бота. Menu Button поставится автоматически.
 
-База `data/kustos.db` создаётся на сервере при первом запуске и хранится в volume. Если нужно перенести текущие балансы и арбитров — скопируйте `data/kustos.db` на сервер **вручную**, в Git он не попадёт. На чистой базе главный арбитр назначается командой `/anlantachief` от ID из `ADMIN_IDS`.
+База `data/kustos.db` создаётся на сервере при первом запуске и хранится в volume. Рабочая база в Git не попадает. Для переноса балансов и арбитров снимок лежит в `deploy/kustos.db` — скопируйте его на сервер как `data/kustos.db`. **Репозиторий должен быть приватным.** На чистой базе главный арбитр назначается командой `/anlantachief` от ID из `ADMIN_IDS`.
 
 Альтернатива без VPS: Railway/Render/Fly.io с `Dockerfile`, `HOST=0.0.0.0`, `PORT` из окружения и постоянным диском под `data/`. Без постоянного диска балансы и сделки потеряются при перезапуске.
+
+### Bothost: бот, OTC и маркет в одном контейнере
+
+Bothost подходит: один Docker-контейнер отдаёт FastAPI (`/`, `/app/`, `/market/`, `/api/*`) и держит long-polling бота.
+
+1. Загрузите репозиторий в Git и создайте бота на Bothost по `Dockerfile` (либо укажите `run.py` как главный файл для шаблона Python).
+2. Включите домен и HTTPS. Платформа сама задаёт `PORT` и проксирует его; приложение уже слушает `0.0.0.0` из `HOST`.
+3. Переменные окружения: `BOT_TOKEN`, `BOT_USERNAME`, `ADMIN_IDS`, `PUBLIC_URL=https://<домен>`, `WEBAPP_URL=https://<домен>/app/`, `MARKET_URL=https://<домен>/market/`, `HOST=0.0.0.0`, `DEV_MODE=0`, `PAYMENT_PROVIDER=cryptopay`, `CRYPTOPAY_TOKEN`, `TOPUP_ASSET`, `GRAM_PER_UNIT`.
+4. Храните базу в `/app/data`: платформа сохраняет каталог `data` между пересборками (`DATA_DIR=/app/data`). `DB_PATH` по умолчанию уже указывает туда. Не переносите базу в корень проекта — при деплое из Git она потеряется.
+5. Вебхуки Crypto Pay: `/api/payments/webhook` (OTC) и `/api/market/crypto/webhook` (маркет) на публичном домене.
+6. Каталог маркета (35 МБ картинок) входит в образ, отдельное хранилище для него не нужно.
 
 ### Раздельный деплой: Workers + отдельный хост для бота
 
@@ -252,7 +302,8 @@ DEV_MODE=0
 ```
 
 3. В настройках приложения CryptoPay укажите URL вебхука: `https://ваш-домен/api/payments/webhook`.
-4. Проверьте, что суммы и валюты счетов совпадают с настройками сервиса.
+4. Для пополнения маркета добавьте второй вебхук: `https://ваш-домен/api/market/crypto/webhook` (тот же токен). Подпись проверяется по `crypto-pay-api-signature`.
+5. Проверьте, что суммы и валюты счетов совпадают с настройками сервиса. Курс маркета: 1 `TOPUP_ASSET` = `GRAM_PER_UNIT` GRAM.
 
 Фиат (RUB/USD/EUR) в текущей версии всегда проходит через ручной/демо-сценарий: для реального приёма нужен эквайринг (ЮKassa, Stripe и т. п.) и отдельная интеграция.
 
@@ -281,12 +332,16 @@ py -m pytest -q
 - [ ] Юридические документы: оферта, правила сервиса, политика конфиденциальности, KYC/AML при необходимости.
 - [ ] Логи и мониторинг, алерты на ошибки платежей.
 - [ ] Проверка сценариев спора и возврата на реальных тестовых платежах.
+- [ ] Пополнение маркета проверено на реальном счёте Crypto Pay, вебхук `/api/market/crypto/webhook` доступен.
+- [ ] Настроен ручной процесс выдачи подарков и номеров, а также выплат по заявкам `/marketpayouts`.
 
 ---
 
 ## Важно
 
 Это демонстрационная реализация сервиса безопасных сделок, а не готовый финансовый продукт. Демо-платежи не двигают реальные деньги, баланс хранится в локальной базе, а вывод средств в демо-режиме лишь фиксирует заявку.
+
+Маркет принимает реальные платежи через Crypto Pay, но выдача подарков, номеров Fragment и выплаты GRAM выполняются вручную арбитром. Автоматической интеграции с Fragment и передачей подарков в текущей версии нет.
 
 Реальные расчёты через третью сторону регулируются законодательством о платёжных услугах и требуют юридической проработки, лицензий (в зависимости от юрисдикции) и партнёрства с провайдером. Перед запуском проконсультируйтесь с юристом.
 

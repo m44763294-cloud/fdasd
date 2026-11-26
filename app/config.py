@@ -39,16 +39,31 @@ class Settings:
         if not self.webapp_url.endswith("/"):
             self.webapp_url += "/"
         self.market_url: str = os.getenv("MARKET_URL", "").strip() or f"{self.public_url}/market/"
+        if not self.market_url.endswith("/"):
+            self.market_url += "/"
         self.gram_receive_address: str = os.getenv("GRAM_RECEIVE_ADDRESS", "").strip()
         self.gram_receive_comment: str = os.getenv("GRAM_RECEIVE_COMMENT", "ATLANTA GRAM topup").strip()
         self.gift_receive_username: str = os.getenv("GIFT_RECEIVE_USERNAME", "").strip().lstrip("@")
+
+        # Пополнение маркета: счёт в валюте Crypto Pay, зачисление в GRAM по курсу.
+        self.topup_asset: str = os.getenv("TOPUP_ASSET", "TON").strip().upper() or "TON"
+        try:
+            self.gram_per_unit: float = float(os.getenv("GRAM_PER_UNIT") or os.getenv("GRAM_PER_TON") or "1000")
+        except ValueError:
+            self.gram_per_unit = 1000.0
+        if self.gram_per_unit <= 0:
+            self.gram_per_unit = 1000.0
+        self.market_min_topup: float = float(os.getenv("MARKET_MIN_TOPUP", "10"))
+        self.market_min_withdraw: float = float(os.getenv("MARKET_MIN_WITHDRAW", "10"))
 
         self.admin_ids: tuple[int, ...] = tuple(
             int(x) for x in os.getenv("ADMIN_IDS", "").replace(";", ",").split(",") if x.strip().isdigit()
         )
         self.dev_mode: bool = _flag("DEV_MODE", "1")
 
-        self.db_path: Path = Path(os.getenv("DB_PATH", str(BASE_DIR / "data" / "kustos.db")))
+        self.db_path: Path = Path(
+            os.getenv("DB_PATH", str(Path(os.getenv("DATA_DIR", str(BASE_DIR / "data"))) / "kustos.db"))
+        )
         self.web_dir: Path = BASE_DIR / "web"
 
         self.payment_provider: str = os.getenv("PAYMENT_PROVIDER", "mock").strip().lower()

@@ -107,6 +107,70 @@ CREATE TABLE IF NOT EXISTS payouts (
     created_at   TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS market_wallets (
+    user_id     INTEGER PRIMARY KEY,
+    available   TEXT NOT NULL DEFAULT '0',
+    pending     TEXT NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE IF NOT EXISTS market_ledger (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL,
+    amount      TEXT NOT NULL,
+    kind        TEXT NOT NULL,
+    note        TEXT NOT NULL DEFAULT '',
+    ref         TEXT,
+    created_at  TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_market_ledger_user ON market_ledger(user_id);
+
+CREATE TABLE IF NOT EXISTS market_orders (
+    id          TEXT PRIMARY KEY,
+    user_id     INTEGER NOT NULL,
+    type        TEXT NOT NULL,
+    mode        TEXT NOT NULL,
+    title       TEXT NOT NULL,
+    subtitle    TEXT NOT NULL DEFAULT '',
+    amount      TEXT NOT NULL,
+    currency    TEXT NOT NULL DEFAULT 'GRAM',
+    months      INTEGER NOT NULL DEFAULT 1,
+    gift_id     TEXT,
+    number      TEXT,
+    anonymous   INTEGER NOT NULL DEFAULT 0,
+    status      TEXT NOT NULL,
+    created_at  TEXT NOT NULL,
+    updated_at  TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_market_orders_user ON market_orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_market_orders_status ON market_orders(status);
+
+CREATE TABLE IF NOT EXISTS market_invoices (
+    id           TEXT PRIMARY KEY,
+    user_id      INTEGER NOT NULL,
+    gram         TEXT NOT NULL,
+    asset        TEXT NOT NULL,
+    units        TEXT NOT NULL,
+    status       TEXT NOT NULL,
+    pay_url      TEXT,
+    mini_app_url TEXT,
+    created_at   TEXT NOT NULL,
+    paid_at      TEXT
+);
+
+CREATE TABLE IF NOT EXISTS market_payouts (
+    id          TEXT PRIMARY KEY,
+    user_id     INTEGER NOT NULL,
+    amount      TEXT NOT NULL,
+    address     TEXT NOT NULL,
+    status      TEXT NOT NULL,
+    created_at  TEXT NOT NULL,
+    paid_at     TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_market_payouts_status ON market_payouts(status);
+
 CREATE TABLE IF NOT EXISTS app_settings (
     key         TEXT PRIMARY KEY,
     value       TEXT NOT NULL,

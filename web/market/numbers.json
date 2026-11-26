@@ -1,0 +1,22 @@
+[
+  { "num": "+888 0637 4895", "price": 1800, "rent": 57, "tag": "Fragment · +888" },
+  { "num": "+888 0692 6041", "price": 1950, "rent": 57, "tag": "Fragment · +888" },
+  { "num": "+888 0236 4157", "price": 2100, "rent": 60, "tag": "Fragment · +888" },
+  { "num": "+888 0426 9362", "price": 2250, "rent": 60, "tag": "Fragment · +888" },
+  { "num": "+888 0427 4317", "price": 2400, "rent": 60, "tag": "Fragment · +888" },
+  { "num": "+888 0439 5793", "price": 2600, "rent": 60, "tag": "Fragment · +888" },
+  { "num": "+888 0453 2179", "price": 2800, "rent": 60, "tag": "Fragment · +888" },
+  { "num": "+888 0496 4762", "price": 3050, "rent": 60, "tag": "Fragment · +888" },
+  { "num": "+888 0513 7462", "price": 3300, "rent": 60, "tag": "Fragment · +888" },
+  { "num": "+888 0514 7396", "price": 3600, "rent": 60, "tag": "Fragment · +888" },
+  { "num": "+888 0721 2941", "price": 3900, "rent": 60, "tag": "Fragment · +888" },
+  { "num": "+888 0834 9651", "price": 4300, "rent": 63, "tag": "Fragment · +888" },
+  { "num": "+888 0125 1254", "price": 4800, "rent": 90, "tag": "Fragment · +888" },
+  { "num": "+888 0130 6457", "price": 5300, "rent": 90, "tag": "Fragment · +888" },
+  { "num": "+888 0425 7215", "price": 5900, "rent": 90, "tag": "Fragment · +888" },
+  { "num": "+888 0752 7424", "price": 6500, "rent": 90, "tag": "Fragment · +888" },
+  { "num": "+888 777 77 77", "price": 8200, "rent": 262, "tag": "Fragment · +888" },
+  { "num": "+888 123 45 67", "price": 9000, "rent": 288, "tag": "Fragment · +888" },
+  { "num": "+888 900 90 09", "price": 9800, "rent": 314, "tag": "Fragment · +888" },
+  { "num": "+888 888 88 88", "price": 11500, "rent": 368, "tag": "Fragment · +888" }
+]

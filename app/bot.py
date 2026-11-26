@@ -31,7 +31,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from . import escrow
+from . import escrow, market
 from .config import settings
 from .i18n import tr
 from .models import CURRENCIES, fmt_amount, fmt_usd, parse_amount, quantize, split_fee, usd_value
@@ -83,7 +83,10 @@ def webapp_url(query: str = "") -> str:
 def welcome_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
-        InlineKeyboardButton(text=tr("Перейти в OTC", lang), web_app=WebAppInfo(url=webapp_url()))
+        InlineKeyboardButton(text=tr("Открыть OTC", lang), web_app=WebAppInfo(url=webapp_url())),
+        InlineKeyboardButton(
+            text=tr("Открыть маркетплейс", lang), web_app=WebAppInfo(url=settings.market_url)
+        ),
     )
     return builder.as_markup()
 
@@ -95,6 +98,9 @@ def main_menu(lang: str = "ru") -> InlineKeyboardMarkup:
         InlineKeyboardButton(text=tr("Мои сделки", lang), web_app=WebAppInfo(url=webapp_url("tab=deals"))),
     )
     builder.row(
+        InlineKeyboardButton(text=tr("Маркет подарков", lang), web_app=WebAppInfo(url=settings.market_url)),
+    )
+    builder.row(
         InlineKeyboardButton(text=tr("Создать сделку", lang), callback_data="create"),
         InlineKeyboardButton(text=tr("Войти по коду", lang), callback_data="enter_code"),
     )
@@ -102,8 +108,6 @@ def main_menu(lang: str = "ru") -> InlineKeyboardMarkup:
         InlineKeyboardButton(text=tr("Как это работает", lang), callback_data="how"),
         InlineKeyboardButton(text=tr("Язык", lang), callback_data="lang"),
     )
-    if settings.support_username:
-        builder.row(InlineKeyboardButton(text=tr("Поддержка", lang), url=f"https://t.me/{settings.support_username}"))
     return builder.as_markup()
 
 
@@ -127,10 +131,19 @@ def start_language_menu() -> InlineKeyboardMarkup:
 
 
 async def send_welcome(target, lang: str) -> None:
+    fee = f"{settings.fee_fiat:g}"
     welcome = T(
         lang,
-        "Приветствуем!\n\nПерейдите в приложение, чтобы ознакомиться с сервисом",
-        "Welcome!\n\nOpen the app to explore the service",
+        "Добро пожаловать 👋\n\n"
+        "<blockquote>Atlanta Market — Мы специализированный сервис по обеспечению "
+        "безопасности внебиржевых сделок. Удобный и быстрый вывод средств.</blockquote>\n\n"
+        f"<blockquote>Комиссия сервиса: {fee.replace('.', ',')}%\n"
+        "Режим работы: 24/7</blockquote>",
+        "Welcome 👋\n\n"
+        "<blockquote>Atlanta Market — We are a specialized service for secure "
+        "over-the-counter deals. Fast and convenient withdrawals.</blockquote>\n\n"
+        f"<blockquote>Service fee: {fee}%\n"
+        "Working hours: 24/7</blockquote>",
     )
     markup = welcome_menu(lang)
     if PREVIEW_IMAGE.is_file():
@@ -266,6 +279,27 @@ async def cmd_help(message: Message) -> None:
         "Charged only on a successful deal.",
     )
     await message.answer(text, reply_markup=main_menu(lang))
+
+
+@router.message(Command("market"))
+async def cmd_market(message: Message) -> None:
+    lang = await lang_of(message.from_user.id)
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(text=tr("Открыть маркет", lang), web_app=WebAppInfo(url=settings.market_url))
+    )
+    await message.answer(
+        T(
+            lang,
+            "<b>ATLANTA Market</b>\n\n"
+            "Подарки, аренда и анонимные номера +888.\n"
+            "Баланс в GRAM, пополнение через @CryptoBot.",
+            "<b>ATLANTA Market</b>\n\n"
+            "Gifts, rent and anonymous +888 numbers.\n"
+            "GRAM balance, top-up via @CryptoBot.",
+        ),
+        reply_markup=builder.as_markup(),
+    )
 
 
 @router.message(Command("id"))
@@ -681,6 +715,161 @@ async def cmd_market_store(message: Message, command: CommandObject) -> None:
     )
 
 
+async def _market_admin(message: Message, lang: str) -> dict | None:
+    """Проверить права арбитра для команд маркета."""
+    user = await escrow.get_user(message.from_user.id)
+    if not user or not user.get("is_admin"):
+        await message.answer(tr("Команда доступна только арбитрам.", lang))
+        return None
+    return user
+
+
+@router.message(Command("marketorders"))
+async def cmd_market_orders(message: Message) -> None:
+    lang = await lang_of(message.from_user.id)
+    user = await _market_admin(message, lang)
+    if not user:
+        return
+    items = await market.admin_pending_orders(user)
+    if not items:
+        await message.answer(T(lang, "Нет заказов, ожидающих выдачи.", "No orders awaiting fulfilment."))
+        return
+    builder = InlineKeyboardBuilder()
+    lines = [T(lang, "🧾 <b>Заказы маркета</b>\n", "🧾 <b>Market orders</b>\n")]
+    for order in items:
+        title = order.get("number") or order.get("title") or "—"
+        lines.append(
+            f"\n<code>{html.escape(order['id'])}</code>\n"
+            f"{html.escape(str(title))} · {html.escape(order['amount'])} GRAM\n"
+            f"<i>{html.escape(order['status_label'])}</i>"
+        )
+        builder.row(
+            InlineKeyboardButton(
+                text=f"✅ {title}",
+                callback_data=f"mkt:done:{order['id']}",
+            ),
+            InlineKeyboardButton(
+                text="↩️",
+                callback_data=f"mkt:ref:{order['id']}",
+            ),
+        )
+    await message.answer("".join(lines), reply_markup=builder.as_markup())
+
+
+@router.message(Command("marketdone"))
+async def cmd_market_done(message: Message, command: CommandObject) -> None:
+    lang = await lang_of(message.from_user.id)
+    user = await _market_admin(message, lang)
+    if not user:
+        return
+    order_id = (command.args or "").strip().split()[0] if (command.args or "").strip() else ""
+    if not order_id:
+        await message.answer(T(lang, "Формат: <code>/marketdone &lt;ID заказа&gt;</code>", "Format: <code>/marketdone &lt;order ID&gt;</code>"))
+        return
+    try:
+        order = await market.admin_fulfill_order(user, order_id)
+    except escrow.EscrowError as exc:
+        await message.answer(tr(exc.message, lang))
+        return
+    await message.answer(
+        T(lang, f"Заказ выдан: <code>{html.escape(order['id'])}</code> · {html.escape(order['title'])}",
+          f"Order fulfilled: <code>{html.escape(order['id'])}</code> · {html.escape(order['title'])}")
+    )
+
+
+@router.message(Command("marketrefund"))
+async def cmd_market_refund(message: Message, command: CommandObject) -> None:
+    lang = await lang_of(message.from_user.id)
+    user = await _market_admin(message, lang)
+    if not user:
+        return
+    order_id = (command.args or "").strip().split()[0] if (command.args or "").strip() else ""
+    if not order_id:
+        await message.answer(T(lang, "Формат: <code>/marketrefund &lt;ID заказа&gt;</code>", "Format: <code>/marketrefund &lt;order ID&gt;</code>"))
+        return
+    try:
+        order = await market.admin_refund_order(user, order_id)
+    except escrow.EscrowError as exc:
+        await message.answer(tr(exc.message, lang))
+        return
+    await message.answer(
+        T(lang, f"Возврат выполнен: <code>{html.escape(order['id'])}</code> · {html.escape(order['amount'])} GRAM",
+          f"Refunded: <code>{html.escape(order['id'])}</code> · {html.escape(order['amount'])} GRAM")
+    )
+
+
+@router.message(Command("marketpayouts"))
+async def cmd_market_payouts(message: Message) -> None:
+    lang = await lang_of(message.from_user.id)
+    user = await _market_admin(message, lang)
+    if not user:
+        return
+    items = await market.admin_pending_payouts(user)
+    if not items:
+        await message.answer(T(lang, "Нет заявок на вывод.", "No withdrawal requests."))
+        return
+    builder = InlineKeyboardBuilder()
+    lines = [T(lang, "💸 <b>Заявки на вывод</b>\n", "💸 <b>Withdrawal requests</b>\n")]
+    for item in items:
+        lines.append(
+            f"\n<code>{html.escape(item['id'])}</code> · {html.escape(str(item['amount']))} GRAM\n"
+            f"<code>{html.escape(item['address'])}</code> · ID {item['user_id']}"
+        )
+        builder.row(
+            InlineKeyboardButton(text="✅ Выплачено", callback_data=f"mkt:pay:{item['id']}"),
+            InlineKeyboardButton(text="↩️ Отклонить", callback_data=f"mkt:rej:{item['id']}"),
+        )
+    await message.answer("".join(lines), reply_markup=builder.as_markup())
+
+
+@router.message(Command("marketpaid"))
+async def cmd_market_paid(message: Message, command: CommandObject) -> None:
+    lang = await lang_of(message.from_user.id)
+    user = await _market_admin(message, lang)
+    if not user:
+        return
+    payout_id = (command.args or "").strip().split()[0] if (command.args or "").strip() else ""
+    if not payout_id:
+        await message.answer(T(lang, "Формат: <code>/marketpaid &lt;ID заявки&gt;</code>", "Format: <code>/marketpaid &lt;request ID&gt;</code>"))
+        return
+    try:
+        await market.admin_set_payout(user, payout_id, "paid")
+    except escrow.EscrowError as exc:
+        await message.answer(tr(exc.message, lang))
+        return
+    await message.answer(T(lang, "Заявка отмечена как выплаченная.", "Withdrawal marked as paid."))
+
+
+@router.callback_query(F.data.startswith("mkt:"))
+async def cb_market_admin(callback: CallbackQuery) -> None:
+    lang = await lang_of(callback.from_user.id)
+    user = await escrow.get_user(callback.from_user.id)
+    if not user or not user.get("is_admin"):
+        await callback.answer(tr("Команда доступна только арбитрам.", lang), show_alert=True)
+        return
+    try:
+        parts = (callback.data or "").split(":", 2)
+        if len(parts) != 3:
+            await callback.answer()
+            return
+        action, target = parts[1], parts[2]
+        if action == "done":
+            await market.admin_fulfill_order(user, target)
+            await callback.answer(T(lang, "Заказ выдан", "Order fulfilled"))
+        elif action == "ref":
+            await market.admin_refund_order(user, target)
+            await callback.answer(T(lang, "Возврат выполнен", "Refunded"))
+        elif action in {"pay", "rej"}:
+            await market.admin_set_payout(user, target, "paid" if action == "pay" else "rejected")
+            await callback.answer(T(lang, "Готово", "Done"))
+        else:
+            await callback.answer()
+            return
+    except escrow.EscrowError as exc:
+        await callback.answer(tr(exc.message, lang), show_alert=True)
+        return
+
+
 @router.message(Command("stats"))
 async def cmd_stats(message: Message) -> None:
     lang = await lang_of(message.from_user.id)
@@ -904,6 +1093,7 @@ async def fallback(message: Message, state: FSMContext) -> None:
 
 RU_COMMANDS = [
     BotCommand(command="start", description="Главное меню"),
+    BotCommand(command="market", description="Маркет подарков"),
     BotCommand(command="create", description="Создать сделку"),
     BotCommand(command="deals", description="Мои сделки"),
     BotCommand(command="language", description="Сменить язык"),
@@ -913,6 +1103,7 @@ RU_COMMANDS = [
 
 EN_COMMANDS = [
     BotCommand(command="start", description="Main menu"),
+    BotCommand(command="market", description="Gift market"),
     BotCommand(command="create", description="Create a deal"),
     BotCommand(command="deals", description="My deals"),
     BotCommand(command="language", description="Change language"),
@@ -928,6 +1119,11 @@ RU_ADMIN_COMMANDS = RU_COMMANDS + [
     BotCommand(command="anlantarevoke", description="Забрать статус арбитра"),
     BotCommand(command="anlantawallet", description="Адрес для GRAM"),
     BotCommand(command="anlantastore", description="Аккаунт для подарков"),
+    BotCommand(command="marketorders", description="Заказы маркета"),
+    BotCommand(command="marketdone", description="Выдать заказ маркета"),
+    BotCommand(command="marketrefund", description="Вернуть GRAM за заказ"),
+    BotCommand(command="marketpayouts", description="Выплаты маркета"),
+    BotCommand(command="marketpaid", description="Отметить выплату"),
 ]
 EN_ADMIN_COMMANDS = EN_COMMANDS + [
     BotCommand(command="anlantamoney", description="Credit balance"),
@@ -937,6 +1133,11 @@ EN_ADMIN_COMMANDS = EN_COMMANDS + [
     BotCommand(command="anlantarevoke", description="Revoke arbiter"),
     BotCommand(command="anlantawallet", description="GRAM wallet address"),
     BotCommand(command="anlantastore", description="Gift receiving account"),
+    BotCommand(command="marketorders", description="Market orders"),
+    BotCommand(command="marketdone", description="Fulfill market order"),
+    BotCommand(command="marketrefund", description="Refund market order"),
+    BotCommand(command="marketpayouts", description="Market payouts"),
+    BotCommand(command="marketpaid", description="Mark payout"),
 ]
 
 

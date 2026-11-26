@@ -383,7 +383,11 @@ def test_web_routes(client):
 
     market = client.get("/market/")
     assert market.status_code == 200
-    assert "market.js" in market.text
+    assert "market-data.js" in market.text
+    assert "orders.js" in market.text
+
+    assert client.get("/market/market-data.js").status_code == 200
+    assert client.get("/market/numbers.json").status_code == 200
 
 
 def test_chief_can_manage_arbiters_and_grant_balance(tmp_path, monkeypatch):

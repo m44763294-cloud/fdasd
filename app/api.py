@@ -4,62 +4,18 @@ from __future__ import annotations
 
 import logging
 from typing import Any
-from urllib.parse import unquote
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from . import escrow, payments
+from .auth import current_user
 from .config import settings
 from .i18n import LANGS, tr
 from .models import CATEGORIES, public_currencies
-from .security import verify_init_data
 
 log = logging.getLogger("kustos.api")
 router = APIRouter(prefix="/api")
-
-
-# --------------------------------------------------------------------------- auth
-
-
-async def current_user(request: Request) -> dict:
-    init_data = request.headers.get("X-Telegram-Init-Data", "").strip()
-    auth = request.headers.get("Authorization", "").strip()
-    lang = (request.headers.get("X-Lang") or request.query_params.get("lang") or "").strip().lower()
-    lang = lang if lang in {"ru", "en"} else ""
-    if not init_data and auth.lower().startswith("tma "):
-        init_data = auth[4:].strip()
-
-    tg_user: dict | None = None
-    if init_data:
-        if not settings.bot_token:
-            raise HTTPException(status_code=401, detail=tr("Бот не настроен: проверка Telegram недоступна", lang))
-        verified = verify_init_data(init_data, settings.bot_token)
-        if not verified:
-            raise HTTPException(status_code=401, detail=tr("Подпись Telegram недействительна", lang))
-        tg_user = verified.get("user")
-        if not isinstance(tg_user, dict) or not tg_user.get("id"):
-            raise HTTPException(status_code=401, detail=tr("В данных Telegram нет пользователя", lang))
-
-    if tg_user is None and settings.dev_mode:
-        dev_id = request.headers.get("X-Dev-User", "777000").strip()
-        try:
-            uid = int(dev_id)
-        except ValueError:
-            uid = 777000
-        tg_user = {
-            "id": uid,
-            "first_name": unquote(request.headers.get("X-Dev-Name", "Демо")).strip() or "Демо",
-            "username": request.headers.get("X-Dev-Username", "dev"),
-            "language": lang,
-        }
-
-    if tg_user is None:
-        raise HTTPException(status_code=401, detail=tr("Откройте приложение внутри Telegram", lang))
-
-    if lang:
-        tg_user["language"] = lang
-    return await escrow.upsert_user(tg_user)
 
 
 # --------------------------------------------------------------------------- schemas
@@ -132,12 +88,18 @@ async def market_config() -> dict:
     gram_receive_address = await escrow.get_setting("gram_receive_address", settings.gram_receive_address)
     gram_receive_comment = await escrow.get_setting("gram_receive_comment", settings.gram_receive_comment)
     gift_receive_username = await escrow.get_setting("gift_receive_username", settings.gift_receive_username)
+    crypto_enabled = settings.payment_provider == "cryptopay" and bool(settings.cryptopay_token)
     return {
         "brand": settings.brand,
         "gram_receive_address": gram_receive_address,
         "gram_receive_comment": gram_receive_comment,
-        "gift_receive_username": gift_receive_username,
+        "gift_receive_username": gift_receive_username or "atlanta_holder",
         "bot_username": settings.bot_username,
+        "topup_asset": settings.topup_asset,
+        "gram_per_unit": settings.gram_per_unit,
+        "min_topup": settings.market_min_topup,
+        "min_withdraw": settings.market_min_withdraw,
+        "crypto_enabled": crypto_enabled,
     }
 
 

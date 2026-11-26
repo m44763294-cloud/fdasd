@@ -189,6 +189,28 @@ class CryptoPayProvider:
             expires_at=result.get("expiration_date") or _expiry(),
         )
 
+    async def create_market_invoice(
+        self, *, asset: str, amount: str, description: str, payload: str, expires_in: int = 3600
+    ) -> dict:
+        """Счёт на пополнение баланса маркета (не привязан к сделке OTC)."""
+        return await self._call(
+            "createInvoice",
+            {
+                "asset": asset,
+                "amount": amount,
+                "description": description,
+                "payload": payload,
+                "expires_in": expires_in,
+                "allow_comments": False,
+                "allow_anonymous": False,
+            },
+        )
+
+    async def get_invoice(self, invoice_id: str) -> dict | None:
+        data = await self._call("getInvoices", {"invoice_ids": str(invoice_id), "count": 1})
+        items = data.get("items") or []
+        return items[0] if items else None
+
     async def parse_webhook(self, headers: dict, raw: bytes, payload: dict) -> PaymentEvent | None:
         token = headers.get("crypto-pay-api-token") or headers.get("Crypto-Pay-API-Token") or ""
         if not hmac.compare_digest(token, self.token):

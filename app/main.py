@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
+import mimetypes
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -18,6 +19,7 @@ from .config import settings
 from .db import db
 from .escrow import EscrowError
 from .i18n import tr
+from .market import router as market_router
 from .payments import init_provider
 
 logging.basicConfig(
@@ -27,6 +29,13 @@ logging.basicConfig(
 log = logging.getLogger("kustos")
 
 WEB_DIR = settings.web_dir
+
+# Windows и slim-образы без /etc/mime.types не знают WebP: без этого браузер
+# откажется показывать картинки каталога из-за X-Content-Type-Options: nosniff.
+mimetypes.add_type("image/webp", ".webp")
+mimetypes.add_type("image/png", ".png")
+mimetypes.add_type("image/svg+xml", ".svg")
+mimetypes.add_type("application/javascript", ".js")
 
 
 async def _run_bot_background() -> None:
@@ -99,6 +108,7 @@ async def escrow_error_handler(request: Request, exc: EscrowError):
 
 
 app.include_router(router)
+app.include_router(market_router)
 
 app.mount("/app", StaticFiles(directory=str(WEB_DIR / "app"), html=True), name="miniapp")
 app.mount("/market", StaticFiles(directory=str(WEB_DIR / "market"), html=True), name="market")
