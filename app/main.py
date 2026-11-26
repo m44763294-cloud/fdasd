@@ -6,6 +6,7 @@ import asyncio
 import contextlib
 import logging
 import mimetypes
+import re
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -29,6 +30,8 @@ logging.basicConfig(
 log = logging.getLogger("kustos")
 
 WEB_DIR = settings.web_dir
+
+_PRIVATE_HOST = re.compile(r"^(10\.|127\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)")
 
 # Windows и slim-образы без /etc/mime.types не знают WebP: без этого браузер
 # откажется показывать картинки каталога из-за X-Content-Type-Options: nosniff.
@@ -87,8 +90,27 @@ app.add_middleware(
 )
 
 
+def _public_url_from_request(request: Request) -> str:
+    """Публичный адрес, который видит прокси хостинга (Bothost, Railway, Caddy)."""
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
+    host = host.split(",")[0].strip().lower()
+    if not host:
+        return ""
+    name = host.rsplit(":", 1)[0].strip("[]")
+    if "." not in name or _PRIVATE_HOST.match(name):
+        return ""
+    proto = (request.headers.get("x-forwarded-proto") or "").split(",")[0].strip().lower()
+    if proto and proto != "https":
+        return ""
+    return f"https://{host}"
+
+
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
+    if not settings.public_url_explicit:
+        detected = _public_url_from_request(request)
+        if detected and settings.set_public_url(detected):
+            log.info("Публичный адрес определён по запросу: %s", detected)
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "same-origin"

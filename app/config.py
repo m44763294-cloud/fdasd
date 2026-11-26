@@ -28,19 +28,37 @@ def _flag(name: str, default: str = "0") -> bool:
     return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _detect_public_url() -> str:
+    """Адрес, который платформа хостинга сообщает через переменные окружения."""
+    for name in (
+        "APP_URL",
+        "PUBLIC_DOMAIN",
+        "DOMAIN",
+        "RAILWAY_PUBLIC_DOMAIN",
+        "RENDER_EXTERNAL_URL",
+        "VERCEL_URL",
+        "BOTHOST_DOMAIN",
+    ):
+        value = os.getenv(name, "").strip().rstrip("/")
+        if not value:
+            continue
+        if value.startswith("http://"):
+            value = f"https://{value[len('http://'):]}"
+        elif not value.startswith("https://"):
+            value = f"https://{value}"
+        return value
+    return ""
+
+
 class Settings:
     def __init__(self) -> None:
         self.bot_token: str = os.getenv("BOT_TOKEN", "").strip()
         self.bot_username: str = os.getenv("BOT_USERNAME", "atlantaotcbot").strip().lstrip("@")
-        self.public_url: str = os.getenv("PUBLIC_URL", "http://127.0.0.1:8080").rstrip("/")
-        self.webapp_url: str = (
-            os.getenv("WEBAPP_URL", "").strip() or f"{self.public_url}/app/"
-        )
-        if not self.webapp_url.endswith("/"):
-            self.webapp_url += "/"
-        self.market_url: str = os.getenv("MARKET_URL", "").strip() or f"{self.public_url}/market/"
-        if not self.market_url.endswith("/"):
-            self.market_url += "/"
+        explicit_public_url = os.getenv("PUBLIC_URL", "").strip().rstrip("/")
+        self.public_url_explicit: bool = bool(explicit_public_url)
+        self.public_url: str = explicit_public_url or _detect_public_url() or "http://127.0.0.1:8080"
+        self._webapp_url: str = os.getenv("WEBAPP_URL", "").strip()
+        self._market_url: str = os.getenv("MARKET_URL", "").strip()
         self.gram_receive_address: str = os.getenv("GRAM_RECEIVE_ADDRESS", "").strip()
         self.gram_receive_comment: str = os.getenv("GRAM_RECEIVE_COMMENT", "ATLANTA GRAM topup").strip()
         self.gift_receive_username: str = os.getenv("GIFT_RECEIVE_USERNAME", "").strip().lstrip("@")
@@ -78,6 +96,31 @@ class Settings:
         self.brand: str = "ATLANTA"
         self.tagline: str = "Сделки под контролем"
         self.support_username: str = os.getenv("SUPPORT_USERNAME", "").strip().lstrip("@")
+
+    @property
+    def webapp_url(self) -> str:
+        base = self._webapp_url or f"{self.public_url}/app/"
+        return base if base.endswith("/") else f"{base}/"
+
+    @property
+    def market_url(self) -> str:
+        base = self._market_url or f"{self.public_url}/market/"
+        return base if base.endswith("/") else f"{base}/"
+
+    @property
+    def public_url_ready(self) -> bool:
+        """Telegram открывает Mini App только по живому HTTPS-адресу."""
+        return self.public_url.startswith("https://")
+
+    def set_public_url(self, url: str) -> bool:
+        """Подхватить публичный адрес из запроса, если PUBLIC_URL не задан вручную."""
+        if self.public_url_explicit or self.public_url_ready:
+            return False
+        url = (url or "").strip().rstrip("/")
+        if not url.startswith("https://") or url == self.public_url:
+            return False
+        self.public_url = url
+        return True
 
     @property
     def is_production(self) -> bool:

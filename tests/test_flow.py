@@ -390,6 +390,48 @@ def test_web_routes(client):
     assert client.get("/market/numbers.json").status_code == 200
 
 
+def test_public_url_autodetection(monkeypatch):
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "public_url_explicit", False)
+    monkeypatch.setattr(settings, "_webapp_url", "")
+    monkeypatch.setattr(settings, "_market_url", "")
+    monkeypatch.setattr(settings, "public_url", "http://127.0.0.1:8080")
+
+    # локальные и http-адреса Telegram не принимает — их игнорируем
+    assert settings.set_public_url("http://example.com") is False
+    assert settings.set_public_url("") is False
+
+    assert settings.set_public_url("https://atlanta.example.com/") is True
+    assert settings.public_url == "https://atlanta.example.com"
+    assert settings.webapp_url == "https://atlanta.example.com/app/"
+    assert settings.market_url == "https://atlanta.example.com/market/"
+    assert settings.public_url_ready is True
+
+
+def test_platform_domain_detection(monkeypatch):
+    from app.config import _detect_public_url
+
+    names = (
+        "APP_URL",
+        "PUBLIC_DOMAIN",
+        "DOMAIN",
+        "RAILWAY_PUBLIC_DOMAIN",
+        "RENDER_EXTERNAL_URL",
+        "VERCEL_URL",
+        "BOTHOST_DOMAIN",
+    )
+    for name in names:
+        monkeypatch.delenv(name, raising=False)
+    assert _detect_public_url() == ""
+
+    monkeypatch.setenv("DOMAIN", "atlanta.example.com")
+    assert _detect_public_url() == "https://atlanta.example.com"
+
+    monkeypatch.setenv("DOMAIN", "http://atlanta.example.com/")
+    assert _detect_public_url() == "https://atlanta.example.com"
+
+
 def test_chief_can_manage_arbiters_and_grant_balance(tmp_path, monkeypatch):
     import asyncio
 

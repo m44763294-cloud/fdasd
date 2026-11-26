@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import html
 import logging
 import os
@@ -130,7 +131,18 @@ def start_language_menu() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
+async def _await_public_url(timeout: float = 3.0) -> None:
+    """Даёт приложению шанс узнать домен из первого HTTP-запроса прокси."""
+    if settings.public_url_ready or settings.public_url_explicit:
+        return
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    while not settings.public_url_ready and loop.time() < deadline:
+        await asyncio.sleep(0.25)
+
+
 async def send_welcome(target, lang: str) -> None:
+    await _await_public_url()
     fee = f"{settings.fee_fiat:g}"
     welcome = T(
         lang,
@@ -1164,6 +1176,22 @@ def _telegram_session() -> AiohttpSession | None:
     return AiohttpSession(proxy=proxy) if proxy else None
 
 
+async def _sync_menu_button(bot: Bot, attempts: int = 120, delay: float = 3.0) -> None:
+    """Ставит кнопку меню, когда станет известен публичный HTTPS-адрес."""
+    for _ in range(attempts):
+        if settings.public_url_ready or settings.public_url_explicit:
+            try:
+                await bot.set_chat_menu_button(
+                    menu_button=MenuButtonWebApp(text="Mini App", web_app=WebAppInfo(url=settings.webapp_url))
+                )
+                log.info("Кнопка меню указывает на %s", settings.webapp_url)
+            except Exception as exc:
+                log.warning("Не удалось установить кнопку меню: %s", exc)
+            return
+        await asyncio.sleep(delay)
+    log.warning("Публичный адрес не определён — задайте PUBLIC_URL в переменных окружения.")
+
+
 async def run_bot() -> None:
     bot = Bot(
         token=settings.bot_token,
@@ -1179,15 +1207,10 @@ async def run_bot() -> None:
         await bot.set_my_commands(RU_COMMANDS)
         await bot.set_my_commands(EN_COMMANDS, language_code="en")
         await refresh_admin_commands(bot)
-        try:
-            await bot.set_chat_menu_button(
-                menu_button=MenuButtonWebApp(text="Mini App", web_app=WebAppInfo(url=settings.webapp_url))
-            )
-        except Exception as exc:
-            log.warning("Не удалось установить кнопку меню: %s", exc)
 
         await bot.delete_webhook(drop_pending_updates=True)
         log.info("Бот @%s запущен", me.username)
+        _menu_task = asyncio.create_task(_sync_menu_button(bot))
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     finally:
         await bot.session.close()

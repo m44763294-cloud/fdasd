@@ -136,7 +136,7 @@ kustos/
 | `BOT_USERNAME` | `atlantaotcbot` | Username бота без `@`. |
 | `ADMIN_IDS` | — | Telegram ID арбитров через запятую. |
 | `SUPPORT_USERNAME` | — | Username поддержки для ссылок в интерфейсе. |
-| `PUBLIC_URL` | `http://127.0.0.1:8080` | Публичный адрес сервиса. |
+| `PUBLIC_URL` | определяется автоматически | Публичный адрес сервиса. Если не задан — берётся из заголовков первого запроса (`X-Forwarded-Host` / `Host`). |
 | `WEBAPP_URL` | `PUBLIC_URL/app/` | Адрес мини-приложения OTC. |
 | `MARKET_URL` | `PUBLIC_URL/market/` | Адрес маркета (кнопка «Маркет»). |
 | `HOST` / `PORT` | `127.0.0.1` / `8080` | Адрес и порт сервера. |
@@ -241,7 +241,8 @@ Bothost подходит: один Docker-контейнер отдаёт FastAP
 
 1. Загрузите репозиторий в Git и создайте бота на Bothost по `Dockerfile` (либо укажите `run.py` как главный файл для шаблона Python).
 2. Включите домен и HTTPS. Платформа сама задаёт `PORT` и проксирует его; приложение уже слушает `0.0.0.0` из `HOST`.
-3. Переменные окружения: `BOT_TOKEN`, `BOT_USERNAME`, `ADMIN_IDS`, `PUBLIC_URL=https://<домен>`, `WEBAPP_URL=https://<домен>/app/`, `MARKET_URL=https://<домен>/market/`, `HOST=0.0.0.0`, `DEV_MODE=0`, `PAYMENT_PROVIDER=cryptopay`, `CRYPTOPAY_TOKEN`, `TOPUP_ASSET`, `GRAM_PER_UNIT`.
+3. Переменные окружения: `BOT_TOKEN`, `BOT_USERNAME`, `ADMIN_IDS`, `HOST=0.0.0.0`, `DEV_MODE=0`, `PAYMENT_PROVIDER=cryptopay`, `CRYPTOPAY_TOKEN`, `TOPUP_ASSET`, `GRAM_PER_UNIT`.
+   `PUBLIC_URL`, `WEBAPP_URL` и `MARKET_URL` можно не задавать: если домен выдаёт платформа, приложение само возьмёт его из заголовков первого запроса (`X-Forwarded-Host` / `Host`) и подставит в кнопки бота и Mini App. Указывайте их вручную только когда домен известен заранее.
 4. Храните базу в `/app/data`: платформа сохраняет каталог `data` между пересборками (`DATA_DIR=/app/data`). `DB_PATH` по умолчанию уже указывает туда. Не переносите базу в корень проекта — при деплое из Git она потеряется.
 5. Вебхуки Crypto Pay: `/api/payments/webhook` (OTC) и `/api/market/crypto/webhook` (маркет) на публичном домене.
 6. Каталог маркета (35 МБ картинок) входит в образ, отдельное хранилище для него не нужно.
