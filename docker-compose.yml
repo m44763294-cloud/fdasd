@@ -5,7 +5,7 @@ services:
     env_file: .env
     environment:
       HOST: 0.0.0.0
-      PORT: 8080
+      PORT: 3000
     volumes:
       - ./data:/app/data
 

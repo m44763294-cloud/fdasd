@@ -3,7 +3,7 @@ FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     HOST=0.0.0.0 \
-    PORT=8080
+    PORT=3000
 
 WORKDIR /app
 
@@ -18,5 +18,5 @@ COPY preview_welcome.png ./
 RUN mkdir -p data
 VOLUME ["/app/data"]
 
-EXPOSE 8080
+EXPOSE 3000
 CMD ["python", "run.py"]
