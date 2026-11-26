@@ -7,6 +7,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Владелец бота по умолчанию: арбитр, которому доступны админ-команды.
+# Переопределяется переменной ADMIN_IDS.
+DEFAULT_ADMIN_IDS = "976961244"
+
 
 def _load_env() -> None:
     path = BASE_DIR / ".env"
@@ -53,7 +57,8 @@ def _detect_public_url() -> str:
 class Settings:
     def __init__(self) -> None:
         self.bot_token: str = os.getenv("BOT_TOKEN", "").strip()
-        self.bot_username: str = os.getenv("BOT_USERNAME", "atlantaotcbot").strip().lstrip("@")
+        # Bothost подставляет токен и домен сам; username уточняется через getMe при старте.
+        self.bot_username: str = os.getenv("BOT_USERNAME", "").strip().lstrip("@")
         explicit_public_url = os.getenv("PUBLIC_URL", "").strip().rstrip("/")
         self.public_url_explicit: bool = bool(explicit_public_url)
         self.public_url: str = explicit_public_url or _detect_public_url() or "http://127.0.0.1:8080"
@@ -75,7 +80,9 @@ class Settings:
         self.market_min_withdraw: float = float(os.getenv("MARKET_MIN_WITHDRAW", "10"))
 
         self.admin_ids: tuple[int, ...] = tuple(
-            int(x) for x in os.getenv("ADMIN_IDS", "").replace(";", ",").split(",") if x.strip().isdigit()
+            int(x)
+            for x in os.getenv("ADMIN_IDS", DEFAULT_ADMIN_IDS).replace(";", ",").split(",")
+            if x.strip().isdigit()
         )
         self.dev_mode: bool = _flag("DEV_MODE", "1")
 

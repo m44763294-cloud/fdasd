@@ -1200,6 +1200,8 @@ async def run_bot() -> None:
     )
     try:
         me = await bot.get_me()
+        if me.username:
+            settings.bot_username = me.username
         notifier.attach(bot, me.username or settings.bot_username)
         dp = Dispatcher(storage=MemoryStorage())
         dp.include_router(router)
