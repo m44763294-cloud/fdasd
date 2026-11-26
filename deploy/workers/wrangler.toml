@@ -3,7 +3,7 @@ main = "worker/index.js"
 compatibility_date = "2026-11-26"
 
 [assets]
-directory = "./web"
+directory = "../../web"
 binding = "ASSETS"
 
 # BOT_ORIGIN задаётся в Cloudflare Dashboard:

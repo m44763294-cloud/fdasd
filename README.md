@@ -252,7 +252,7 @@ Bothost подходит: один Docker-контейнер отдаёт FastAP
 Можно держать статику на Cloudflare Workers, а FastAPI с ботом — на другом хосте:
 
 1. В Cloudflare Dashboard откройте Worker `hdfhdfb` → Settings → Variables and Secrets → добавьте переменную `BOT_ORIGIN` = `https://<хост-бота>` (без завершающего `/`).
-2. Подключите GitHub-репозиторий через Workers Builds. Root directory: `kustos`, deploy command: `npx wrangler deploy`. Workers раздаёт `web/` и проксирует `/api/*` и `/health` на бот-хост. Адрес будет `https://hdfhdfb.m44763294.workers.dev`.
+2. Подключите GitHub-репозиторий через Workers Builds. Root directory: `kustos/deploy/workers`, deploy command: `npx wrangler deploy`. Workers раздаёт `web/` и проксирует `/api/*` и `/health` на бот-хост. Адрес будет `https://hdfhdfb.m44763294.workers.dev`.
 3. На бот-хосте в `.env` укажите публичные адреса Worker:
    ```env
    PUBLIC_URL=https://hdfhdfb.m44763294.workers.dev
