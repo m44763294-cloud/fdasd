@@ -67,7 +67,10 @@ body::before {
 /* ------------------------------------------------------------------- balance */
 
 .balance-card {
-  background: #151517;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 144, 232, 0.16), transparent 58%),
+    radial-gradient(circle at 0% 120%, rgba(35, 160, 148, 0.10), transparent 60%),
+    #151517;
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: none;
 }
@@ -89,7 +92,10 @@ body::before {
 /* ---------------------------------------------------------------------- CTA */
 
 .cta-create {
-  background: #151517;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 144, 232, 0.16), transparent 58%),
+    radial-gradient(circle at 0% 120%, rgba(35, 160, 148, 0.10), transparent 60%),
+    #151517;
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: none;

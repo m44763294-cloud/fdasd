@@ -313,6 +313,7 @@
     "Название": "Title",
     "5–120 символов": "5–120 characters",
     "Например: аккаунт Steam с 50 играми": "e.g. Steam account with 50 games",
+    "Например: NFT-подарок Telegram": "e.g. Telegram NFT gift",
     "Категория": "Category",
     "Сумма и валюта": "Amount & currency",
     "Сумма сделки": "Deal amount",
@@ -322,8 +323,7 @@
     "Детали": "Details",
     "Описание": "Description",
     "необязательно": "optional",
-    "Что входит в сделку, состояние товара, детали передачи":
-      "What's included, item condition, delivery details",
+    "Что входит в сделку": "What's included",
     "Условия": "Terms",
     "Что считается выполнением сделки и что делать при проблеме":
       "What counts as completion and what to do if there's a problem",

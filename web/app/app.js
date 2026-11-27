@@ -768,7 +768,7 @@
           </div>
           <div class="field">
             <label>Название <span class="hint">5–120 символов</span></label>
-            <input class="input" name="title" maxlength="120" placeholder="Например: iPhone 15 Pro 256 ГБ" required>
+            <input class="input" name="title" maxlength="120" placeholder="Например: NFT-подарок Telegram" required>
           </div>
           <div class="field" style="margin-bottom:0">
             <label>Категория</label>
@@ -803,13 +803,9 @@
 
         <div class="form-card">
           <h4>Детали</h4>
-          <div class="field">
-            <label>Описание</label>
-            <textarea class="textarea" name="description" maxlength="1500" placeholder="Что входит в сделку, состояние товара, детали передачи"></textarea>
-          </div>
           <div class="field" style="margin-bottom:0">
-            <label>Условия</label>
-            <textarea class="textarea" name="terms" maxlength="3000" placeholder="Что считается выполнением сделки и что делать при проблеме"></textarea>
+            <label>Описание</label>
+            <textarea class="textarea" name="description" maxlength="1500" placeholder="Что входит в сделку"></textarea>
           </div>
         </div>
 
@@ -1146,11 +1142,6 @@
         ${
           deal.description
             ? `<div class="detail-block"><span class="detail-label">Описание</span><p>${esc(deal.description)}</p></div>`
-            : ""
-        }
-        ${
-          deal.terms
-            ? `<div class="detail-block"><span class="detail-label">Условия сделки</span><p>${esc(deal.terms)}</p></div>`
             : ""
         }
       </section>`;
