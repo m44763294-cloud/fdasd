@@ -51,7 +51,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from . import escrow, market
 from .config import settings
-from .emoji import pe, split_icon
+from .emoji import pe
 from .i18n import tr
 from .models import CURRENCIES, fmt_amount, fmt_usd, parse_amount, quantize, split_fee, usd_value
 from .notify import notifier
@@ -117,21 +117,11 @@ def market_url(lang: str = "ru") -> str:
 
 
 def blue(markup: InlineKeyboardMarkup) -> InlineKeyboardMarkup:
-    """Красит кнопки в синий и добавляет премиум-иконки.
-
-    ``style="primary"`` — Bot API 9.4+.  ``icon_custom_emoji_id`` показывает
-    кастомный эмодзи перед подписью; ведущий эмодзи из текста при этом
-    убирается, чтобы он не дублировался.
-    """
+    """Красит все кнопки в синий (Bot API 9.4+: style="primary")."""
     for row in markup.inline_keyboard:
         for button in row:
             if not getattr(button, "style", None):
                 button.style = "primary"
-            if settings.button_icons and not getattr(button, "icon_custom_emoji_id", None):
-                text, emoji_id = split_icon(button.text or "")
-                if emoji_id:
-                    button.text = text
-                    button.icon_custom_emoji_id = emoji_id
     return markup
 
 
@@ -155,11 +145,11 @@ def welcome_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
         InlineKeyboardButton(
-            text="🛒 " + tr("Открыть маркетплейс", lang), web_app=WebAppInfo(url=market_url(lang))
+            text=tr("Открыть маркетплейс", lang), web_app=WebAppInfo(url=market_url(lang))
         )
     )
     builder.row(
-        InlineKeyboardButton(text="💱 " + tr("Открыть OTC", lang), web_app=WebAppInfo(url=webapp_url(lang=lang))),
+        InlineKeyboardButton(text=tr("Открыть OTC", lang), web_app=WebAppInfo(url=webapp_url(lang=lang))),
         InlineKeyboardButton(
             text="➕ " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create", lang))
         ),
@@ -186,7 +176,7 @@ def main_menu(lang: str = "ru") -> InlineKeyboardMarkup:
         InlineKeyboardButton(text="🎁 " + tr("Маркет подарков", lang), web_app=WebAppInfo(url=market_url(lang))),
     )
     builder.row(
-        InlineKeyboardButton(text="🔓 " + tr("Войти по коду", lang), callback_data="enter_code"),
+        InlineKeyboardButton(text="🔑 " + tr("Войти по коду", lang), callback_data="enter_code"),
         InlineKeyboardButton(text="❔ " + tr("Как это работает", lang), callback_data="how"),
     )
     builder.row(InlineKeyboardButton(text="🌐 " + tr("Язык", lang), callback_data="lang"))
@@ -206,8 +196,8 @@ def language_menu(lang: str = "ru") -> InlineKeyboardMarkup:
 def start_language_menu() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
-        InlineKeyboardButton(text="🇷🇺 Русский", callback_data="startlang:ru"),
-        InlineKeyboardButton(text="🇬🇧 English", callback_data="startlang:en"),
+        InlineKeyboardButton(text="Русский", callback_data="startlang:ru"),
+        InlineKeyboardButton(text="English", callback_data="startlang:en"),
     )
     return blue(builder.as_markup())
 
@@ -243,6 +233,24 @@ def welcome_text(lang: str = "ru") -> str:
         f"<blockquote>{pe('💼')} Service fee: {fee}%\n"
         f"{pe('🕓')} Working hours: 24/7</blockquote>",
     )
+
+
+LANGUAGE_CAPTION = f"{pe('🌐')} <b>Choose a language</b>"
+
+
+async def send_language_screen(target, markup: InlineKeyboardMarkup) -> None:
+    """Гифка и «Choose a language» с премиум-эмодзи."""
+    if PREVIEW_LANGUAGE.is_file():
+        try:
+            await target.answer_animation(
+                animation=FSInputFile(PREVIEW_LANGUAGE),
+                caption=LANGUAGE_CAPTION,
+                reply_markup=markup,
+            )
+            return
+        except Exception:
+            log.warning("Не удалось отправить анимацию выбора языка", exc_info=True)
+    await target.answer(LANGUAGE_CAPTION, reply_markup=markup)
 
 
 async def send_welcome(target, lang: str) -> None:
@@ -349,18 +357,7 @@ async def cmd_start(message: Message, command: CommandObject, state: FSMContext)
         await message.answer(text, reply_markup=deal_keyboard(deal, message.from_user.id, lang))
         return
 
-    caption = f"{pe('🌐')} <b>Choose a language</b>"
-    if PREVIEW_LANGUAGE.is_file():
-        try:
-            await message.answer_animation(
-                animation=FSInputFile(PREVIEW_LANGUAGE),
-                caption=caption,
-                reply_markup=start_language_menu(),
-            )
-            return
-        except Exception:
-            log.warning("Не удалось отправить анимацию выбора языка", exc_info=True)
-    await message.answer(caption, reply_markup=start_language_menu())
+    await send_language_screen(message, start_language_menu())
 
 
 @router.callback_query(F.data.startswith("startlang:"))
@@ -535,12 +532,12 @@ async def cb_menu(callback: CallbackQuery, state: FSMContext) -> None:
 @router.callback_query(F.data == "lang")
 async def cb_language(callback: CallbackQuery) -> None:
     lang = await lang_of(callback.from_user.id)
-    await edit_text_or_caption(
-        callback.message,
-        T(lang, "Выберите язык интерфейса:", "Choose the interface language:"),
-        language_menu(lang),
-    )
     await callback.answer()
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
+    await send_language_screen(callback.message, language_menu(lang))
 
 
 @router.callback_query(F.data.startswith("lang:"))
