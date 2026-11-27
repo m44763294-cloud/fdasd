@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY run.py ./
 COPY app ./app
 COPY web ./web
-COPY preview_welcome.png preview_welcome_en.png preview_language.gif ./
+COPY preview_welcome.png preview_welcome_en.png ./
 
 RUN mkdir -p data
 VOLUME ["/app/data"]

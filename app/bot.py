@@ -62,7 +62,6 @@ router = Router()
 
 PREVIEW_IMAGE = Path(__file__).resolve().parent.parent / "preview_welcome.png"
 PREVIEW_IMAGE_EN = Path(__file__).resolve().parent.parent / "preview_welcome_en.png"
-PREVIEW_LANGUAGE = Path(__file__).resolve().parent.parent / "preview_language.gif"
 
 
 def T(lang: str, ru: str, en: str) -> str:
@@ -185,20 +184,16 @@ def main_menu(lang: str = "ru") -> InlineKeyboardMarkup:
 
 def language_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.row(
-        InlineKeyboardButton(text="🇷🇺 Русский", callback_data="lang:ru"),
-        InlineKeyboardButton(text="🇬🇧 English", callback_data="lang:en"),
-    )
+    builder.row(InlineKeyboardButton(text="Русский", callback_data="lang:ru"))
+    builder.row(InlineKeyboardButton(text="English", callback_data="lang:en"))
     builder.row(InlineKeyboardButton(text=T(lang, "← Назад", "← Back"), callback_data="menu"))
     return blue(builder.as_markup())
 
 
 def start_language_menu() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.row(
-        InlineKeyboardButton(text="Русский", callback_data="startlang:ru"),
-        InlineKeyboardButton(text="English", callback_data="startlang:en"),
-    )
+    builder.row(InlineKeyboardButton(text="Русский", callback_data="startlang:ru"))
+    builder.row(InlineKeyboardButton(text="English", callback_data="startlang:en"))
     return blue(builder.as_markup())
 
 
@@ -235,22 +230,7 @@ def welcome_text(lang: str = "ru") -> str:
     )
 
 
-LANGUAGE_CAPTION = f"{pe('🌐')} <b>Choose a language</b>"
-
-
-async def send_language_screen(target, markup: InlineKeyboardMarkup) -> None:
-    """Гифка и «Choose a language» с премиум-эмодзи."""
-    if PREVIEW_LANGUAGE.is_file():
-        try:
-            await target.answer_animation(
-                animation=FSInputFile(PREVIEW_LANGUAGE),
-                caption=LANGUAGE_CAPTION,
-                reply_markup=markup,
-            )
-            return
-        except Exception:
-            log.warning("Не удалось отправить анимацию выбора языка", exc_info=True)
-    await target.answer(LANGUAGE_CAPTION, reply_markup=markup)
+LANGUAGE_CAPTION = f"{pe('🌅')} <b>Choose a language</b>"
 
 
 async def send_welcome(target, lang: str) -> None:
@@ -357,7 +337,7 @@ async def cmd_start(message: Message, command: CommandObject, state: FSMContext)
         await message.answer(text, reply_markup=deal_keyboard(deal, message.from_user.id, lang))
         return
 
-    await send_language_screen(message, start_language_menu())
+    await message.answer(LANGUAGE_CAPTION, reply_markup=start_language_menu())
 
 
 @router.callback_query(F.data.startswith("startlang:"))
@@ -423,10 +403,7 @@ async def cmd_id(message: Message) -> None:
 @router.message(Command("language"))
 async def cmd_language(message: Message) -> None:
     lang = await lang_of(message.from_user.id)
-    await message.answer(
-        T(lang, "Выберите язык интерфейса:", "Choose the interface language:"),
-        reply_markup=language_menu(lang),
-    )
+    await message.answer(LANGUAGE_CAPTION, reply_markup=language_menu(lang))
 
 
 @router.message(Command("deals"))
@@ -532,12 +509,8 @@ async def cb_menu(callback: CallbackQuery, state: FSMContext) -> None:
 @router.callback_query(F.data == "lang")
 async def cb_language(callback: CallbackQuery) -> None:
     lang = await lang_of(callback.from_user.id)
+    await edit_text_or_caption(callback.message, LANGUAGE_CAPTION, language_menu(lang))
     await callback.answer()
-    try:
-        await callback.message.delete()
-    except Exception:
-        pass
-    await send_language_screen(callback.message, language_menu(lang))
 
 
 @router.callback_query(F.data.startswith("lang:"))
