@@ -358,15 +358,15 @@ async def cmd_help(message: Message) -> None:
     text = T(
         lang,
         "<b>Как это работает</b>\n\n"
-        "<b>Оплата под защитой</b>\n<blockquote><b>Деньги не уходят продавцу.</b></blockquote>\n\n"
+        "<b>Оплата под защитой</b>\n<blockquote><b>Деньги не уходят продавцу сразу после оплаты.</b></blockquote>\n\n"
         "<b>Передача</b>\n<blockquote><b>Продавец фиксирует факт передачи, для решения возможных споров.</b></blockquote>\n\n"
-        "<b>Выплата</b>\n<blockquote><b>После подтверждения покупателем или арбитром.</b></blockquote>\n\n"
+        "<b>Выплата</b>\n<blockquote><b>После выполнения заказа.</b></blockquote>\n\n"
         f"Комиссия: <b>{settings.fee_crypto:g}%</b> в крипте, <b>{settings.fee_fiat:g}%</b> в фиате. "
         "Удерживается только при успешной сделке.",
         "<b>How it works</b>\n\n"
-        "<b>Payment protected</b>\n<blockquote><b>Funds don't go to the seller.</b></blockquote>\n\n"
+        "<b>Payment protected</b>\n<blockquote><b>Funds don't go to the seller right after payment.</b></blockquote>\n\n"
         "<b>Delivery</b>\n<blockquote><b>The seller records the delivery to help resolve possible disputes.</b></blockquote>\n\n"
-        "<b>Payout</b>\n<blockquote><b>After confirmation by the buyer or an arbitrator.</b></blockquote>\n\n"
+        "<b>Payout</b>\n<blockquote><b>After the order is completed.</b></blockquote>\n\n"
         f"Fee: <b>{settings.fee_crypto:g}%</b> for crypto, <b>{settings.fee_fiat:g}%</b> for fiat. "
         "Charged only on a successful deal.",
     )
@@ -536,13 +536,13 @@ async def cb_how(callback: CallbackQuery) -> None:
     text = T(
         lang,
         "<b>Как это работает</b>\n\n"
-        "<b>Оплата под защитой</b>\n<blockquote><b>Деньги не уходят продавцу.</b></blockquote>\n\n"
+        "<b>Оплата под защитой</b>\n<blockquote><b>Деньги не уходят продавцу сразу после оплаты.</b></blockquote>\n\n"
         "<b>Передача</b>\n<blockquote><b>Продавец фиксирует факт передачи, для решения возможных споров.</b></blockquote>\n\n"
-        "<b>Выплата</b>\n<blockquote><b>После подтверждения покупателем или арбитром.</b></blockquote>",
+        "<b>Выплата</b>\n<blockquote><b>После выполнения заказа.</b></blockquote>",
         "<b>How it works</b>\n\n"
-        "<b>Payment protected</b>\n<blockquote><b>Funds don't go to the seller.</b></blockquote>\n\n"
+        "<b>Payment protected</b>\n<blockquote><b>Funds don't go to the seller right after payment.</b></blockquote>\n\n"
         "<b>Delivery</b>\n<blockquote><b>The seller records the delivery to help resolve possible disputes.</b></blockquote>\n\n"
-        "<b>Payout</b>\n<blockquote><b>After confirmation by the buyer or an arbitrator.</b></blockquote>",
+        "<b>Payout</b>\n<blockquote><b>After the order is completed.</b></blockquote>",
     )
     await callback.message.answer(text, reply_markup=main_menu(lang))
     await callback.answer()

@@ -92,10 +92,10 @@
     "Начните": "Start",
     "уже сейчас!": "right now!",
     "Начните уже сейчас!": "Start right now!",
-    "Gumroad держит оплату под защитой, пока покупатель не получит товар.":
-      "Gumroad holds the payment until the buyer receives the goods.",
-    "Продавец видит, что деньги уже есть. Покупатель знает, что они уйдут только после подтверждения.":
-      "The seller sees the funds are there. The buyer knows they are released only after confirmation.",
+    "Gumroad гарантирует безопасность сделки. Средства удерживаются платформой до передачи товара.":
+      "Gumroad guarantees the security of the deal. Funds are held by the platform until the item is delivered.",
+    "Статус оплаты виден сразу, но доступ к выводу денег открывается только после выполнения заказа.":
+      "The payment status is visible immediately, but withdrawal becomes available only after the order is completed.",
     "Как это работает": "How it works",
     "комиссия в крипте": "crypto fee",
     "за создание сделки": "to create a deal",
@@ -146,16 +146,16 @@
     "Покупатель проверяет результат и подтверждает. Продавец получает деньги за вычетом комиссии.":
       "The buyer checks the result and confirms. The seller receives the amount minus the fee.",
     "Оплата под защитой": "Payment protected",
-    "Деньги не уходят продавцу": "Funds don't go to the seller",
-    "Деньги не уходят продавцу.": "Funds don't go to the seller.",
+    "Деньги не уходят продавцу сразу после оплаты": "Funds don't go to the seller right after payment",
+    "Деньги не уходят продавцу сразу после оплаты.": "Funds don't go to the seller right after payment.",
     "Передача": "Delivery",
     "Продавец фиксирует факт передачи, для решения возможных споров":
       "The seller records the delivery to help resolve possible disputes",
     "Продавец фиксирует факт передачи, для решения возможных споров.":
       "The seller records the delivery to help resolve possible disputes.",
     "Выплата": "Payout",
-    "После подтверждения покупателем или арбитром": "After confirmation by the buyer or an arbitrator",
-    "После подтверждения покупателем или арбитром.": "After confirmation by the buyer or an arbitrator.",
+    "После выполнения заказа": "After the order is completed",
+    "После выполнения заказа.": "After the order is completed.",
     "Если что-то пошло не так": "If something goes wrong",
     " — любой участник открывает спор. Арбитр изучает условия, историю сделки и доказательства, затем выплачивает средства продавцу или возвращает покупателю.":
       " — either party can open a dispute. An arbitrator reviews the terms, deal history and evidence, then pays the seller or refunds the buyer.",
@@ -224,8 +224,8 @@
     "Не нашли ответ? Напишите в поддержку — поможем разобраться со сделкой.":
       "Didn't find an answer? Contact support — we'll help with the deal.",
     "Как работает защита оплаты?": "How does payment protection work?",
-    "Gumroad временно держит деньги покупателя. Покупатель платит не продавцу напрямую, а на защищённый счёт сервиса. Продавец видит, что оплата есть, и передаёт товар. Деньги уходят продавцу только после подтверждения покупателя.":
-      "Gumroad temporarily holds the buyer's money. The buyer pays the service's protected account, not the seller directly. The seller sees the payment and delivers. The money reaches the seller only after the buyer confirms.",
+    "Gumroad временно держит деньги покупателя. Покупатель платит не продавцу напрямую, а на защищённый счёт сервиса. Продавец видит, что оплата есть, и передаёт товар. Деньги уходят продавцу только после выполнения заказа.":
+      "Gumroad temporarily holds the buyer's money. The buyer pays the service's protected account, not the seller directly. The seller sees the payment and delivers. The money reaches the seller only after the order is completed.",
     "Когда продавец получает деньги?": "When does the seller get paid?",
     "Сразу после того, как покупатель нажмёт «Подтвердить получение». Выплата зачисляется на баланс Gumroad за вычетом комиссии, после чего её можно вывести на кошелёк или реквизиты.":
       "Right after the buyer taps “Confirm receipt”. The payout is credited to the Gumroad balance minus the fee, and can then be withdrawn to a wallet or bank details.",
@@ -316,8 +316,8 @@
     "0": "0",
     "24/7": "24/7",
     "Пропустить": "Skip",
-    "Gumroad держит оплату под защитой, пока покупатель не получит товар. Продавец видит, что деньги уже есть. Покупатель знает, что они уйдут только после подтверждения.":
-      "Gumroad holds the payment until the buyer receives the item. The seller sees that the money is there. The buyer knows it's paid out only after confirmation.",
+    "Gumroad гарантирует безопасность сделки. Средства удерживаются платформой до передачи товара. Статус оплаты виден сразу, но доступ к выводу денег открывается только после выполнения заказа.":
+      "Gumroad guarantees the security of the deal. Funds are held by the platform until the item is delivered. The payment status is visible immediately, but withdrawal becomes available only after the order is completed.",
 
     /* ----------------------------------------------------------- create */
     "Деньги под защитой Gumroad": "Money protected by Gumroad",
@@ -350,8 +350,8 @@
     "Комиссия сервиса": "Service fee",
     "Продавец получит": "Seller receives",
     "Покупатель платит": "Buyer pays",
-    "Оплата попадёт под защиту Gumroad. Продавец получит деньги только после вашего подтверждения или решения арбитра.":
-      "Payment goes under Gumroad protection. The seller is paid only after your confirmation or an arbitrator's decision.",
+    "Оплата попадёт под защиту Gumroad. Продавец получит деньги только после выполнения заказа.":
+      "Payment goes under Gumroad protection. The seller is paid only after the order is completed.",
     "Название — минимум 5 символов": "Title must be at least 5 characters",
     "Укажите сумму сделки": "Enter the deal amount",
     "Введите код сделки": "Enter the deal code",
