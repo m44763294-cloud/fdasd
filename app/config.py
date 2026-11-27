@@ -91,6 +91,10 @@ class Settings:
         self.webhook_secret: str = os.getenv("PAYMENT_WEBHOOK_SECRET", "dev-webhook-secret").strip()
         self.payment_ttl_minutes: int = int(os.getenv("PAYMENT_TTL_MINUTES", "45"))
 
+        # Кастомные эмодзи-иконки в inline-кнопках (icon_custom_emoji_id).
+        # Требуют Telegram Premium у владельца бота; при ошибке можно выключить.
+        self.button_icons: bool = _flag("BUTTON_ICONS", "1")
+
         self.fee_crypto: float = float(os.getenv("FEE_CRYPTO", "1.5"))
         self.fee_fiat: float = float(os.getenv("FEE_FIAT", "2.5"))
         self.min_fee_usd: float = float(os.getenv("MIN_FEE_USD", "0.30"))

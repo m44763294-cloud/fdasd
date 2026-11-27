@@ -1,12 +1,16 @@
-"""Премиум-эмодзи из набора Translucent Pack (@devaiden).
+"""Премиум-эмодзи из набора Translucent Pack (@devaiden) и флагов.
 
-Telegram разрешает кастомные эмодзи только в тексте сообщений, не в подписях
-inline-кнопок. Для кнопок остаются обычные символы, для текста — этот хелпер.
+В тексте сообщений и подписях используется тег ``<tg-emoji>`` (хелпер ``pe``).
+В inline-кнопках Telegram показывает кастомный эмодзи через поле
+``icon_custom_emoji_id`` — для этого хелпер ``split_icon`` отделяет ведущий
+эмодзи от подписи.  Иконки в кнопках доступны, если у владельца бота есть
+Telegram Premium (или бот купил username на Fragment).
 
 Использование::
 
-    from .emoji import pe
+    from .emoji import pe, split_icon
     text = f"{pe('🛒')} <b>Магазин</b>"
+    label, icon_id = split_icon("🛒 Магазин")
 
 Если идентификатор для символа не найден, возвращается обычный эмодзи.
 """
@@ -73,6 +77,9 @@ EMOJI_IDS: dict[str, str] = {
     "❔": "5242205011529719330",
     "🔤": "5242602592357345985",
     "💱": "5255933397750014894",
+    "🌐": "5974155090460678354",
+    "🇷🇺": "5398017006165305287",
+    "🇬🇧": "5458416160586342331",
 }
 
 
@@ -82,3 +89,29 @@ def pe(emoji: str, fallback: str | None = None) -> str:
     if not emoji_id:
         return fallback or emoji
     return f'<tg-emoji emoji-id="{emoji_id}">{fallback or emoji}</tg-emoji>'
+
+
+def icon(emoji: str) -> str | None:
+    """ID кастомного эмодзи для иконки inline-кнопки (icon_custom_emoji_id)."""
+    return EMOJI_IDS.get(emoji)
+
+
+# Длинные префиксы проверяются первыми: «👥️» и «⭐️» содержат variation selector.
+ICON_PREFIXES: tuple[tuple[str, str], ...] = tuple(
+    sorted(EMOJI_IDS.items(), key=lambda item: len(item[0]), reverse=True)
+)
+
+
+def split_icon(text: str) -> tuple[str, str | None]:
+    """Отделить ведущий эмодзи от подписи кнопки.
+
+    Возвращает (подпись без эмодзи, id кастомного эмодзи) — id нужен для
+    ``InlineKeyboardButton.icon_custom_emoji_id``.  Если эмодзи не из набора,
+    возвращает исходный текст и ``None``.
+    """
+    for emoji, emoji_id in ICON_PREFIXES:
+        if text.startswith(emoji):
+            rest = text[len(emoji):].lstrip()
+            if rest:
+                return rest, emoji_id
+    return text, None
