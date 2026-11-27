@@ -111,15 +111,24 @@ body::before {
 .cta-create .cta-btn:active { transform: translateY(1px); }
 
 .w-hero {
-  background: #ff90e8;
-  color: #0a0a0b;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 46px -26px rgba(255, 144, 232, 0.7);
+  background:
+    radial-gradient(120% 130% at 92% -18%, rgba(255, 144, 232, 0.2), transparent 58%),
+    radial-gradient(110% 120% at 0% 112%, rgba(35, 160, 148, 0.1), transparent 62%),
+    #151517;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  box-shadow: none;
 }
 .w-hero::after { display: none; }
-.w-hero h1, .w-hero p { color: #0a0a0b; }
-.w-hero h1 em { color: #0a0a0b; opacity: 0.72; }
-.w-badge { background: rgba(0, 0, 0, 0.1); border-color: rgba(0, 0, 0, 0.22); color: #0a0a0b; }
+.w-hero h1 { color: #ffffff; }
+.w-hero h1 em { color: #ff90e8; opacity: 1; }
+.w-hero p { color: var(--muted); }
+.w-badge {
+  background: rgba(255, 144, 232, 0.1);
+  border-color: rgba(255, 144, 232, 0.28);
+  color: #ffc4f3;
+}
 .w-cta { background: #23a094; color: #ffffff; border: 1px solid rgba(0, 0, 0, 0.25); border-radius: 10px; }
 
 /* ------------------------------------------------------------------ buttons */

@@ -978,7 +978,7 @@ button{position:relative;overflow:hidden}
 }
 
 </style>
-<link rel="stylesheet" href="gumroad.css?v=1">
+<link rel="stylesheet" href="gumroad.css?v=4">
 </head>
 <body>
 
@@ -1015,23 +1015,26 @@ button{position:relative;overflow:hidden}
 
       <div class="app">
         <header class="topbar">
-          <div class="logo">
-            <img src="assets/logo-a.png" alt="Gumroad">
-            <span class="logo-txt"><b>Gumroad</b><i>MARKET</i></span>
-          </div>
           <button class="bal" data-wallet aria-label="Кошелёк GRAM">
             <b data-balance>0</b><span>GRAM</span>
           </button>
+          <div class="brand">Gumroad</div>
           <button class="ava" data-tab="profile" aria-label="Профиль">D</button>
         </header>
 
         <div class="searchbar" id="searchWrap">
           <div class="search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.4"/><path d="m15.8 15.8 4.6 4.6"/></svg>
-            <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Найти подарок, модель или узор">
+            <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Быстрый поиск">
             <button class="q-clear" data-clear-q aria-label="Очистить поиск"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
             <kbd>⌘K</kbd>
           </div>
+          <button class="sq" data-sort aria-label="Сортировка"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M7 12h10M10 17h4"/></svg></button>
+          <button class="sq" id="filtersBtn" data-filters aria-label="Фильтры"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8L3 5Z"/></svg></button>
+        </div>
+
+        <div class="filters" id="filters">
+          <div class="chips" id="chips"></div>
         </div>
 
         <main class="view" id="view"></main>
@@ -1324,8 +1327,10 @@ const SORT_LABEL = { curated: 'Подборка', asc: 'Цена ↑', desc: 'Ц
 
 const state = {
   tab: 'store', query: '', term: 1, sort: 'curated', limit: 24, deposit: 10,
+  model: '', backdrop: '', symbol: '',
   favs: (() => { try { return new Set(JSON.parse(localStorage.getItem('atlanta-market:favs:v1') || '[]')); } catch (e) { return new Set(); } })()
 };
+let chipsOpen = true;
 
 /* ============ helpers ============ */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1345,20 +1350,56 @@ function numTermTotal(n) { return Math.round(n.rent * state.term * TERMS[state.t
 
 function filtered(kind = 'sale') {
   const q = state.query.trim().toLowerCase();
-  const base = q
+  let base = q
     ? GIFTS.filter(g => (g.name + ' ' + g.model + ' ' + g.backdrop + ' ' + g.symbol + ' ' + g.num).toLowerCase().includes(q))
     : (kind === 'rent' ? FEED_POOLS.rent : FEED_POOLS.sale);
+  if (state.model) base = base.filter(g => g.model === state.model);
+  if (state.backdrop) base = base.filter(g => g.backdrop === state.backdrop);
+  if (state.symbol) base = base.filter(g => g.symbol === state.symbol);
   let list = base;
   if (state.sort === 'asc') list = list.slice().sort((a, b) => a.price - b.price);
   else if (state.sort === 'desc') list = list.slice().sort((a, b) => b.price - a.price);
   return list;
 }
 
+const MODELS = [...new Set(GIFTS.map(g => g.model).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+const BACKDROPS = [...new Set(GIFTS.map(g => g.backdrop).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+const SYMBOLS = [...new Set(GIFTS.map(g => g.symbol).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+
+function chipsHTML() {
+  const kind = state.tab === 'rent' ? 'rent' : 'sale';
+  const narrowed = !!state.query.trim() || !!state.model || !!state.backdrop || !!state.symbol;
+  const total = narrowed ? filtered(kind).length : (kind === 'rent' ? FEED_POOLS.rent.length : LOTS.length);
+  const chevron = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+  const sel = (key, label, arr) => {
+    const active = !!state[key];
+    return `<label class="chip ${active ? 'on' : ''}">
+      <span>${active ? esc(state[key]) : label}</span>
+      ${chevron}
+      <select data-f="${key}" aria-label="${esc(label)}">
+        <option value="">${esc(label)}: все</option>
+        ${arr.map(v => `<option value="${esc(v)}" ${state[key] === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}
+      </select>
+    </label>`;
+  };
+  const reset = (state.model || state.backdrop || state.symbol)
+    ? `<button class="chip chip-reset" data-reset-f>Сбросить</button>`
+    : '';
+  return `${sel('model', 'Модель', MODELS)}${sel('backdrop', 'Фон', BACKDROPS)}${sel('symbol', 'Узор', SYMBOLS)}${reset}<span class="chip-count">${num(total)} шт.</span>`;
+}
+
 /* ============ views ============ */
+const rarityTier = g => {
+  const r = (g && g.rarity) || {};
+  const s = (Number(r.model) || 0) + (Number(r.backdrop) || 0) + (Number(r.symbol) || 0);
+  return s >= 5 ? 4 : s >= 3.5 ? 3 : s >= 2 ? 2 : 1;
+};
+
 const giftArt = (g, i, extra = '') => `
     <span class="gift-art">
       <img src="${esc(artOf(g))}" alt="${esc(g.name)} · ${esc(g.model)}" loading="${i < 4 ? 'eager' : 'lazy'}" decoding="async">
-      <span class="gift-shine"></span>${extra}
+      <span class="gift-shine"></span>
+      <span class="rarity r${rarityTier(g)}" aria-hidden="true">✿</span>${extra}
     </span>`;
 
 const giftCard = (g, i) => `
@@ -1366,10 +1407,10 @@ const giftCard = (g, i) => `
     ${giftArt(g, i, `<span class="fav ${state.favs.has(g.id) ? 'on' : ''}" data-fav="${g.id}" aria-label="В избранное">${I.heart}</span>`)}
     <span class="gift-info">
       <span class="gift-name">${esc(g.name)}</span>
-      <span class="gift-sub">${esc(g.model)} · ${esc(g.backdrop)}</span>
+      <span class="gift-num">#${esc(g.num)}</span>
       <span class="gift-foot">
-        <span class="price"><b>${num(g.price)}</b> <i>GRAM</i></span>
-        <span class="rent-min">аренда ${num(g.rent)}</span>
+        <span class="price"><b>${num(g.price)}</b> <i>💎</i></span>
+        <span class="gift-buy" aria-hidden="true">${I.gift}</span>
       </span>
     </span>
   </button>`;
@@ -1379,10 +1420,10 @@ const rentCard = (g, i) => `
     ${giftArt(g, i)}
     <span class="gift-info">
       <span class="gift-name">${esc(g.name)}</span>
-      <span class="gift-sub">${esc(g.model)} · ${esc(g.backdrop)}</span>
+      <span class="gift-num">#${esc(g.num)} · ${state.term} мес</span>
       <span class="gift-foot">
-        <span class="price"><b>${num(termTotal(g))}</b> <i>GRAM</i></span>
-        <span class="rent-min">за ${state.term} мес</span>
+        <span class="price"><b>${num(termTotal(g))}</b> <i>💎</i></span>
+        <span class="gift-buy" aria-hidden="true">${I.key}</span>
       </span>
     </span>
   </button>`;
@@ -1392,47 +1433,9 @@ const sortBtn = () => `<button class="sort-btn" data-sort>${I.sort}${SORT_LABEL[
 const storeView = () => {
   const list = filtered('sale');
   const shown = list.slice(0, state.limit);
-  const q = state.query.trim();
-  const searching = !!q;
   return `
-  ${searching ? '' : `
-  <section class="hero">
-    <img class="hero-mark" src="assets/logo-a.png" alt="" aria-hidden="true">
-    <div class="hero-copy">
-      <h1>Подарки Telegram<br><span>Твоя коллекция</span></h1>
-      <p>Покупай, арендуй и собирай свою коллекцию подарков</p>
-    </div>
-    <div class="hero-art">
-      <img class="g1" src="${esc(heroLot('eternalrose-10104'))}" alt="">
-      <img class="g2" src="${esc(heroLot('diamondring-18433'))}" alt="">
-    </div>
-  </section>
-
-  <div class="cats">
-    <button class="cat cat-rent" data-go="rent">
-      <span class="cat-ico ico-rent">RENT</span>
-      <span class="cat-txt"><small>1–6 месяцев · от ${num(MIN_RENT)} GRAM</small></span>
-      <span class="cat-arrow">${I.up}</span>
-    </button>
-    <button class="cat cat-num" data-go="numbers">
-      <span class="cat-ico ico-888">+888</span>
-      <span class="cat-txt"><small>1–6 месяцев · от ${num(MIN_NUM_RENT)} GRAM</small></span>
-      <span class="cat-arrow">${I.up}</span>
-    </button>
-  </div>`}
-
-  <div class="sec-head">
-    <div><h2>${searching ? 'Результаты' : 'Все подарки'}</h2><p>${searching ? 'по запросу «' + esc(q) + '»' : 'Выбирай по настроению и цене'}</p></div>
-    ${sortBtn()}
-  </div>
   ${shown.length ? `<div class="gift-grid">${shown.map(giftCard).join('')}</div>` : `<div class="empty"><div class="ring">${I.search}</div><b>Ничего не нашлось</b><p>Попробуй другое название, модель или узор.</p></div>`}
-  ${list.length > shown.length ? `<button class="more" data-more>Показать ещё ${I.down}</button>` : ''}
-
-  ${searching ? '' : `
-  <button class="teaser" data-go="numbers">
-    <span><b>Анонимные номера +888</b><p>Аренда и покупка. Выдача за 2 минуты.</p></span>
-    <span class="teaser-arrow">${I.arrow}</span>
-  </button>`}`;
+  ${list.length > shown.length ? `<button class="more" data-more>Показать ещё ${I.down}</button>` : ''}`;
 };
 
 const rentView = () => {
@@ -1464,8 +1467,8 @@ const numbersView = () => {
   return `
   ${q ? '' : `
   <section class="num-head">
-    <h1>Анонимные номера <span>+888</span></h1>
-    <p>Аренда от ${num(MIN_NUM_RENT)} GRAM в месяц, выдача за пару минут</p>
+    <h1>Анонимные номера<br><span>+888</span></h1>
+    <p>Аренда от ${num(MIN_NUM_RENT)} 💎 в месяц · выдача за пару минут</p>
     <div class="num-stats">
       <div><b>${NUM_STATS.inStock}</b><span>в наличии</span></div>
       <div><b>${NUM_STATS.term}</b><span>срок аренды</span></div>
@@ -1476,15 +1479,18 @@ const numbersView = () => {
     ${[1, 3, 6].map(d => `<button class="term ${state.term === d ? 'on' : ''}" data-num-term="${d}">${d} мес${d > 1 ? `<b>−${d === 3 ? 5 : 10}%</b>` : ''}</button>`).join('')}
   </div>`}
   <div class="sec-head">
-    <div><h2>${q ? 'Результаты' : 'Каталог номеров'}</h2><p>${q ? 'по запросу «' + esc(state.query.trim()) + '»' : 'Цены в GRAM · выдача за 2 минуты'}</p></div>
+    <div><h2>${q ? 'Результаты' : 'Каталог номеров'}</h2><p>${q ? 'по запросу «' + esc(state.query.trim()) + '»' : 'Цены в 💎 · выдача за 2 минуты'}</p></div>
   </div>
   ${list.length ? `<div class="num-grid">
     ${list.map(n => {
       const i = NUMBERS.indexOf(n);
-      return `<button class="num-card" data-number="${i}" style="--i:${Math.min(i, 10)};--tone:${NUM_TONES[i % NUM_TONES.length]}">
-        <span class="num-val">${n.num}</span>
+      return `<button class="num-card" data-number="${i}" style="--i:${Math.min(i, 10)}">
+        <span class="num-main">
+          <b class="num-val">${n.num}</b>
+          <span class="num-sub">аренда ${num(n.rent)} 💎 / мес${state.term > 1 ? ` · ${num(numTermTotal(n))} за ${state.term} мес` : ''}</span>
+        </span>
         <span class="num-foot">
-          <span class="num-price"><b>${num(n.price)}</b> GRAM<span>аренда ${num(n.rent)} / мес${state.term > 1 ? ` · ${num(numTermTotal(n))} за ${state.term} мес` : ''}</span></span>
+          <span class="num-price"><b>${num(n.price)}</b> <i class="gem">💎</i></span>
           <span class="num-go">${I.up}</span>
         </span>
       </button>`;
@@ -1564,7 +1570,7 @@ const profileView = () => {
     <div class="me-top">
       <span class="ava big">${esc(letter)}</span>
       <span class="me-name"><b>${esc(name)}</b><small>${esc(handle)}</small></span>
-      <span class="id-chip">ATL · ${u.id ? String(u.id).slice(-4) : '—'}</span>
+      <span class="id-chip">ID · ${u.id ? String(u.id).slice(-4) : '—'}</span>
     </div>
     <div class="me-bal">
       <span>Баланс</span>
@@ -1583,7 +1589,7 @@ const profileView = () => {
     <span><b>Gumroad Club</b><p>Кэшбэк GRAM с каждой покупки, аренды и номера.</p></span>
     <button class="club-btn" data-toast="Gumroad Club · скоро">Вступить</button>
   </div>
-  <div style="text-align:center;color:#5b6378;font-size:7px;letter-spacing:.2em;margin:0 0 12px;font-weight:700">GUMROAD MARKET · NFT · RENT · NUMBERS · 2026</div>`;
+  <div style="text-align:center;color:#8a8a93;font-size:7.5px;letter-spacing:.18em;margin:0 0 12px;font-weight:700">GUMROAD MARKET · NFT · RENT · NUMBERS · 2026</div>`;
 };
 
 /* ============ sheets ============ */
@@ -1603,7 +1609,7 @@ function giftSheet(id) {
       <span class="gs-photo">
         <img class="gs-main" src="${esc(artOf(g))}" alt="${esc(g.name)} · ${esc(g.model)}">
       </span>
-      <span class="gs-price"><b data-price="${rentMode ? termTotal(g) : g.price}">0</b><i>GRAM${rentMode ? ' · ' + TERMS[state.term].short : ''}</i></span>
+      <span class="gs-price"><b data-price="${rentMode ? termTotal(g) : g.price}">0</b><i>💎${rentMode ? ' · ' + TERMS[state.term].short : ''}</i></span>
       <span class="gs-sym"><b>${glyphOf(g.symbol)}</b>${esc(g.symbol)}</span>
     </div>
     <div class="attrs">
@@ -1613,19 +1619,19 @@ function giftSheet(id) {
     </div>
     <div class="sheet-rows">
       ${rentMode ? `
-        <div class="sheet-row"><span>Аренда / мес</span><b>${num(g.rent)} GRAM</b></div>
-        <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(termTotal(g))} GRAM</b></div>
+        <div class="sheet-row"><span>Аренда / мес</span><b>${num(g.rent)} 💎</b></div>
+        <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(termTotal(g))} 💎</b></div>
         <div class="sheet-row"><span>Депозит при аренде</span><b>30%</b></div>
         <div class="sheet-row"><span>Комиссия маркета</span><b>2%</b></div>
       ` : `
-        <div class="sheet-row"><span>Цена</span><b>${num(g.price)} GRAM</b></div>
+        <div class="sheet-row"><span>Цена</span><b>${num(g.price)} 💎</b></div>
         <div class="sheet-row"><span>Комиссия маркета</span><b>2%</b></div>
         ${st.models ? `<div class="sheet-row"><span>В коллекции</span><b>${st.models} моделей · ${st.backdrops} фонов · ${st.symbols} узоров</b></div>` : ''}
       `}
     </div>
     ${rentMode
-      ? `<button class="buy" data-buy="Аренда оплачена" data-order="${orderJson({ type: 'gift', mode: 'rent', giftId: g.id, months: state.term })}">${I.key} Арендовать · ${num(termTotal(g))} GRAM за ${TERMS[state.term].label}</button>`
-      : `<button class="buy" data-buy="Заказ оплачен" data-order="${orderJson({ type: 'gift', mode: 'buy', giftId: g.id, months: 1 })}">Купить за ${num(g.price)} GRAM ${I.arrow}</button>`}
+      ? `<button class="buy" data-buy="Аренда оплачена" data-order="${orderJson({ type: 'gift', mode: 'rent', giftId: g.id, months: state.term })}">${I.key} Арендовать · ${num(termTotal(g))} 💎 за ${TERMS[state.term].label}</button>`
+      : `<button class="buy" data-buy="Заказ оплачен" data-order="${orderJson({ type: 'gift', mode: 'buy', giftId: g.id, months: 1 })}">Купить за ${num(g.price)} 💎 ${I.arrow}</button>`}
     <p class="small-note">Оплата с баланса GRAM. Подарок выдаётся через безопасную сделку Gumroad.</p>`);
 }
 
@@ -1647,14 +1653,14 @@ function numberSheet(index) {
       ${[1, 3, 6].map(d => `<button class="term ${state.term === d ? 'on' : ''}" data-num-term="${d}" data-index="${index}">${d} мес${d > 1 ? `<b>−${d === 3 ? 5 : 10}%</b>` : ''}</button>`).join('')}
     </div>
     <div class="sheet-rows">
-      <div class="sheet-row"><span>Цена</span><b>${num(n.price)} GRAM</b></div>
-      <div class="sheet-row"><span>Аренда / мес</span><b>${num(n.rent)} GRAM</b></div>
-      <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(numTermTotal(n))} GRAM</b></div>
+      <div class="sheet-row"><span>Цена</span><b>${num(n.price)} 💎</b></div>
+      <div class="sheet-row"><span>Аренда / мес</span><b>${num(n.rent)} 💎</b></div>
+      <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(numTermTotal(n))} 💎</b></div>
       <div class="sheet-row"><span>Выдача</span><b>2–5 минут</b></div>
       <div class="sheet-row"><span>Гарантия</span><b>Пожизненная</b></div>
     </div>
-    <button class="buy" data-buy="Номер оплачен" data-order="${orderJson({ type: 'number', mode: 'buy', number: n.num, months: 1 })}">Купить за ${num(n.price)} GRAM ${I.arrow}</button>
-    <button class="ghost" data-buy="Аренда номера оплачена" data-order="${orderJson({ type: 'number', mode: 'rent', number: n.num, months: state.term })}">${I.clock} Арендовать · ${num(numTermTotal(n))} GRAM за ${TERMS[state.term].label}</button>
+    <button class="buy" data-buy="Номер оплачен" data-order="${orderJson({ type: 'number', mode: 'buy', number: n.num, months: 1 })}">Купить за ${num(n.price)} 💎 ${I.arrow}</button>
+    <button class="ghost" data-buy="Аренда номера оплачена" data-order="${orderJson({ type: 'number', mode: 'rent', number: n.num, months: state.term })}">${I.clock} Арендовать · ${num(numTermTotal(n))} 💎 за ${TERMS[state.term].label}</button>
     <p class="small-note">Оплата с баланса GRAM. Номер выдаётся через Fragment после подтверждения.</p>`);
 }
 
@@ -1763,12 +1769,22 @@ function render(keepScroll = false) {
   searchWrap.classList.toggle('hide', !showSearch);
   const q = document.getElementById('q');
   if (q) {
-    q.placeholder = state.tab === 'rent' ? 'Найти подарок в аренду' : state.tab === 'numbers' ? 'Найти номер +888' : 'Найти подарок, модель или узор';
+    q.placeholder = state.tab === 'rent' ? 'Поиск в аренде' : state.tab === 'numbers' ? 'Поиск номера' : 'Быстрый поиск';
     q.value = state.query;
     const box = q.closest('.search');
     if (box) box.classList.toggle('has-q', !!state.query);
   }
   updateBalanceUI();
+  const tiles = document.getElementById('tabsRow');
+  if (tiles) [...tiles.children].forEach(b => b.classList.toggle('on', b.dataset.tab === state.tab));
+  const chips = document.getElementById('chips');
+  if (chips) chips.innerHTML = chipsHTML();
+  const filters = document.getElementById('filters');
+  if (filters) filters.classList.toggle('hide', !['store', 'rent'].includes(state.tab) || !chipsOpen);
+  const filtersBtn = document.getElementById('filtersBtn');
+  if (filtersBtn) filtersBtn.classList.toggle('on', chipsOpen);
+  const wrap = document.getElementById('searchWrap');
+  if (wrap) wrap.classList.toggle('minimal', state.tab === 'numbers');
   [...tabbar.children].forEach(b => b.classList.toggle('on', b.dataset.tab === state.tab));
 }
 
@@ -1804,7 +1820,33 @@ function toast(msg) {
 }
 
 /* ============ events ============ */
+document.addEventListener('change', e => {
+  const sel = e.target.closest('select[data-f]');
+  if (!sel) return;
+  state[sel.dataset.f] = sel.value;
+  state.limit = 24;
+  render(true);
+});
+
 document.addEventListener('click', async e => {
+  const filtersBtn = e.target.closest('[data-filters]');
+  if (filtersBtn) {
+    chipsOpen = !chipsOpen;
+    haptic('light');
+    render(true);
+    return;
+  }
+
+  const resetF = e.target.closest('[data-reset-f]');
+  if (resetF) {
+    state.model = '';
+    state.backdrop = '';
+    state.symbol = '';
+    state.limit = 24;
+    render(true);
+    return;
+  }
+
   const tab = e.target.closest('[data-tab]');
   if (tab) {
     haptic('light');
