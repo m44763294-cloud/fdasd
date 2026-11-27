@@ -852,11 +852,19 @@ body::after { display: none; }
 .loader::before {
   content: "";
   position: absolute;
-  inset: -22px;
+  inset: -40px;
   opacity: 1;
-  background: url("assets/loader-art.jpg") center 32% / cover no-repeat;
-  filter: saturate(1.08) blur(0.5px);
-  transform: scale(1.03);
+  background: url("assets/loader-art.jpg") center 40% / cover no-repeat;
+  filter: blur(26px) saturate(1.15) brightness(0.55);
+  transform: scale(1.08);
+}
+.ld-art {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: url("assets/loader-art.jpg") center 46% / contain no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, transparent 20%, #000 30%, #000 70%, transparent 80%);
+  mask-image: linear-gradient(180deg, transparent 20%, #000 30%, #000 70%, transparent 80%);
 }
 .loader::after {
   background:
@@ -875,7 +883,7 @@ body::after { display: none; }
 .ld-center {
   position: absolute;
   left: 50%;
-  bottom: 132px;
+  top: 30px;
   transform: translateX(-50%);
   width: max-content;
   max-width: calc(100% - 44px);
@@ -888,7 +896,8 @@ body::after { display: none; }
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
   z-index: 3;
 }
-.ld-mark { width: 104px; height: 66px; }
+.ld-mark { width: 62px; height: 62px; }
+.ld-mark img { filter: brightness(0) invert(1) drop-shadow(0 12px 26px rgba(0, 0, 0, 0.55)); }
 .ld-name { margin-top: 14px; }
 .ld-tag { color: #ffb6ee; }
 .ld-foot { bottom: 44px; z-index: 3; }
