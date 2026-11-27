@@ -86,8 +86,8 @@ body::after { display: none; }
   padding: 0 14px;
   border-radius: 999px;
   flex: none;
-  border: 1px solid rgba(255, 144, 232, 0.34);
-  background: rgba(255, 144, 232, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
   box-shadow: none;
   color: #ffffff;
   font-size: 13px;
@@ -103,6 +103,9 @@ body::after { display: none; }
   color: rgba(255, 255, 255, 0.6);
   margin-top: 1px;
 }
+.cur { font-size: 8.5px; font-weight: 800; letter-spacing: 0.1em; }
+.wallet-card .cur { color: #a1a1aa; font-size: 12px; }
+.me-bal .cur { color: #7c7c86; font-size: 12px; letter-spacing: 0.08em; }
 
 .brand {
   flex: 1;
@@ -287,6 +290,8 @@ body::after { display: none; }
 .chip svg { width: 11px; height: 11px; flex: none; color: var(--dim); }
 .chip.on { border-color: rgba(255, 144, 232, 0.55); color: #ffffff; background: rgba(255, 144, 232, 0.1); }
 .chip.on svg { color: #ff90e8; }
+.chip-locked { opacity: 0.45; font-family: inherit; }
+.chip-locked:active { opacity: 0.7; }
 .chip-reset { color: #ff90e8; border-color: rgba(255, 144, 232, 0.4); background: rgba(255, 144, 232, 0.08); }
 .chip-count {
   flex: none;
@@ -693,19 +698,19 @@ body::after { display: none; }
 /* --------------------------------------------------------------- wallet */
 
 .wallet-card {
-  background: #ff90e8;
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: #151517;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
 }
 .wallet-card::before { display: none; }
-.wallet-card > span { color: rgba(0, 0, 0, 0.6); }
+.wallet-card > span { color: #a1a1aa; }
 .wallet-card b {
   background: none;
-  -webkit-text-fill-color: #0a0a0b;
-  color: #0a0a0b;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
 }
-.wallet-card b i { -webkit-text-fill-color: rgba(0, 0, 0, 0.55); }
-.wallet-card small { color: rgba(0, 0, 0, 0.6); }
+.wallet-card b i { -webkit-text-fill-color: #7c7c86; color: #7c7c86; }
+.wallet-card small { color: #a1a1aa; }
 
 /* ------------------------------------------------------------- sheet bits */
 

@@ -67,11 +67,8 @@ body::before {
 /* ------------------------------------------------------------------- balance */
 
 .balance-card {
-  background:
-    radial-gradient(circle at 100% 0%, rgba(255, 144, 232, 0.18), transparent 55%),
-    radial-gradient(circle at 0% 120%, rgba(35, 160, 148, 0.1), transparent 60%),
-    #151517;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #151517;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: none;
 }
 .bc-glow { display: none; }
@@ -79,9 +76,9 @@ body::before {
 .bc-value { color: #ffffff; }
 .bc-hint { color: #a1a1aa; }
 .mini-chip {
-  color: #ffc4f3;
-  background: rgba(255, 144, 232, 0.12);
-  border: 1px solid rgba(255, 144, 232, 0.3);
+  color: #a1a1aa;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 .balance-card .btn-ghost {
   background: rgba(255, 255, 255, 0.06);
@@ -92,21 +89,18 @@ body::before {
 /* ---------------------------------------------------------------------- CTA */
 
 .cta-create {
-  background:
-    radial-gradient(circle at 100% 0%, rgba(255, 144, 232, 0.18), transparent 55%),
-    radial-gradient(circle at 0% 120%, rgba(35, 160, 148, 0.1), transparent 60%),
-    #151517;
+  background: #151517;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: none;
 }
 .cta-create::after { display: none; }
 .cta-create h2 { color: #ffffff; }
 .cta-create p { color: #a1a1aa; }
 .cta-badge {
-  background: rgba(255, 144, 232, 0.14);
-  color: #ffc4f3;
-  border: 1px solid rgba(255, 144, 232, 0.3);
+  background: rgba(35, 160, 148, 0.12);
+  color: #2fbfae;
+  border: 1px solid rgba(35, 160, 148, 0.32);
 }
 .cta-create .cta-btn {
   background: #23a094;

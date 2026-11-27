@@ -8,7 +8,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from . import escrow, payments
+from . import escrow, market, payments
 from .auth import current_user
 from .config import settings
 from .i18n import LANGS, tr
@@ -116,6 +116,9 @@ async def me(request: Request) -> dict:
     user = await current_user(request)
     data = await escrow.profile(user)
     data["is_admin"] = bool(user.get("is_admin"))
+    gram, gram_pending = await market._wallet_state(int(user["id"]))
+    data["gram"] = float(gram)
+    data["gram_pending"] = float(gram_pending)
     return data
 
 

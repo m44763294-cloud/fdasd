@@ -83,6 +83,9 @@
   const rub = (value) =>
     (Number(value || 0) * rubPerUsd()).toLocaleString(locale(), { maximumFractionDigits: 2 }) + " RUB";
 
+  const gram = (value) =>
+    Number(value || 0).toLocaleString(locale(), { maximumFractionDigits: 2 }) + " GRAM";
+
   function money(amount, code) {
     const currency = (state.config?.currencies || []).find((c) => c.code === code);
     const decimals = Math.min(Math.max(currency?.decimals ?? 2, 2), 6);
@@ -455,7 +458,6 @@
   function renderHome() {
     const me = state.me;
     const user = me?.user;
-    const balances = me?.balances;
     const active = state.deals.filter((deal) => ACTIVE_STATUSES.includes(deal.status));
     const completed = me?.stats?.completed || 0;
     const greeting = state.deals.length === 0 && completed === 0 ? "Приветствуем!" : "С возвращением";
@@ -476,9 +478,8 @@
         <div class="bc-glow"></div>
         <div class="bc-top">
           <span>Баланс</span>
-          <span class="mini-chip">RUB</span>
         </div>
-        <div class="bc-value">${rub(balances?.total_usd || 0)}</div>
+        <div class="bc-value">${gram(me?.gram || 0)}</div>
         <div class="bc-actions">
           <button class="btn btn-ghost btn-sm" data-nav="profile">${icon("wallet")} Вывести</button>
         </div>

@@ -978,7 +978,7 @@ button{position:relative;overflow:hidden}
 }
 
 </style>
-<link rel="stylesheet" href="gumroad.css?v=5">
+<link rel="stylesheet" href="gumroad.css?v=7">
 </head>
 <body>
 
@@ -1016,7 +1016,7 @@ button{position:relative;overflow:hidden}
       <div class="app">
         <header class="topbar">
           <button class="bal" data-wallet aria-label="Кошелёк">
-            <b data-balance>0</b><img class="gem-ico" src="assets/gem.svg" alt="GRAM">
+            <b data-balance>0</b><span class="cur">GRAM</span>
           </button>
           <div class="brand">Gumroad</div>
           <button class="ava" data-tab="profile" aria-label="Профиль">D</button>
@@ -1329,7 +1329,7 @@ const SORT_LABEL = { curated: 'Подборка', asc: 'Цена ↑', desc: 'Ц
 
 const state = {
   tab: 'store', query: '', term: 1, sort: 'curated', limit: 24, deposit: 10,
-  model: '', backdrop: '', symbol: '',
+  collection: '', model: '', backdrop: '', symbol: '',
   favs: (() => { try { return new Set(JSON.parse(localStorage.getItem('atlanta-market:favs:v1') || '[]')); } catch (e) { return new Set(); } })()
 };
 let chipsOpen = false;
@@ -1352,25 +1352,32 @@ function numTermTotal(n) { return Math.round(n.rent * state.term * TERMS[state.t
 
 function filtered(kind = 'sale') {
   const q = state.query.trim().toLowerCase();
-  let base = q
-    ? GIFTS.filter(g => (g.name + ' ' + g.model + ' ' + g.backdrop + ' ' + g.symbol + ' ' + g.num).toLowerCase().includes(q))
-    : (kind === 'rent' ? FEED_POOLS.rent : FEED_POOLS.sale);
-  if (state.model) base = base.filter(g => g.model === state.model);
-  if (state.backdrop) base = base.filter(g => g.backdrop === state.backdrop);
-  if (state.symbol) base = base.filter(g => g.symbol === state.symbol);
+  let base;
+  if (q || state.collection) {
+    base = GIFTS.filter(g => !q || (g.name + ' ' + g.model + ' ' + g.backdrop + ' ' + g.symbol + ' ' + g.num).toLowerCase().includes(q));
+    if (state.collection) base = base.filter(g => g.name === state.collection);
+  } else {
+    base = kind === 'rent' ? FEED_POOLS.rent : FEED_POOLS.sale;
+  }
+  if (state.collection) {
+    if (state.model) base = base.filter(g => g.model === state.model);
+    if (state.backdrop) base = base.filter(g => g.backdrop === state.backdrop);
+    if (state.symbol) base = base.filter(g => g.symbol === state.symbol);
+  }
   let list = base;
   if (state.sort === 'asc') list = list.slice().sort((a, b) => a.price - b.price);
   else if (state.sort === 'desc') list = list.slice().sort((a, b) => b.price - a.price);
   return list;
 }
 
-const MODELS = [...new Set(GIFTS.map(g => g.model).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-const BACKDROPS = [...new Set(GIFTS.map(g => g.backdrop).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-const SYMBOLS = [...new Set(GIFTS.map(g => g.symbol).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+const sortNames = arr => [...new Set(arr.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+const COLLECTIONS = sortNames(GIFTS.map(g => g.name));
+const collectionPool = () => state.collection ? GIFTS.filter(g => g.name === state.collection) : [];
+const optionsFor = field => sortNames(collectionPool().map(g => g[field]));
 
 function chipsHTML() {
   const kind = state.tab === 'rent' ? 'rent' : 'sale';
-  const narrowed = !!state.query.trim() || !!state.model || !!state.backdrop || !!state.symbol;
+  const narrowed = !!state.query.trim() || !!state.collection || !!state.model || !!state.backdrop || !!state.symbol;
   const total = narrowed ? filtered(kind).length : (kind === 'rent' ? FEED_POOLS.rent.length : LOTS.length);
   const chevron = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
   const sel = (key, label, arr) => {
@@ -1384,10 +1391,16 @@ function chipsHTML() {
       </select>
     </label>`;
   };
-  const reset = (state.model || state.backdrop || state.symbol)
+  const locked = label => `<button type="button" class="chip chip-locked" data-need-collection aria-label="${esc(label)}">
+      <span>${label}</span>${chevron}
+    </button>`;
+  const fields = state.collection
+    ? `${sel('model', 'Модель', optionsFor('model'))}${sel('backdrop', 'Фон', optionsFor('backdrop'))}${sel('symbol', 'Узор', optionsFor('symbol'))}`
+    : `${locked('Модель')}${locked('Фон')}${locked('Узор')}`;
+  const reset = (state.collection || state.model || state.backdrop || state.symbol)
     ? `<button class="chip chip-reset" data-reset-f>Сбросить</button>`
     : '';
-  return `${sel('model', 'Модель', MODELS)}${sel('backdrop', 'Фон', BACKDROPS)}${sel('symbol', 'Узор', SYMBOLS)}${reset}<span class="chip-count">${num(total)} шт.</span>`;
+  return `${sel('collection', 'Коллекция', COLLECTIONS)}${fields}${reset}<span class="chip-count">${num(total)} шт.</span>`;
 }
 
 /* ============ views ============ */
@@ -1573,7 +1586,7 @@ const profileView = () => {
     </div>
     <div class="me-bal">
       <span>Баланс</span>
-      <b><span data-balance>${num(wallet.balance)}</span> <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b>
+      <b><span data-balance>${num(wallet.balance)}</span> <span class="cur">GRAM</span></b>
       <small>+2% кэшбэк с покупок и аренды</small>
     </div>
   </div>
@@ -1673,7 +1686,7 @@ function walletSheet() {
     </div>
     <div class="wallet-card">
       <span>Доступно</span>
-      <b><span data-balance>${num(wallet.balance)}</span> <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b>
+      <b><span data-balance>${num(wallet.balance)}</span> <span class="cur">GRAM</span></b>
       <small>${wallet.pending > 0 ? `В заявке на вывод: ${num(wallet.pending)}` : 'Пополнение и вывод'}</small>
     </div>
     <div class="wallet-actions">
@@ -1699,14 +1712,14 @@ function depositSheet() {
       <button class="close" data-close>${I.close}</button>
     </div>
     <div class="amount-grid">
-      ${TOPUP_PRESETS.map(a => `<button class="amount ${state.deposit === a ? 'on' : ''}" data-amount="${a}">${num(a)}<small>${GEM_IMG}</small></button>`).join('')}
+      ${TOPUP_PRESETS.map(a => `<button class="amount ${state.deposit === a ? 'on' : ''}" data-amount="${a}">${num(a)}<small>GRAM</small></button>`).join('')}
     </div>
     <div class="field"><span class="lbl">Сумма пополнения</span><input id="depositSum" inputmode="decimal" value="${state.deposit}"></div>
     <div class="pay-box">
       <span class="pb-ico">${I.wallet}</span>
       <span><b>@CryptoBot</b><small>${esc(marketConfig.topup_asset)} · оплата в Telegram</small></span>
     </div>
-    <p class="pay-hint">Счёт в ${esc(marketConfig.topup_asset)}. 1 ${esc(marketConfig.topup_asset)} = ${num(marketConfig.gram_per_unit)} ${GEM_IMG}.</p>
+    <p class="pay-hint">Счёт в ${esc(marketConfig.topup_asset)}. 1 ${esc(marketConfig.topup_asset)} = ${num(marketConfig.gram_per_unit)} GRAM.</p>
     <button class="buy" data-pay-submit ${marketConfig.crypto_enabled === false ? 'disabled' : ''}>Оплатить через CryptoBot ${I.arrow}</button>
     ${marketConfig.crypto_enabled === false ? `<p class="pay-note">Пополнение временно недоступно: администратор не подключил Crypto Pay.</p>` : `<p class="pay-note">Баланс зачисляется автоматически после оплаты счёта.</p>`}`);
 }
@@ -1720,7 +1733,7 @@ function withdrawSheet() {
     </div>
     <div class="wallet-card">
       <span>Доступно</span>
-      <b><span data-balance>${num(wallet.balance)}</span> <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b>
+      <b><span data-balance>${num(wallet.balance)}</span> <span class="cur">GRAM</span></b>
       <small>Заявка обрабатывается до 24 часов</small>
     </div>
     <div class="field"><span class="lbl">Сумма вывода</span><input id="wdSum" inputmode="decimal" placeholder="от ${num(marketConfig.min_withdraw)}"></div>
@@ -1821,12 +1834,30 @@ function toast(msg) {
 document.addEventListener('change', e => {
   const sel = e.target.closest('select[data-f]');
   if (!sel) return;
-  state[sel.dataset.f] = sel.value;
+  const key = sel.dataset.f;
+  if (key !== 'collection' && !state.collection) {
+    toast('Сначала выберите коллекцию');
+    render(true);
+    return;
+  }
+  state[key] = sel.value;
+  if (key === 'collection') {
+    state.model = '';
+    state.backdrop = '';
+    state.symbol = '';
+  }
   state.limit = 24;
   render(true);
 });
 
 document.addEventListener('click', async e => {
+  const needCollection = e.target.closest('[data-need-collection]');
+  if (needCollection) {
+    toast('Сначала выберите коллекцию');
+    haptic('light');
+    return;
+  }
+
   const filtersBtn = e.target.closest('[data-filters]');
   if (filtersBtn) {
     chipsOpen = !chipsOpen;
@@ -1837,6 +1868,7 @@ document.addEventListener('click', async e => {
 
   const resetF = e.target.closest('[data-reset-f]');
   if (resetF) {
+    state.collection = '';
     state.model = '';
     state.backdrop = '';
     state.symbol = '';
