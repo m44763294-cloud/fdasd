@@ -67,40 +67,46 @@ body::before {
 /* ------------------------------------------------------------------- balance */
 
 .balance-card {
-  background: #ff90e8;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  box-shadow: 0 18px 44px -24px rgba(255, 144, 232, 0.7);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 144, 232, 0.18), transparent 55%),
+    radial-gradient(circle at 0% 120%, rgba(35, 160, 148, 0.1), transparent 60%),
+    #151517;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 .bc-glow { display: none; }
-.bc-top, .bc-top span { color: rgba(0, 0, 0, 0.68); }
-.bc-value { color: #0a0a0b; }
-.bc-hint { color: rgba(0, 0, 0, 0.62); }
+.bc-top, .bc-top span { color: #a1a1aa; }
+.bc-value { color: #ffffff; }
+.bc-hint { color: #a1a1aa; }
 .mini-chip {
-  color: #0a0a0b;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  color: #ffc4f3;
+  background: rgba(255, 144, 232, 0.12);
+  border: 1px solid rgba(255, 144, 232, 0.3);
 }
 .balance-card .btn-ghost {
-  background: #0a0a0b;
-  border-color: #0a0a0b;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.14);
   color: #ffffff;
 }
 
 /* ---------------------------------------------------------------------- CTA */
 
 .cta-create {
-  background: #ff90e8;
-  color: #0a0a0b;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 46px -26px rgba(255, 144, 232, 0.7);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 144, 232, 0.18), transparent 55%),
+    radial-gradient(circle at 0% 120%, rgba(35, 160, 148, 0.1), transparent 60%),
+    #151517;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 .cta-create::after { display: none; }
-.cta-create h2 { color: #0a0a0b; }
-.cta-create p { color: rgba(0, 0, 0, 0.7); }
+.cta-create h2 { color: #ffffff; }
+.cta-create p { color: #a1a1aa; }
 .cta-badge {
-  background: rgba(255, 255, 255, 0.55);
-  color: #0a0a0b;
-  border: 1px solid rgba(0, 0, 0, 0.16);
+  background: rgba(255, 144, 232, 0.14);
+  color: #ffc4f3;
+  border: 1px solid rgba(255, 144, 232, 0.3);
 }
 .cta-create .cta-btn {
   background: #23a094;

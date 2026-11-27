@@ -235,7 +235,8 @@ body::after { display: none; }
 }
 .sq svg { width: 17px; height: 17px; }
 .sq:active { transform: scale(0.95); }
-.sq.on { border-color: #ff90e8; color: #ff90e8; }
+.sq:focus, .sq:focus-visible, .sq:active { outline: none; }
+.sq.on { border-color: rgba(255, 255, 255, 0.16); color: #ffffff; background: rgba(255, 255, 255, 0.06); }
 .searchbar.minimal .sq { display: none; }
 
 /* ----------------------------------------------------------------- chips */
@@ -354,27 +355,6 @@ body::after { display: none; }
 }
 .gift-shine { display: none; }
 
-.rarity {
-  position: absolute;
-  z-index: 4;
-  left: 8px;
-  top: 8px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 13px;
-  line-height: 1;
-  color: #ffffff;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(8px);
-}
-.rarity.r1 { color: #6ee7a8; }
-.rarity.r2 { color: #7cc4ff; }
-.rarity.r3 { color: #c9a2ff; }
-.rarity.r4 { color: #ffcf6a; }
 
 .fav {
   right: 8px;
@@ -452,18 +432,19 @@ body::after { display: none; }
   line-height: 1;
 }
 .price i.gem { font-size: 12px; }
-.gift-buy {
-  width: 34px;
-  height: 34px;
-  flex: none;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: #23a094;
-  border: 1px solid rgba(0, 0, 0, 0.22);
-  color: #ffffff;
+.gem-ico {
+  width: 13px;
+  height: 13px;
+  display: inline-block;
+  vertical-align: -2px;
 }
-.gift-buy svg { width: 15px; height: 15px; }
+.price .gem-ico,
+.num-price .gem-ico,
+.gs-price .gem-ico { width: 13px; height: 13px; }
+.bal .gem-ico { width: 13px; height: 13px; }
+.me-bal .gem-ico { width: 17px; height: 17px; vertical-align: -3px; }
+.wallet-card .gem-ico { width: 20px; height: 20px; vertical-align: -4px; }
+.amount .gem-ico { width: 11px; height: 11px; vertical-align: -1px; }
 .rent-min { display: none; }
 
 /* --------------------------------------------------------------- headings */
@@ -534,6 +515,7 @@ body::after { display: none; }
 }
 .num-stats > div + div { border-left: 1px solid var(--line); }
 .num-stats > div:first-child { padding-left: 10px; }
+.rent-head .num-stats { grid-template-columns: repeat(2, 1fr); }
 .num-stats b { display: block; font-size: 13px; color: #ffffff; }
 .num-stats span {
   display: block;
@@ -791,7 +773,7 @@ body::after { display: none; }
 }
 .m-row:hover { border-color: rgba(255, 144, 232, 0.3); background: var(--card); }
 .mi { color: #b8b8c0; }
-.mi.mi-rent svg { color: #23a094; filter: none; }
+.mi.mi-rent svg { color: #8a8a93; filter: none; }
 .mi.mi-num {
   background: none;
   background-image: none;

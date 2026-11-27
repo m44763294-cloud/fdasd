@@ -978,7 +978,7 @@ button{position:relative;overflow:hidden}
 }
 
 </style>
-<link rel="stylesheet" href="gumroad.css?v=4">
+<link rel="stylesheet" href="gumroad.css?v=5">
 </head>
 <body>
 
@@ -1015,8 +1015,8 @@ button{position:relative;overflow:hidden}
 
       <div class="app">
         <header class="topbar">
-          <button class="bal" data-wallet aria-label="Кошелёк GRAM">
-            <b data-balance>0</b><span>GRAM</span>
+          <button class="bal" data-wallet aria-label="Кошелёк">
+            <b data-balance>0</b><img class="gem-ico" src="assets/gem.svg" alt="GRAM">
           </button>
           <div class="brand">Gumroad</div>
           <button class="ava" data-tab="profile" aria-label="Профиль">D</button>
@@ -1041,7 +1041,7 @@ button{position:relative;overflow:hidden}
 
         <nav class="tabbar" id="tabbar">
           <button class="tab on" data-tab="store">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v8H4v-8"/><path d="M2 7h20v5H2z"/><path d="M12 21V7"/><path d="M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>
             Маркет
           </button>
           <button class="tab" data-tab="rent">
@@ -1129,8 +1129,10 @@ const I = {
   send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 3 10.5l6.5 2.5L21 3Z"/><path d="m9.5 13 2.5 7 3-5.5 5.5-11.5"/></svg>'
 };
 
+const GEM_IMG = '<img class="gem-ico" src="assets/gem.svg" alt="GRAM">';
+
 /* ============ data ============ */
-const FEATURED = ['Eternal Rose','Diamond Ring','Crystal Ball','Bunny Muffin','Chill Flame','Bling Binky','Astral Shard','Candy Cane',"Durov's Cap",'Heart Locket','Witch Hat','Plush Pepe'];
+const FEATURED = ['Eternal Rose','Diamond Ring','Crystal Ball','Bunny Muffin','Chill Flame','Bling Binky','Astral Shard','Candy Cane',"Durov's Cap",'Heart Locket','Witch Hat'];
 const LOTS = Array.isArray(window.ATLANTA_MARKET) ? window.ATLANTA_MARKET : [];
 const META = window.ATLANTA_META || { total: LOTS.length, collections: 0, currency: 'GRAM' };
 
@@ -1330,7 +1332,7 @@ const state = {
   model: '', backdrop: '', symbol: '',
   favs: (() => { try { return new Set(JSON.parse(localStorage.getItem('atlanta-market:favs:v1') || '[]')); } catch (e) { return new Set(); } })()
 };
-let chipsOpen = true;
+let chipsOpen = false;
 
 /* ============ helpers ============ */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1399,7 +1401,7 @@ const giftArt = (g, i, extra = '') => `
     <span class="gift-art">
       <img src="${esc(artOf(g))}" alt="${esc(g.name)} · ${esc(g.model)}" loading="${i < 4 ? 'eager' : 'lazy'}" decoding="async">
       <span class="gift-shine"></span>
-      <span class="rarity r${rarityTier(g)}" aria-hidden="true">✿</span>${extra}
+      ${extra}
     </span>`;
 
 const giftCard = (g, i) => `
@@ -1409,8 +1411,7 @@ const giftCard = (g, i) => `
       <span class="gift-name">${esc(g.name)}</span>
       <span class="gift-num">#${esc(g.num)}</span>
       <span class="gift-foot">
-        <span class="price"><b>${num(g.price)}</b> <i>💎</i></span>
-        <span class="gift-buy" aria-hidden="true">${I.gift}</span>
+        <span class="price"><b>${num(g.price)}</b> <i><img class="gem-ico" src="assets/gem.svg" alt="GRAM"></i></span>
       </span>
     </span>
   </button>`;
@@ -1422,8 +1423,7 @@ const rentCard = (g, i) => `
       <span class="gift-name">${esc(g.name)}</span>
       <span class="gift-num">#${esc(g.num)} · ${state.term} мес</span>
       <span class="gift-foot">
-        <span class="price"><b>${num(termTotal(g))}</b> <i>💎</i></span>
-        <span class="gift-buy" aria-hidden="true">${I.key}</span>
+        <span class="price"><b>${num(termTotal(g))}</b> <i><img class="gem-ico" src="assets/gem.svg" alt="GRAM"></i></span>
       </span>
     </span>
   </button>`;
@@ -1447,7 +1447,6 @@ const rentView = () => {
     <div class="num-stats">
       <div><b>1–6 мес</b><span>срок аренды</span></div>
       <div><b>−10%</b><span>за 6 месяцев</span></div>
-      <div><b>30%</b><span>депозит</span></div>
     </div>
   </section>
   <div class="terms">
@@ -1468,7 +1467,7 @@ const numbersView = () => {
   ${q ? '' : `
   <section class="num-head">
     <h1>Анонимные номера<br><span>+888</span></h1>
-    <p>Аренда от ${num(MIN_NUM_RENT)} 💎 в месяц · выдача за пару минут</p>
+    <p>Аренда от ${num(MIN_NUM_RENT)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> в месяц · выдача за пару минут</p>
     <div class="num-stats">
       <div><b>${NUM_STATS.inStock}</b><span>в наличии</span></div>
       <div><b>${NUM_STATS.term}</b><span>срок аренды</span></div>
@@ -1479,7 +1478,7 @@ const numbersView = () => {
     ${[1, 3, 6].map(d => `<button class="term ${state.term === d ? 'on' : ''}" data-num-term="${d}">${d} мес${d > 1 ? `<b>−${d === 3 ? 5 : 10}%</b>` : ''}</button>`).join('')}
   </div>`}
   <div class="sec-head">
-    <div><h2>${q ? 'Результаты' : 'Каталог номеров'}</h2><p>${q ? 'по запросу «' + esc(state.query.trim()) + '»' : 'Цены в 💎 · выдача за 2 минуты'}</p></div>
+    <div><h2>${q ? 'Результаты' : 'Каталог номеров'}</h2><p>${q ? 'по запросу «' + esc(state.query.trim()) + '»' : 'Цены в <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> · выдача за 2 минуты'}</p></div>
   </div>
   ${list.length ? `<div class="num-grid">
     ${list.map(n => {
@@ -1487,10 +1486,10 @@ const numbersView = () => {
       return `<button class="num-card" data-number="${i}" style="--i:${Math.min(i, 10)}">
         <span class="num-main">
           <b class="num-val">${n.num}</b>
-          <span class="num-sub">аренда ${num(n.rent)} 💎 / мес${state.term > 1 ? ` · ${num(numTermTotal(n))} за ${state.term} мес` : ''}</span>
+          <span class="num-sub">аренда ${num(n.rent)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> / мес${state.term > 1 ? ` · ${num(numTermTotal(n))} за ${state.term} мес` : ''}</span>
         </span>
         <span class="num-foot">
-          <span class="num-price"><b>${num(n.price)}</b> <i class="gem">💎</i></span>
+          <span class="num-price"><b>${num(n.price)}</b> <i class="gem"><img class="gem-ico" src="assets/gem.svg" alt="GRAM"></i></span>
           <span class="num-go">${I.up}</span>
         </span>
       </button>`;
@@ -1540,11 +1539,11 @@ const inventoryView = () => {
         return `<div class="order">
           <span class="order-ico">${o.type === 'number' ? I.phone : o.mode === 'rent' ? I.key : I.gift}</span>
           <span class="order-main"><b>${esc(title)}</b><small>${esc(sub)}${o.subtitle ? ' · ' + esc(o.subtitle) : ''}</small></span>
-          <span class="order-sum"><b>${num(o.amount)} ${esc(o.currency || 'GRAM')}</b><small>${esc(o.status_label || o.status || '')}</small></span>
+          <span class="order-sum"><b>${num(o.amount)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b><small>${esc(o.status_label || o.status || '')}</small></span>
         </div>`;
       }).join('')}
     </div>
-    <p class="note">Заказы оплачены с баланса GRAM. Выдача — после подтверждения.</p>
+    <p class="note">Заказы оплачены с баланса <img class="gem-ico" src="assets/gem.svg" alt="GRAM">. Выдача — после подтверждения.</p>
   ` : `
     <div class="empty" style="padding-top:26px">
       <div class="ring">${I.gift}</div>
@@ -1574,7 +1573,7 @@ const profileView = () => {
     </div>
     <div class="me-bal">
       <span>Баланс</span>
-      <b><span data-balance>${num(wallet.balance)}</span> <i>GRAM</i></b>
+      <b><span data-balance>${num(wallet.balance)}</span> <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b>
       <small>+2% кэшбэк с покупок и аренды</small>
     </div>
   </div>
@@ -1586,7 +1585,7 @@ const profileView = () => {
   </div>
   <div class="club">
     <span class="big">2%</span>
-    <span><b>Gumroad Club</b><p>Кэшбэк GRAM с каждой покупки, аренды и номера.</p></span>
+    <span><b>Gumroad Club</b><p>Кэшбэк <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> с каждой покупки, аренды и номера.</p></span>
     <button class="club-btn" data-toast="Gumroad Club · скоро">Вступить</button>
   </div>
   <div style="text-align:center;color:#8a8a93;font-size:7.5px;letter-spacing:.18em;margin:0 0 12px;font-weight:700">GUMROAD MARKET · NFT · RENT · NUMBERS · 2026</div>`;
@@ -1609,7 +1608,7 @@ function giftSheet(id) {
       <span class="gs-photo">
         <img class="gs-main" src="${esc(artOf(g))}" alt="${esc(g.name)} · ${esc(g.model)}">
       </span>
-      <span class="gs-price"><b data-price="${rentMode ? termTotal(g) : g.price}">0</b><i>💎${rentMode ? ' · ' + TERMS[state.term].short : ''}</i></span>
+      <span class="gs-price"><b data-price="${rentMode ? termTotal(g) : g.price}">0</b><i><img class="gem-ico" src="assets/gem.svg" alt="GRAM">${rentMode ? ' · ' + TERMS[state.term].short : ''}</i></span>
       <span class="gs-sym"><b>${glyphOf(g.symbol)}</b>${esc(g.symbol)}</span>
     </div>
     <div class="attrs">
@@ -1619,20 +1618,19 @@ function giftSheet(id) {
     </div>
     <div class="sheet-rows">
       ${rentMode ? `
-        <div class="sheet-row"><span>Аренда / мес</span><b>${num(g.rent)} 💎</b></div>
-        <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(termTotal(g))} 💎</b></div>
-        <div class="sheet-row"><span>Депозит при аренде</span><b>30%</b></div>
+        <div class="sheet-row"><span>Аренда / мес</span><b>${num(g.rent)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b></div>
+        <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(termTotal(g))} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b></div>
         <div class="sheet-row"><span>Комиссия маркета</span><b>2%</b></div>
       ` : `
-        <div class="sheet-row"><span>Цена</span><b>${num(g.price)} 💎</b></div>
+        <div class="sheet-row"><span>Цена</span><b>${num(g.price)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b></div>
         <div class="sheet-row"><span>Комиссия маркета</span><b>2%</b></div>
         ${st.models ? `<div class="sheet-row"><span>В коллекции</span><b>${st.models} моделей · ${st.backdrops} фонов · ${st.symbols} узоров</b></div>` : ''}
       `}
     </div>
     ${rentMode
-      ? `<button class="buy" data-buy="Аренда оплачена" data-order="${orderJson({ type: 'gift', mode: 'rent', giftId: g.id, months: state.term })}">${I.key} Арендовать · ${num(termTotal(g))} 💎 за ${TERMS[state.term].label}</button>`
-      : `<button class="buy" data-buy="Заказ оплачен" data-order="${orderJson({ type: 'gift', mode: 'buy', giftId: g.id, months: 1 })}">Купить за ${num(g.price)} 💎 ${I.arrow}</button>`}
-    <p class="small-note">Оплата с баланса GRAM. Подарок выдаётся через безопасную сделку Gumroad.</p>`);
+      ? `<button class="buy" data-buy="Аренда оплачена" data-order="${orderJson({ type: 'gift', mode: 'rent', giftId: g.id, months: state.term })}">Арендовать · ${num(termTotal(g))} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> за ${TERMS[state.term].label}</button>`
+      : `<button class="buy" data-buy="Заказ оплачен" data-order="${orderJson({ type: 'gift', mode: 'buy', giftId: g.id, months: 1 })}">Купить за ${num(g.price)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> ${I.arrow}</button>`}
+    <p class="small-note">Оплата с баланса <img class="gem-ico" src="assets/gem.svg" alt="GRAM">. Подарок выдаётся через безопасную сделку Gumroad.</p>`);
 }
 
 function numberSheet(index) {
@@ -1653,15 +1651,15 @@ function numberSheet(index) {
       ${[1, 3, 6].map(d => `<button class="term ${state.term === d ? 'on' : ''}" data-num-term="${d}" data-index="${index}">${d} мес${d > 1 ? `<b>−${d === 3 ? 5 : 10}%</b>` : ''}</button>`).join('')}
     </div>
     <div class="sheet-rows">
-      <div class="sheet-row"><span>Цена</span><b>${num(n.price)} 💎</b></div>
-      <div class="sheet-row"><span>Аренда / мес</span><b>${num(n.rent)} 💎</b></div>
-      <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(numTermTotal(n))} 💎</b></div>
+      <div class="sheet-row"><span>Цена</span><b>${num(n.price)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b></div>
+      <div class="sheet-row"><span>Аренда / мес</span><b>${num(n.rent)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b></div>
+      <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(numTermTotal(n))} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b></div>
       <div class="sheet-row"><span>Выдача</span><b>2–5 минут</b></div>
       <div class="sheet-row"><span>Гарантия</span><b>Пожизненная</b></div>
     </div>
-    <button class="buy" data-buy="Номер оплачен" data-order="${orderJson({ type: 'number', mode: 'buy', number: n.num, months: 1 })}">Купить за ${num(n.price)} 💎 ${I.arrow}</button>
-    <button class="ghost" data-buy="Аренда номера оплачена" data-order="${orderJson({ type: 'number', mode: 'rent', number: n.num, months: state.term })}">${I.clock} Арендовать · ${num(numTermTotal(n))} 💎 за ${TERMS[state.term].label}</button>
-    <p class="small-note">Оплата с баланса GRAM. Номер выдаётся через Fragment после подтверждения.</p>`);
+    <button class="buy" data-buy="Номер оплачен" data-order="${orderJson({ type: 'number', mode: 'buy', number: n.num, months: 1 })}">Купить за ${num(n.price)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> ${I.arrow}</button>
+    <button class="ghost" data-buy="Аренда номера оплачена" data-order="${orderJson({ type: 'number', mode: 'rent', number: n.num, months: state.term })}">${I.clock} Арендовать · ${num(numTermTotal(n))} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> за ${TERMS[state.term].label}</button>
+    <p class="small-note">Оплата с баланса <img class="gem-ico" src="assets/gem.svg" alt="GRAM">. Номер выдаётся через Fragment после подтверждения.</p>`);
 }
 
 /* ============ wallet & sell ============ */
@@ -1670,13 +1668,13 @@ function walletSheet() {
   showSheet(`
     <div class="sheet-grab"></div>
     <div class="sheet-head">
-      <div><h3>Кошелёк</h3><p>GRAM · баланс Gumroad</p></div>
+      <div><h3>Кошелёк</h3><p>Баланс Gumroad</p></div>
       <button class="close" data-close>${I.close}</button>
     </div>
     <div class="wallet-card">
       <span>Доступно</span>
-      <b><span data-balance>${num(wallet.balance)}</span> <i>GRAM</i></b>
-      <small>${wallet.pending > 0 ? `В заявке на вывод: ${num(wallet.pending)} GRAM` : 'Пополнение и вывод в GRAM'}</small>
+      <b><span data-balance>${num(wallet.balance)}</span> <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b>
+      <small>${wallet.pending > 0 ? `В заявке на вывод: ${num(wallet.pending)}` : 'Пополнение и вывод'}</small>
     </div>
     <div class="wallet-actions">
       <button class="wallet-btn primary" data-deposit>${I.plus} Пополнить</button>
@@ -1697,18 +1695,18 @@ function depositSheet() {
   showSheet(`
     <div class="sheet-grab"></div>
     <div class="sheet-head">
-      <div><h3>Пополнение GRAM</h3><p>Оплата через @CryptoBot</p></div>
+      <div><h3>Пополнение баланса</h3><p>Оплата через @CryptoBot</p></div>
       <button class="close" data-close>${I.close}</button>
     </div>
     <div class="amount-grid">
-      ${TOPUP_PRESETS.map(a => `<button class="amount ${state.deposit === a ? 'on' : ''}" data-amount="${a}">${num(a)}<small>GRAM</small></button>`).join('')}
+      ${TOPUP_PRESETS.map(a => `<button class="amount ${state.deposit === a ? 'on' : ''}" data-amount="${a}">${num(a)}<small>${GEM_IMG}</small></button>`).join('')}
     </div>
     <div class="field"><span class="lbl">Сумма пополнения</span><input id="depositSum" inputmode="decimal" value="${state.deposit}"></div>
     <div class="pay-box">
       <span class="pb-ico">${I.wallet}</span>
       <span><b>@CryptoBot</b><small>${esc(marketConfig.topup_asset)} · оплата в Telegram</small></span>
     </div>
-    <p class="pay-hint">Счёт в ${esc(marketConfig.topup_asset)}. 1 ${esc(marketConfig.topup_asset)} = ${num(marketConfig.gram_per_unit)} GRAM.</p>
+    <p class="pay-hint">Счёт в ${esc(marketConfig.topup_asset)}. 1 ${esc(marketConfig.topup_asset)} = ${num(marketConfig.gram_per_unit)} ${GEM_IMG}.</p>
     <button class="buy" data-pay-submit ${marketConfig.crypto_enabled === false ? 'disabled' : ''}>Оплатить через CryptoBot ${I.arrow}</button>
     ${marketConfig.crypto_enabled === false ? `<p class="pay-note">Пополнение временно недоступно: администратор не подключил Crypto Pay.</p>` : `<p class="pay-note">Баланс зачисляется автоматически после оплаты счёта.</p>`}`);
 }
@@ -1717,18 +1715,18 @@ function withdrawSheet() {
   showSheet(`
     <div class="sheet-grab"></div>
     <div class="sheet-head">
-      <div><h3>Вывод GRAM</h3><p>На кошелёк или @username</p></div>
+      <div><h3>Вывод средств</h3><p>На кошелёк или @username</p></div>
       <button class="close" data-close>${I.close}</button>
     </div>
     <div class="wallet-card">
       <span>Доступно</span>
-      <b><span data-balance>${num(wallet.balance)}</span> <i>GRAM</i></b>
+      <b><span data-balance>${num(wallet.balance)}</span> <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b>
       <small>Заявка обрабатывается до 24 часов</small>
     </div>
-    <div class="field"><span class="lbl">Сумма вывода</span><input id="wdSum" inputmode="decimal" placeholder="от ${num(marketConfig.min_withdraw)} GRAM"></div>
-    <div class="field"><span class="lbl">Куда вывести</span><input id="wdAddr" placeholder="UQ… / GRAM-кошелёк / @username"></div>
+    <div class="field"><span class="lbl">Сумма вывода</span><input id="wdSum" inputmode="decimal" placeholder="от ${num(marketConfig.min_withdraw)}"></div>
+    <div class="field"><span class="lbl">Куда вывести</span><input id="wdAddr" placeholder="UQ… / @username"></div>
     <button class="buy" data-withdraw-submit>Вывести ${I.down}</button>
-    <p class="pay-note">Заявка сохраняется на сервере, GRAM резервируются. Выплата вручную, до 24 часов.</p>`);
+    <p class="pay-note">Заявка сохраняется на сервере, средства резервируются. Выплата вручную, до 24 часов.</p>`);
 }
 
 function sellSheet() {
@@ -1922,13 +1920,13 @@ document.addEventListener('click', async e => {
       await refreshMe();
       closeSheet();
       haptic('medium');
-      toast((buy.dataset.buy || 'Заказ оплачен') + ' · ' + num(saved.amount) + ' GRAM');
+      toast((buy.dataset.buy || 'Заказ оплачен') + ' · ' + num(saved.amount));
       render();
     } catch (err) {
       buy.disabled = false;
       buy.innerHTML = label;
       if (err.status === 409) {
-        toast('Недостаточно GRAM · пополни кошелёк');
+        toast('Недостаточно средств · пополни кошелёк');
         closeSheet();
         depositSheet();
       } else {
@@ -1980,7 +1978,7 @@ document.addEventListener('click', async e => {
   const paySubmit = e.target.closest('[data-pay-submit]');
   if (paySubmit) {
     const amount = Number((document.getElementById('depositSum')?.value || '').replace(',', '.'));
-    if (!amount || amount < marketConfig.min_topup) { toast('Минимум ' + num(marketConfig.min_topup) + ' GRAM'); return; }
+    if (!amount || amount < marketConfig.min_topup) { toast('Минимум ' + num(marketConfig.min_topup)); return; }
     paySubmit.disabled = true;
     paySubmit.textContent = 'Создаём счёт…';
     haptic('light');
@@ -2009,8 +2007,8 @@ document.addEventListener('click', async e => {
     const amount = Number((document.getElementById('wdSum')?.value || '').replace(',', '.'));
     const addr = (document.getElementById('wdAddr')?.value || '').trim();
     if (!amount || amount <= 0) { toast('Укажи сумму вывода'); return; }
-    if (amount < marketConfig.min_withdraw) { toast('Минимум ' + num(marketConfig.min_withdraw) + ' GRAM'); return; }
-    if (amount > wallet.balance) { toast('Недостаточно GRAM на балансе'); return; }
+    if (amount < marketConfig.min_withdraw) { toast('Минимум ' + num(marketConfig.min_withdraw)); return; }
+    if (amount > wallet.balance) { toast('Недостаточно средств на балансе'); return; }
     if (!addr) { toast('Укажи адрес кошелька'); return; }
     const label = wdSubmit.innerHTML;
     wdSubmit.disabled = true;
