@@ -61,6 +61,7 @@ log = logging.getLogger("kustos.bot")
 router = Router()
 
 PREVIEW_IMAGE = Path(__file__).resolve().parent.parent / "preview_welcome.png"
+PREVIEW_IMAGE_EN = Path(__file__).resolve().parent.parent / "preview_welcome_en.png"
 
 
 def T(lang: str, ru: str, en: str) -> str:
@@ -198,10 +199,11 @@ async def send_welcome(target, lang: str) -> None:
         f"{pe('🕓')} Working hours: 24/7</blockquote>",
     )
     markup = welcome_menu(lang)
-    if PREVIEW_IMAGE.is_file():
+    preview = PREVIEW_IMAGE_EN if lang == "en" else PREVIEW_IMAGE
+    if preview.is_file():
         try:
             await target.answer_photo(
-                photo=FSInputFile(PREVIEW_IMAGE),
+                photo=FSInputFile(preview),
                 caption=welcome,
                 reply_markup=markup,
             )

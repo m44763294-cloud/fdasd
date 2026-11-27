@@ -852,31 +852,22 @@ body::after { display: none; }
 .loader::before {
   content: "";
   position: absolute;
-  inset: -40px;
-  opacity: 1;
-  background: url("assets/loader-art.jpg") center 40% / cover no-repeat;
-  filter: blur(26px) saturate(1.15) brightness(0.55);
-  transform: scale(1.08);
-}
-.ld-art {
-  position: absolute;
   inset: 0;
-  z-index: 1;
-  background: url("assets/loader-art.jpg") center 46% / contain no-repeat;
-  -webkit-mask-image: linear-gradient(180deg, transparent 20%, #000 30%, #000 70%, transparent 80%);
-  mask-image: linear-gradient(180deg, transparent 20%, #000 30%, #000 70%, transparent 80%);
+  opacity: 1;
+  background: url("assets/loader-art.jpg") center / cover no-repeat;
+  filter: saturate(1.05);
 }
 .loader::after {
   background:
     linear-gradient(
       180deg,
-      rgba(7, 4, 14, 0.6) 0%,
-      rgba(7, 4, 14, 0.04) 26%,
-      rgba(7, 4, 14, 0.1) 50%,
-      rgba(7, 4, 14, 0.8) 82%,
-      rgba(7, 4, 14, 0.96) 100%
+      rgba(7, 4, 14, 0.62) 0%,
+      rgba(7, 4, 14, 0.08) 22%,
+      rgba(7, 4, 14, 0.05) 52%,
+      rgba(7, 4, 14, 0.55) 78%,
+      rgba(7, 4, 14, 0.92) 100%
     ),
-    radial-gradient(92% 58% at 50% 42%, transparent 42%, rgba(7, 4, 14, 0.55) 100%);
+    radial-gradient(96% 64% at 50% 42%, transparent 52%, rgba(7, 4, 14, 0.4) 100%);
   z-index: 2;
 }
 .ld-grid { display: none; }
