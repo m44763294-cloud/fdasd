@@ -847,16 +847,62 @@ body::after { display: none; }
 /* ----------------------------------------------------------------- loader */
 
 .loader {
-  background: var(--ink);
+  background: #0b0714;
 }
-.loader::after { background: none; }
+.loader::before {
+  content: "";
+  position: absolute;
+  inset: -22px;
+  opacity: 1;
+  background: url("assets/loader-art.jpg") center 32% / cover no-repeat;
+  filter: saturate(1.08) blur(0.5px);
+  transform: scale(1.03);
+}
+.loader::after {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7, 4, 14, 0.6) 0%,
+      rgba(7, 4, 14, 0.04) 26%,
+      rgba(7, 4, 14, 0.1) 50%,
+      rgba(7, 4, 14, 0.8) 82%,
+      rgba(7, 4, 14, 0.96) 100%
+    ),
+    radial-gradient(92% 58% at 50% 42%, transparent 42%, rgba(7, 4, 14, 0.55) 100%);
+  z-index: 2;
+}
+.ld-grid { display: none; }
+.ld-center {
+  position: absolute;
+  left: 50%;
+  bottom: 132px;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 44px);
+  padding: 17px 30px 15px;
+  border-radius: 24px;
+  background: rgba(10, 7, 18, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  z-index: 3;
+}
+.ld-mark { width: 104px; height: 66px; }
+.ld-name { margin-top: 14px; }
+.ld-tag { color: #ffb6ee; }
+.ld-foot { bottom: 44px; z-index: 3; }
+.ld-track { background: rgba(255, 255, 255, 0.16); }
+.ld-track i {
+  background: linear-gradient(90deg, #ff90e8, #ffffff);
+  box-shadow: 0 0 14px rgba(255, 144, 232, 0.6);
+}
+.ld-meta { color: rgba(255, 255, 255, 0.6); }
+.ld-skip { color: rgba(255, 255, 255, 0.38); }
 .loader-bar { background: rgba(255, 255, 255, 0.08); }
-.loader-bar i,
-.ld-track i { background: #ff90e8; }
 .loader-ring { border-color: rgba(255, 255, 255, 0.05); }
 .loader-word span { color: var(--dim); }
 .ld-name { color: #ffffff; }
-.ld-tag { color: #ff90e8; }
 
 /* --------------------------------------------------------------- elements */
 
