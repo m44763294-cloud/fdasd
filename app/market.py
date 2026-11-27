@@ -2,7 +2,7 @@
 
 Маркет работает на том же FastAPI-сервере, что и OTC-приложение: Telegram initData
 проверяется один раз, баланс и заказы хранятся в SQLite, счёт на пополнение
-выставляется в валюте Crypto Pay и зачисляется в GRAM по курсу GRAM_PER_UNIT.
+выставляется в TON и зачисляется в GRAM 1:1.
 """
 
 from __future__ import annotations
@@ -317,7 +317,7 @@ async def market_topup(request: Request, payload: TopupIn) -> dict:
     if asset not in {"USDT", "TON", "BTC", "ETH", "USDC"}:
         raise EscrowError(f"Crypto Pay не поддерживает {asset}", 503, "topup_unavailable")
 
-    units = (amount / Decimal(str(settings.gram_per_unit))).quantize(Decimal("0.000001"))
+    units = amount.quantize(Decimal("0.000001"))
     if units <= 0:
         raise EscrowError("Сумма слишком мала для счёта")
 

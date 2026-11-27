@@ -1227,7 +1227,7 @@ const FEED_POOLS = (() => {
 const wallet = { balance: 0, pending: 0, ops: [] };
 let marketUser = tgUser;
 let marketConfig = {
-  topup_asset: 'TON', gram_per_unit: 1000, min_topup: 10, min_withdraw: 10,
+  topup_asset: 'TON', gram_per_unit: 1, min_topup: 1, min_withdraw: 10,
   crypto_enabled: null
 };
 function updateBalanceUI() {

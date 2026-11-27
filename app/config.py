@@ -68,15 +68,10 @@ class Settings:
         self.gram_receive_comment: str = os.getenv("GRAM_RECEIVE_COMMENT", "Gumroad GRAM topup").strip()
         self.gift_receive_username: str = os.getenv("GIFT_RECEIVE_USERNAME", "").strip().lstrip("@")
 
-        # Пополнение маркета: счёт в валюте Crypto Pay, зачисление в GRAM по курсу.
+        # Пополнение маркета: счёт в TON, 1 TON = 1 GRAM (без внутреннего курса).
         self.topup_asset: str = os.getenv("TOPUP_ASSET", "TON").strip().upper() or "TON"
-        try:
-            self.gram_per_unit: float = float(os.getenv("GRAM_PER_UNIT") or os.getenv("GRAM_PER_TON") or "1000")
-        except ValueError:
-            self.gram_per_unit = 1000.0
-        if self.gram_per_unit <= 0:
-            self.gram_per_unit = 1000.0
-        self.market_min_topup: float = float(os.getenv("MARKET_MIN_TOPUP", "25"))
+        self.gram_per_unit: float = 1.0
+        self.market_min_topup: float = float(os.getenv("MARKET_MIN_TOPUP", "1"))
         self.market_min_withdraw: float = float(os.getenv("MARKET_MIN_WITHDRAW", "10"))
 
         self.admin_ids: tuple[int, ...] = tuple(
