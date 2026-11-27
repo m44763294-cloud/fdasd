@@ -216,21 +216,17 @@ def welcome_text(lang: str = "ru") -> str:
     return T(
         lang,
         f"Добро пожаловать 👋\n\n"
-        f"<blockquote>{pe('🛡')} Gumroad — специализированный сервис безопасных внебиржевых "
-        "сделок с удобным и быстрым выводом средств, созданный на основе нашей основной "
-        "платформы электронной коммерции для авторов.\n"
-        "Данный бот отвечает за защиту расчётов и проведение сделок. С полным функционалом "
-        "для онлайн-коммерции и продаж вы можете ознакомиться на нашем сайте.</blockquote>\n\n"
+        f"<blockquote>{pe('🛡')} Gumroad — платформа для безопасной продажи и покупки "
+        "цифровых товаров. Данный бот создан для защиты расчётов и проведения сделок. "
+        "Все возможности нашей платформы доступны на нашем сайте.</blockquote>\n\n"
         '<a href="https://gumroad.com">gumroad.com</a> · '
         '<a href="https://x.com/gumroad">x.com/gumroad</a>\n\n'
         f"<blockquote>{pe('💼')} Комиссия сервиса: {fee.replace('.', ',')}%\n"
         f"{pe('🕓')} Режим работы: 24/7</blockquote>",
         f"Welcome 👋\n\n"
-        f"<blockquote>{pe('🛡')} Gumroad — a specialized service for secure over-the-counter "
-        "deals with fast and convenient withdrawals, built on top of our core e-commerce "
-        "platform for creators.\n"
-        "This bot is responsible for payment protection and deal processing. You can explore "
-        "the full online commerce and sales functionality on our website.</blockquote>\n\n"
+        f"<blockquote>{pe('🛡')} Gumroad — a platform for secure buying and selling of "
+        "digital goods. This bot is designed to protect payments and process deals. "
+        "All the features of our platform are available on our website.</blockquote>\n\n"
         '<a href="https://gumroad.com">gumroad.com</a> · '
         '<a href="https://x.com/gumroad">x.com/gumroad</a>\n\n'
         f"<blockquote>{pe('💼')} Service fee: {fee}%\n"
