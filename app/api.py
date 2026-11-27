@@ -87,13 +87,11 @@ async def config() -> dict:
 async def market_config() -> dict:
     gram_receive_address = await escrow.get_setting("gram_receive_address", settings.gram_receive_address)
     gram_receive_comment = await escrow.get_setting("gram_receive_comment", settings.gram_receive_comment)
-    gift_receive_username = await escrow.get_setting("gift_receive_username", settings.gift_receive_username)
     crypto_enabled = settings.payment_provider == "cryptopay" and bool(settings.cryptopay_token)
     return {
         "brand": settings.brand,
         "gram_receive_address": gram_receive_address,
         "gram_receive_comment": gram_receive_comment,
-        "gift_receive_username": gift_receive_username or "atlanta_holder",
         "bot_username": settings.bot_username,
         "topup_asset": settings.topup_asset,
         "gram_per_unit": settings.gram_per_unit,

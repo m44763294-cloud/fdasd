@@ -1226,7 +1226,7 @@ const wallet = { balance: 0, pending: 0, ops: [] };
 let marketUser = tgUser;
 let marketConfig = {
   topup_asset: 'TON', gram_per_unit: 1000, min_topup: 10, min_withdraw: 10,
-  crypto_enabled: null, gift_receive_username: 'atlanta_holder'
+  crypto_enabled: null
 };
 function updateBalanceUI() {
   document.querySelectorAll('[data-balance]').forEach(el => el.textContent = num(wallet.balance));
@@ -1750,16 +1750,14 @@ function sellSheet() {
   showSheet(`
     <div class="sheet-grab"></div>
     <div class="sheet-head">
-      <div><h3>Инструкция</h3></div>
+      <div><h3>Продажа подарков</h3><p>Скоро</p></div>
       <button class="close" data-close>${I.close}</button>
     </div>
-    <div class="holder-chip">${I.shield}<span>@atlanta_holder</span><button data-copy="@atlanta_holder">Копировать</button></div>
-    <div class="steps">
-      <div class="step"><i>1</i><span><b>Открой свой профиль в Telegram</b></span></div>
-      <div class="step"><i>2</i><span><b>Перейди во вкладку «Подарки»</b></span></div>
-      <div class="step"><i>3</i><span><b>Нажми «Передать подарок»</b></span></div>
-      <div class="step"><i>4</i><span><b>Передай его на @atlanta_holder</b><small>После проверки подарок появится в инвентаре.</small></span></div>
+    <div class="pay-box">
+      <span class="pb-ico">${I.shield}</span>
+      <span><b>Передача подарков на маркет пока недоступна</b><small>Мы доделываем приём подарков от продавцов.</small></span>
     </div>
+    <p class="pay-note">Как только приём откроется, здесь появится аккаунт для передачи и пошаговая инструкция.</p>
     <button class="buy" data-close>Понятно</button>`);
 }
 
