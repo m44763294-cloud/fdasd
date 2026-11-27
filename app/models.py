@@ -38,8 +38,6 @@ CATEGORIES: dict[str, str] = {
     "digital": "Цифровые товары",
     "accounts": "Аккаунты и доступы",
     "services": "Услуги",
-    "gaming": "Игровое",
-    "goods": "Товары",
     "other": "Другое",
 }
 
