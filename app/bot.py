@@ -99,6 +99,15 @@ def webapp_url(query: str = "") -> str:
     return f"{base}?{query}" if query else base
 
 
+def blue(markup: InlineKeyboardMarkup) -> InlineKeyboardMarkup:
+    """Красит все кнопки в синий (Bot API 9.4+: style="primary")."""
+    for row in markup.inline_keyboard:
+        for button in row:
+            if not getattr(button, "style", None):
+                button.style = "primary"
+    return markup
+
+
 def welcome_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
@@ -107,7 +116,13 @@ def welcome_menu(lang: str = "ru") -> InlineKeyboardMarkup:
             text=tr("Открыть маркетплейс", lang), web_app=WebAppInfo(url=settings.market_url)
         ),
     )
-    return builder.as_markup()
+    builder.row(
+        InlineKeyboardButton(
+            text="➕ " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create"))
+        ),
+        InlineKeyboardButton(text="🌐 " + tr("Сменить язык", lang), callback_data="lang"),
+    )
+    return blue(builder.as_markup())
 
 
 def main_menu(lang: str = "ru") -> InlineKeyboardMarkup:
@@ -130,7 +145,7 @@ def main_menu(lang: str = "ru") -> InlineKeyboardMarkup:
         InlineKeyboardButton(text="❔ " + tr("Как это работает", lang), callback_data="how"),
     )
     builder.row(InlineKeyboardButton(text="🌐 " + tr("Язык", lang), callback_data="lang"))
-    return builder.as_markup()
+    return blue(builder.as_markup())
 
 
 def language_menu(lang: str = "ru") -> InlineKeyboardMarkup:
@@ -140,7 +155,7 @@ def language_menu(lang: str = "ru") -> InlineKeyboardMarkup:
         InlineKeyboardButton(text="🇬🇧 English", callback_data="lang:en"),
     )
     builder.row(InlineKeyboardButton(text=T(lang, "← Назад", "← Back"), callback_data="menu"))
-    return builder.as_markup()
+    return blue(builder.as_markup())
 
 
 def start_language_menu() -> InlineKeyboardMarkup:
@@ -149,7 +164,7 @@ def start_language_menu() -> InlineKeyboardMarkup:
         InlineKeyboardButton(text="Русский", callback_data="startlang:ru"),
         InlineKeyboardButton(text="English", callback_data="startlang:en"),
     )
-    return builder.as_markup()
+    return blue(builder.as_markup())
 
 
 async def _await_public_url(timeout: float = 3.0) -> None:
@@ -170,11 +185,15 @@ async def send_welcome(target, lang: str) -> None:
         f"Добро пожаловать 👋\n\n"
         "<blockquote>Gumroad — Мы специализированный сервис по обеспечению "
         "безопасности внебиржевых сделок. Удобный и быстрый вывод средств.</blockquote>\n\n"
+        '<a href="https://gumroad.com">gumroad.com</a> · '
+        '<a href="https://x.com/gumroad">x.com/gumroad</a>\n\n'
         f"<blockquote>{pe('💼')} Комиссия сервиса: {fee.replace('.', ',')}%\n"
         f"{pe('🕓')} Режим работы: 24/7</blockquote>",
         f"Welcome 👋\n\n"
         "<blockquote>Gumroad — We are a specialized service for secure "
         "over-the-counter deals. Fast and convenient withdrawals.</blockquote>\n\n"
+        '<a href="https://gumroad.com">gumroad.com</a> · '
+        '<a href="https://x.com/gumroad">x.com/gumroad</a>\n\n'
         f"<blockquote>{pe('💼')} Service fee: {fee}%\n"
         f"{pe('🕓')} Working hours: 24/7</blockquote>",
     )
@@ -217,7 +236,7 @@ def deal_keyboard(deal: dict, viewer_id: int | None, lang: str = "ru") -> Inline
                 url=f"https://t.me/share/url?url={quote(invite)}&text={quote(T(lang, 'Сделка в Gumroad: ', 'Deal on Gumroad: ') + deal['title'])}",
             ),
         )
-    return builder.as_markup()
+    return blue(builder.as_markup())
 
 
 def deal_text(deal: dict, lang: str = "ru") -> str:
@@ -331,7 +350,7 @@ async def cmd_market(message: Message) -> None:
             "Gifts, rent and anonymous +888 numbers.\n"
             "GRAM balance, top-up via @CryptoBot.",
         ),
-        reply_markup=builder.as_markup(),
+        reply_markup=blue(builder.as_markup()),
     )
 
 
@@ -355,7 +374,7 @@ async def cmd_deals(message: Message) -> None:
     lang = await lang_of(message.from_user.id)
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(text=tr("Открыть мои сделки", lang), web_app=WebAppInfo(url=webapp_url("tab=deals"))))
-    await message.answer(tr("Все сделки — в приложении:", lang), reply_markup=builder.as_markup())
+    await message.answer(tr("Все сделки — в приложении:", lang), reply_markup=blue(builder.as_markup()))
 
 
 @router.message(Command("balance"))
@@ -388,7 +407,7 @@ def balance_menu(lang: str = "ru") -> InlineKeyboardMarkup:
         ),
     )
     builder.row(InlineKeyboardButton(text=T(lang, "← Назад", "← Back"), callback_data="menu"))
-    return builder.as_markup()
+    return blue(builder.as_markup())
 
 
 async def balance_text(uid: int, lang: str = "ru") -> str:
@@ -427,7 +446,7 @@ async def cmd_create(message: Message) -> None:
             f"{pe('➕')} Создание сделки — в приложении, там всё наглядно.",
             f"{pe('➕')} Deal creation is in the app — everything is visual there.",
         ),
-        reply_markup=builder.as_markup(),
+        reply_markup=blue(builder.as_markup()),
     )
 
 
@@ -500,7 +519,7 @@ async def start_create(message: Message, state: FSMContext) -> None:
         builder.button(text=info.code, callback_data=f"cur:{info.code}")
     builder.adjust(2)
     builder.row(InlineKeyboardButton(text=tr("Отмена", lang), callback_data="create_cancel"))
-    await message.answer(tr("Выберите валюту сделки:", lang), reply_markup=builder.as_markup())
+    await message.answer(tr("Выберите валюту сделки:", lang), reply_markup=blue(builder.as_markup()))
 
 
 @router.callback_query(F.data == "create")
@@ -602,7 +621,7 @@ async def step_amount(message: Message, state: FSMContext) -> None:
             "Describe the terms: what is delivered and what counts as completion.\n\n"
             "Send the text or tap “Skip”.",
         ),
-        reply_markup=builder.as_markup(),
+        reply_markup=blue(builder.as_markup()),
     )
 
 
@@ -647,9 +666,9 @@ async def preview_deal(message: Message, state: FSMContext, edit: bool = False, 
     )
     await state.set_state(CreateDeal.confirm)
     if edit:
-        await message.edit_text(text, reply_markup=builder.as_markup())
+        await message.edit_text(text, reply_markup=blue(builder.as_markup()))
     else:
-        await message.answer(text, reply_markup=builder.as_markup())
+        await message.answer(text, reply_markup=blue(builder.as_markup()))
 
 
 @router.callback_query(CreateDeal.confirm, F.data == "create:yes")
@@ -692,7 +711,7 @@ async def cb_create_yes(callback: CallbackQuery, state: FSMContext) -> None:
             url=f"https://t.me/share/url?url={quote(invite)}&text={quote(T(lang, 'Сделка в Gumroad: ', 'Deal on Gumroad: ') + deal['title'])}",
         ),
     )
-    await callback.message.edit_text(text, reply_markup=builder.as_markup())
+    await callback.message.edit_text(text, reply_markup=blue(builder.as_markup()))
 
 
 # --------------------------------------------------------------------------- enter by code
@@ -710,7 +729,7 @@ async def cb_enter_code(callback: CallbackQuery, state: FSMContext) -> None:
             "Введите код сделки или ссылку-приглашение.\n<i>Например: KST-AB12CD</i>",
             "Enter the deal code or invite link.\n<i>Example: KST-AB12CD</i>",
         ),
-        reply_markup=builder.as_markup(),
+        reply_markup=blue(builder.as_markup()),
     )
     await callback.answer()
 
@@ -854,7 +873,7 @@ async def cmd_market_orders(message: Message) -> None:
                 callback_data=f"mkt:ref:{order['id']}",
             ),
         )
-    await message.answer("".join(lines), reply_markup=builder.as_markup())
+    await message.answer("".join(lines), reply_markup=blue(builder.as_markup()))
 
 
 @router.message(Command("marketdone"))
@@ -920,7 +939,7 @@ async def cmd_market_payouts(message: Message) -> None:
             InlineKeyboardButton(text="✅ Выплачено", callback_data=f"mkt:pay:{item['id']}"),
             InlineKeyboardButton(text="↩️ Отклонить", callback_data=f"mkt:rej:{item['id']}"),
         )
-    await message.answer("".join(lines), reply_markup=builder.as_markup())
+    await message.answer("".join(lines), reply_markup=blue(builder.as_markup()))
 
 
 @router.message(Command("marketpaid"))
@@ -1158,7 +1177,7 @@ async def cmd_disputes(message: Message) -> None:
             f"{tr('Продавец', lang)}: {html.escape(deal['seller']['name'] if deal['seller'] else '—')}\n"
             f"{tr('Покупатель', lang)}: {html.escape(deal['buyer']['name'] if deal['buyer'] else '—')}\n\n"
             f"{tr('Причина', lang)}: {html.escape(deal['dispute_reason'] or '—')}",
-            reply_markup=builder.as_markup(),
+            reply_markup=blue(builder.as_markup()),
         )
 
 
@@ -1178,8 +1197,10 @@ async def cb_arbitrate(callback: CallbackQuery) -> None:
     await callback.message.edit_text(
         T(lang, f"Решение принято по <code>{deal['code']}</code>\nСтатус: {deal['status_label']}",
           f"Decision made on <code>{deal['code']}</code>\nStatus: {deal['status_label']}"),
-        reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[[InlineKeyboardButton(text=tr("Открыть сделку", lang), web_app=WebAppInfo(url=deal["webapp_url"]))]]
+        reply_markup=blue(
+            InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text=tr("Открыть сделку", lang), web_app=WebAppInfo(url=deal["webapp_url"]))]]
+            )
         ),
     )
     await callback.answer(T(lang, "Готово", "Done"))

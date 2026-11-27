@@ -171,6 +171,7 @@ EN: dict[str, str] = {
     "Как это работает": "How it works",
     "Поддержка": "Support",
     "Язык": "Language",
+    "Сменить язык": "Change language",
     "Присоединиться": "Join",
     "Присоединиться как продавец": "Join as seller",
     "Ссылка для продавца:": "Seller link:",
