@@ -214,15 +214,21 @@ def welcome_text(lang: str = "ru") -> str:
     return T(
         lang,
         f"Добро пожаловать 👋\n\n"
-        f"<blockquote>{pe('🛡')} Gumroad — Мы специализированный сервис по обеспечению "
-        "безопасности внебиржевых сделок. Удобный и быстрый вывод средств.</blockquote>\n\n"
+        f"<blockquote>{pe('🛡')} Gumroad — специализированный сервис безопасных внебиржевых "
+        "сделок с удобным и быстрым выводом средств, созданный на основе нашей основной "
+        "платформы электронной коммерции для авторов.\n"
+        "Данный бот отвечает за защиту расчётов и проведение сделок. С полным функционалом "
+        "для онлайн-коммерции и продаж вы можете ознакомиться на нашем сайте.</blockquote>\n\n"
         '<a href="https://gumroad.com">gumroad.com</a> · '
         '<a href="https://x.com/gumroad">x.com/gumroad</a>\n\n'
         f"<blockquote>{pe('💼')} Комиссия сервиса: {fee.replace('.', ',')}%\n"
         f"{pe('🕓')} Режим работы: 24/7</blockquote>",
         f"Welcome 👋\n\n"
-        f"<blockquote>{pe('🛡')} Gumroad — We are a specialized service for secure "
-        "over-the-counter deals. Fast and convenient withdrawals.</blockquote>\n\n"
+        f"<blockquote>{pe('🛡')} Gumroad — a specialized service for secure over-the-counter "
+        "deals with fast and convenient withdrawals, built on top of our core e-commerce "
+        "platform for creators.\n"
+        "This bot is responsible for payment protection and deal processing. You can explore "
+        "the full online commerce and sales functionality on our website.</blockquote>\n\n"
         '<a href="https://gumroad.com">gumroad.com</a> · '
         '<a href="https://x.com/gumroad">x.com/gumroad</a>\n\n'
         f"<blockquote>{pe('💼')} Service fee: {fee}%\n"
@@ -334,7 +340,7 @@ async def cmd_start(message: Message, command: CommandObject, state: FSMContext)
         await message.answer(text, reply_markup=deal_keyboard(deal, message.from_user.id, lang))
         return
 
-    await message.answer("Выберите язык / Choose language", reply_markup=start_language_menu())
+    await message.answer("Choose a language", reply_markup=start_language_menu())
 
 
 @router.callback_query(F.data.startswith("startlang:"))
