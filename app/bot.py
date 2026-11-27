@@ -143,15 +143,17 @@ async def edit_text_or_caption(
 def welcome_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
-        InlineKeyboardButton(text=tr("Открыть OTC", lang), web_app=WebAppInfo(url=webapp_url(lang=lang))),
         InlineKeyboardButton(
             text=tr("Открыть маркетплейс", lang), web_app=WebAppInfo(url=market_url(lang))
-        ),
+        )
     )
     builder.row(
+        InlineKeyboardButton(text=tr("Открыть OTC", lang), web_app=WebAppInfo(url=webapp_url(lang=lang))),
         InlineKeyboardButton(
             text="➕ " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create", lang))
         ),
+    )
+    builder.row(
         InlineKeyboardButton(text="🌐 " + tr("Сменить язык", lang), callback_data="lang"),
     )
     return blue(builder.as_markup())
