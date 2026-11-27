@@ -258,7 +258,9 @@
   /* ------------------------------------------------------------------ router */
 
   function getRoute() {
-    const hash = location.hash.replace(/^#\/?/, "").trim();
+    // Telegram дописывает к адресу #tgWebAppData=... — это не маршрут.
+    const raw = location.hash || "";
+    const hash = raw.startsWith("#/") ? raw.replace(/^#\/?/, "").trim() : "";
     if (hash) return hash;
     const params = new URLSearchParams(location.search);
     const deal = params.get("deal");
@@ -1906,6 +1908,14 @@
 
   async function boot() {
     try {
+      // Убираем служебный хэш Telegram, чтобы ?tab=... и ?deal=... читались.
+      if (location.hash && !location.hash.startsWith("#/")) {
+        try {
+          history.replaceState(null, "", location.pathname + location.search);
+        } catch (_) {
+          /* noop */
+        }
+      }
       state.config = await api("/config");
       const [me, deals] = await Promise.all([api("/me"), api("/deals")]);
       state.me = me;

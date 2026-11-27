@@ -31,6 +31,7 @@ from aiogram import Bot, Dispatcher, F, Router
 from aiogram.client.default import DefaultBotProperties
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command, CommandObject, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -109,6 +110,22 @@ def blue(markup: InlineKeyboardMarkup) -> InlineKeyboardMarkup:
     return markup
 
 
+async def edit_text_or_caption(
+    message: Message, text: str, markup: InlineKeyboardMarkup | None = None
+) -> None:
+    """Правит текст сообщения, а если это фото — его подпись.
+
+    Приветствие приходит картинкой, поэтому обычный edit_text на нём падает.
+    """
+    try:
+        if message.photo:
+            await message.edit_caption(caption=text, reply_markup=markup)
+        else:
+            await message.edit_text(text, reply_markup=markup)
+    except TelegramBadRequest:
+        await message.answer(text, reply_markup=markup)
+
+
 def welcome_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
@@ -184,14 +201,14 @@ async def send_welcome(target, lang: str) -> None:
     welcome = T(
         lang,
         f"Добро пожаловать 👋\n\n"
-        "<blockquote>Gumroad — Мы специализированный сервис по обеспечению "
+        f"<blockquote>{pe('🛡')} Gumroad — Мы специализированный сервис по обеспечению "
         "безопасности внебиржевых сделок. Удобный и быстрый вывод средств.</blockquote>\n\n"
         '<a href="https://gumroad.com">gumroad.com</a> · '
         '<a href="https://x.com/gumroad">x.com/gumroad</a>\n\n'
         f"<blockquote>{pe('💼')} Комиссия сервиса: {fee.replace('.', ',')}%\n"
         f"{pe('🕓')} Режим работы: 24/7</blockquote>",
         f"Welcome 👋\n\n"
-        "<blockquote>Gumroad — We are a specialized service for secure "
+        f"<blockquote>{pe('🛡')} Gumroad — We are a specialized service for secure "
         "over-the-counter deals. Fast and convenient withdrawals.</blockquote>\n\n"
         '<a href="https://gumroad.com">gumroad.com</a> · '
         '<a href="https://x.com/gumroad">x.com/gumroad</a>\n\n'
@@ -463,16 +480,21 @@ async def cmd_cancel(message: Message, state: FSMContext) -> None:
 async def cb_menu(callback: CallbackQuery, state: FSMContext) -> None:
     lang = await lang_of(callback.from_user.id)
     await state.clear()
-    await callback.message.edit_text(T(lang, "Главное меню Gumroad:", "Gumroad main menu:"), reply_markup=main_menu(lang))
+    await edit_text_or_caption(
+        callback.message,
+        T(lang, "Главное меню Gumroad:", "Gumroad main menu:"),
+        main_menu(lang),
+    )
     await callback.answer()
 
 
 @router.callback_query(F.data == "lang")
 async def cb_language(callback: CallbackQuery) -> None:
     lang = await lang_of(callback.from_user.id)
-    await callback.message.edit_text(
+    await edit_text_or_caption(
+        callback.message,
         T(lang, "Выберите язык интерфейса:", "Choose the interface language:"),
-        reply_markup=language_menu(lang),
+        language_menu(lang),
     )
     await callback.answer()
 
@@ -488,7 +510,7 @@ async def cb_set_language(callback: CallbackQuery) -> None:
         f"{pe('🛒')} <b>Gumroad</b> — сделки под контролем\n\nВыберите действие:",
         f"{pe('🛒')} <b>Gumroad</b> — deals under control\n\nChoose an action:",
     )
-    await callback.message.edit_text(text, reply_markup=main_menu(lang))
+    await edit_text_or_caption(callback.message, text, main_menu(lang))
 
 
 @router.callback_query(F.data == "how")
