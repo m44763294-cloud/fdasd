@@ -140,6 +140,7 @@ a{color:inherit}
   box-shadow:0 0 0 2px rgba(255,255,255,.09),0 8px 20px -6px rgba(90,120,255,.55);
 }
 .ava:active{transform:scale(.94)}
+.ava img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
 
 /* search */
 .searchbar{flex:none;padding:0 16px 12px;transition:.2s}
@@ -1019,7 +1020,7 @@ button{position:relative;overflow:hidden}
             <b data-balance>0</b><span class="cur">GRAM</span>
           </button>
           <div class="brand">Gumroad</div>
-          <button class="ava" data-tab="profile" aria-label="Профиль">D</button>
+          <button class="ava" data-tab="profile" aria-label="Профиль"></button>
         </header>
 
         <div class="searchbar" id="searchWrap">
@@ -1088,6 +1089,7 @@ button{position:relative;overflow:hidden}
   </div>
 </div>
 
+<script src="/static/i18n.js?v=28"></script>
 <script src="market-data.js"></script>
 <script src="orders.js"></script>
 <script>
@@ -1232,6 +1234,22 @@ function updateBalanceUI() {
   document.querySelectorAll('[data-balance]').forEach(el => el.textContent = num(wallet.balance));
 }
 
+function updateHeaderAvatar() {
+  const el = document.querySelector('.topbar .ava');
+  if (!el) return;
+  const u = marketUser || {};
+  const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.name || u.username || '';
+  const initial = (name.trim()[0] || 'G').toUpperCase();
+  const photo = u.photo_url || '';
+  if (!photo) {
+    el.textContent = initial;
+    return;
+  }
+  el.innerHTML = `<img src="${esc(photo)}" alt="" loading="lazy">`;
+  const img = el.querySelector('img');
+  if (img) img.addEventListener('error', () => { el.textContent = initial; }, { once: true });
+}
+
 /* Server API: the same FastAPI process serves the market and verifies initData. */
 const tgInitData = () => (tg && tg.initData) || '';
 
@@ -1239,6 +1257,7 @@ function apiHeaders(extra) {
   const h = Object.assign({ 'Accept': 'application/json' }, extra || {});
   const init = tgInitData();
   if (init) h['X-Telegram-Init-Data'] = init;
+  h['X-Lang'] = (window.ATLANTA_I18N?.getLang?.() || 'ru');
   return h;
 }
 
@@ -1264,6 +1283,7 @@ function applyMe(data) {
   if (data.user) marketUser = data.user;
   if (window.AtlantaOrders) window.AtlantaOrders.items = Array.isArray(data.orders) ? data.orders : [];
   updateBalanceUI();
+  updateHeaderAvatar();
 }
 
 async function refreshMe() {
@@ -1289,6 +1309,18 @@ async function startTopup(amount) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ amount })
   });
+}
+
+// Crypto Pay отдаёт ссылку t.me/CryptoBot… — это не invoice-link для openInvoice,
+// поэтому открываем её как обычную ссылку Telegram (иначе WebAppInvoiceUrlInvalid).
+function openPayment(inv) {
+  const url = inv.payUrl || inv.miniAppUrl || '';
+  if (!url) { toast('Не удалось открыть счёт'); return; }
+  try {
+    if (tg && tg.openTelegramLink) { tg.openTelegramLink(url); return; }
+    if (tg && tg.openLink) { tg.openLink(url); return; }
+  } catch (e) {}
+  window.open(url, '_blank');
 }
 
 async function fetchMe() { return api('/me'); }
@@ -1318,6 +1350,15 @@ function waitTopup(invoiceId) {
   };
   setTimeout(tick, 2500);
 }
+
+// После возврата из CryptoBot обновляем баланс, даже если таймеры были на паузе.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  refreshMe().then(() => {
+    updateBalanceUI();
+    if (state.tab === 'profile' || state.tab === 'inventory') render();
+  });
+});
 
 let hapticTimer = 0;
 function haptic(kind = 'light') {
@@ -1484,7 +1525,7 @@ const numbersView = () => {
   ${q ? '' : `
   <section class="num-head">
     <h1>Анонимные номера<br><span>+888</span></h1>
-    <p>Аренда от ${num(MIN_NUM_RENT)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> в месяц · выдача за пару минут</p>
+    <p>Аренда от ${num(MIN_NUM_RENT)} GRAM в месяц · выдача за пару минут</p>
     <div class="num-stats">
       <div><b>${NUM_STATS.inStock}</b><span>в наличии</span></div>
       <div><b>${NUM_STATS.term}</b><span>срок аренды</span></div>
@@ -1495,7 +1536,7 @@ const numbersView = () => {
     ${[1, 3, 6].map(d => `<button class="term ${state.term === d ? 'on' : ''}" data-num-term="${d}">${d} мес${d > 1 ? `<b>−${d === 3 ? 5 : 10}%</b>` : ''}</button>`).join('')}
   </div>`}
   <div class="sec-head">
-    <div><h2>${q ? 'Результаты' : 'Каталог номеров'}</h2><p>${q ? 'по запросу «' + esc(state.query.trim()) + '»' : 'Цены в <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> · выдача за 2 минуты'}</p></div>
+    <div><h2>${q ? 'Результаты' : 'Каталог номеров'}</h2><p>${q ? 'по запросу «' + esc(state.query.trim()) + '»' : 'Цены в GRAM · выдача за 2 минуты'}</p></div>
   </div>
   ${list.length ? `<div class="num-grid">
     ${list.map(n => {
@@ -1503,10 +1544,10 @@ const numbersView = () => {
       return `<button class="num-card" data-number="${i}" style="--i:${Math.min(i, 10)}">
         <span class="num-main">
           <b class="num-val">${n.num}</b>
-          <span class="num-sub">аренда ${num(n.rent)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> / мес${state.term > 1 ? ` · ${num(numTermTotal(n))} за ${state.term} мес` : ''}</span>
+          <span class="num-sub">аренда ${num(n.rent)} GRAM / мес${state.term > 1 ? ` · ${num(numTermTotal(n))} GRAM за ${state.term} мес` : ''}</span>
         </span>
         <span class="num-foot">
-          <span class="num-price"><b>${num(n.price)}</b> <i class="gem"><img class="gem-ico" src="assets/gem.svg" alt="GRAM"></i></span>
+          <span class="num-price"><b>${num(n.price)}</b> <i class="gem">GRAM</i></span>
           <span class="num-go">${I.up}</span>
         </span>
       </button>`;
@@ -1578,7 +1619,7 @@ const inventoryView = () => {
 const profileView = () => {
   const c = orderCounts();
   const u = marketUser || {};
-  const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || 'Пользователь';
+  const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.name || 'Пользователь';
   const handle = u.username ? '@' + u.username : (u.id ? 'ID ' + u.id : 'Открой в Telegram');
   const letter = (name[0] || 'A').toUpperCase();
   return `
@@ -1591,7 +1632,6 @@ const profileView = () => {
     <div class="me-bal">
       <span>Баланс</span>
       <b><span data-balance>${num(wallet.balance)}</span> <span class="cur">GRAM</span></b>
-      <small>+2% кэшбэк с покупок и аренды</small>
     </div>
   </div>
   <div class="menu">
@@ -1602,7 +1642,7 @@ const profileView = () => {
   </div>
   <div class="club">
     <span class="big">2%</span>
-    <span><b>Gumroad Club</b><p>Кэшбэк <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> с каждой покупки, аренды и номера.</p></span>
+    <span><b>Gumroad Club</b><p>Кэшбэк GRAM с каждой покупки, аренды и номера.</p></span>
     <button class="club-btn" data-toast="Gumroad Club · скоро">Вступить</button>
   </div>
   <div style="text-align:center;color:#8a8a93;font-size:7.5px;letter-spacing:.18em;margin:0 0 12px;font-weight:700">GUMROAD MARKET · NFT · RENT · NUMBERS · 2026</div>`;
@@ -1668,15 +1708,15 @@ function numberSheet(index) {
       ${[1, 3, 6].map(d => `<button class="term ${state.term === d ? 'on' : ''}" data-num-term="${d}" data-index="${index}">${d} мес${d > 1 ? `<b>−${d === 3 ? 5 : 10}%</b>` : ''}</button>`).join('')}
     </div>
     <div class="sheet-rows">
-      <div class="sheet-row"><span>Цена</span><b>${num(n.price)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b></div>
-      <div class="sheet-row"><span>Аренда / мес</span><b>${num(n.rent)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b></div>
-      <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(numTermTotal(n))} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"></b></div>
+      <div class="sheet-row"><span>Цена</span><b>${num(n.price)} GRAM</b></div>
+      <div class="sheet-row"><span>Аренда / мес</span><b>${num(n.rent)} GRAM</b></div>
+      <div class="sheet-row"><span>За ${TERMS[state.term].label}</span><b>${num(numTermTotal(n))} GRAM</b></div>
       <div class="sheet-row"><span>Выдача</span><b>2–5 минут</b></div>
       <div class="sheet-row"><span>Гарантия</span><b>Пожизненная</b></div>
     </div>
-    <button class="buy" data-buy="Номер оплачен" data-order="${orderJson({ type: 'number', mode: 'buy', number: n.num, months: 1 })}">Купить за ${num(n.price)} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> ${I.arrow}</button>
-    <button class="ghost" data-buy="Аренда номера оплачена" data-order="${orderJson({ type: 'number', mode: 'rent', number: n.num, months: state.term })}">${I.clock} Арендовать · ${num(numTermTotal(n))} <img class="gem-ico" src="assets/gem.svg" alt="GRAM"> за ${TERMS[state.term].label}</button>
-    <p class="small-note">Оплата с баланса <img class="gem-ico" src="assets/gem.svg" alt="GRAM">. Номер выдаётся через Fragment после подтверждения.</p>`);
+    <button class="buy" data-buy="Номер оплачен" data-order="${orderJson({ type: 'number', mode: 'buy', number: n.num, months: 1 })}">Купить за ${num(n.price)} GRAM ${I.arrow}</button>
+    <button class="ghost" data-buy="Аренда номера оплачена" data-order="${orderJson({ type: 'number', mode: 'rent', number: n.num, months: state.term })}">${I.clock} Арендовать · ${num(numTermTotal(n))} GRAM за ${TERMS[state.term].label}</button>
+    <p class="small-note">Оплата с баланса GRAM. Номер выдаётся через Fragment после подтверждения.</p>`);
 }
 
 /* ============ wallet & sell ============ */
@@ -2016,16 +2056,9 @@ document.addEventListener('click', async e => {
     paySubmit.textContent = 'Создаём счёт…';
     haptic('light');
     startTopup(amount).then(inv => {
-      if (tg && tg.openInvoice && inv.miniAppUrl) {
-        tg.openInvoice(inv.miniAppUrl, status => {
-          if (status === 'paid') { waitTopup(inv.invoiceId); return; }
-          paySubmit.disabled = false;
-          paySubmit.textContent = 'Оплатить через CryptoBot';
-          toast(status === 'cancelled' ? 'Счёт отменён' : 'Счёт не оплачен');
-        });
-        return;
-      }
-      if (inv.payUrl) window.open(inv.payUrl, '_blank');
+      paySubmit.disabled = false;
+      paySubmit.textContent = 'Оплатить через CryptoBot';
+      openPayment(inv);
       waitTopup(inv.invoiceId);
     }).catch(err => {
       paySubmit.disabled = false;
@@ -2131,6 +2164,7 @@ document.addEventListener('pointerdown', e => {
 })();
 
 render();
+updateHeaderAvatar();
 
 (async function boot() {
   await loadMarketConfig();

@@ -96,9 +96,24 @@ def tg_user(user, lang: str = "ru") -> dict:
     }
 
 
-def webapp_url(query: str = "") -> str:
+def _lang_code(lang: str) -> str:
+    return "en" if lang == "en" else "ru"
+
+
+def with_lang(url: str, lang: str = "ru") -> str:
+    """Добавляет ?lang=…, чтобы мини-приложение открылось на выбранном языке."""
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}lang={_lang_code(lang)}"
+
+
+def webapp_url(query: str = "", lang: str = "ru") -> str:
     base = settings.webapp_url
-    return f"{base}?{query}" if query else base
+    params = [part for part in (query, f"lang={_lang_code(lang)}") if part]
+    return f"{base}?{'&'.join(params)}"
+
+
+def market_url(lang: str = "ru") -> str:
+    return with_lang(settings.market_url, lang)
 
 
 def blue(markup: InlineKeyboardMarkup) -> InlineKeyboardMarkup:
@@ -129,14 +144,14 @@ async def edit_text_or_caption(
 def welcome_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
-        InlineKeyboardButton(text=tr("Открыть OTC", lang), web_app=WebAppInfo(url=webapp_url())),
+        InlineKeyboardButton(text=tr("Открыть OTC", lang), web_app=WebAppInfo(url=webapp_url(lang=lang))),
         InlineKeyboardButton(
-            text=tr("Открыть маркетплейс", lang), web_app=WebAppInfo(url=settings.market_url)
+            text=tr("Открыть маркетплейс", lang), web_app=WebAppInfo(url=market_url(lang))
         ),
     )
     builder.row(
         InlineKeyboardButton(
-            text="➕ " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create"))
+            text="➕ " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create", lang))
         ),
         InlineKeyboardButton(text="🌐 " + tr("Сменить язык", lang), callback_data="lang"),
     )
@@ -146,17 +161,17 @@ def welcome_menu(lang: str = "ru") -> InlineKeyboardMarkup:
 def main_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
-        InlineKeyboardButton(text="🛒 " + tr("Открыть приложение", lang), web_app=WebAppInfo(url=webapp_url())),
-        InlineKeyboardButton(text="📦 " + tr("Мои сделки", lang), web_app=WebAppInfo(url=webapp_url("tab=deals"))),
+        InlineKeyboardButton(text="🛒 " + tr("Открыть приложение", lang), web_app=WebAppInfo(url=webapp_url(lang=lang))),
+        InlineKeyboardButton(text="📦 " + tr("Мои сделки", lang), web_app=WebAppInfo(url=webapp_url("tab=deals", lang))),
     )
     builder.row(
         InlineKeyboardButton(
-            text="➕ " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create"))
+            text="➕ " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create", lang))
         ),
         InlineKeyboardButton(text="💼 " + tr("Баланс", lang), callback_data="balance"),
     )
     builder.row(
-        InlineKeyboardButton(text="🎁 " + tr("Маркет подарков", lang), web_app=WebAppInfo(url=settings.market_url)),
+        InlineKeyboardButton(text="🎁 " + tr("Маркет подарков", lang), web_app=WebAppInfo(url=market_url(lang))),
     )
     builder.row(
         InlineKeyboardButton(text="🔑 " + tr("Войти по коду", lang), callback_data="enter_code"),
@@ -195,10 +210,9 @@ async def _await_public_url(timeout: float = 3.0) -> None:
         await asyncio.sleep(0.25)
 
 
-async def send_welcome(target, lang: str) -> None:
-    await _await_public_url()
+def welcome_text(lang: str = "ru") -> str:
     fee = f"{settings.fee_fiat:g}"
-    welcome = T(
+    return T(
         lang,
         f"Добро пожаловать 👋\n\n"
         f"<blockquote>{pe('🛡')} Gumroad — Мы специализированный сервис по обеспечению "
@@ -215,6 +229,11 @@ async def send_welcome(target, lang: str) -> None:
         f"<blockquote>{pe('💼')} Service fee: {fee}%\n"
         f"{pe('🕓')} Working hours: 24/7</blockquote>",
     )
+
+
+async def send_welcome(target, lang: str) -> None:
+    await _await_public_url()
+    welcome = welcome_text(lang)
     markup = welcome_menu(lang)
     preview = PREVIEW_IMAGE_EN if lang == "en" else PREVIEW_IMAGE
     if preview.is_file():
@@ -232,7 +251,7 @@ async def send_welcome(target, lang: str) -> None:
 
 def deal_keyboard(deal: dict, viewer_id: int | None, lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text=tr("Открыть сделку", lang), web_app=WebAppInfo(url=deal["webapp_url"])))
+    builder.row(InlineKeyboardButton(text=tr("Открыть сделку", lang), web_app=WebAppInfo(url=with_lang(deal["webapp_url"], lang))))
     if deal["role"] == "buyer" and deal["status"] == "waiting_payment":
         builder.row(
             InlineKeyboardButton(
@@ -357,7 +376,7 @@ async def cmd_market(message: Message) -> None:
     lang = await lang_of(message.from_user.id)
     builder = InlineKeyboardBuilder()
     builder.row(
-        InlineKeyboardButton(text="🎁 " + tr("Открыть маркет", lang), web_app=WebAppInfo(url=settings.market_url))
+        InlineKeyboardButton(text="🎁 " + tr("Открыть маркет", lang), web_app=WebAppInfo(url=market_url(lang)))
     )
     await message.answer(
         T(
@@ -392,7 +411,7 @@ async def cmd_language(message: Message) -> None:
 async def cmd_deals(message: Message) -> None:
     lang = await lang_of(message.from_user.id)
     builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text=tr("Открыть мои сделки", lang), web_app=WebAppInfo(url=webapp_url("tab=deals"))))
+    builder.row(InlineKeyboardButton(text=tr("Открыть мои сделки", lang), web_app=WebAppInfo(url=webapp_url("tab=deals", lang))))
     await message.answer(tr("Все сделки — в приложении:", lang), reply_markup=blue(builder.as_markup()))
 
 
@@ -419,10 +438,10 @@ def balance_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
         InlineKeyboardButton(
-            text="🪙 " + tr("Пополнить GRAM", lang), web_app=WebAppInfo(url=settings.market_url)
+            text="🪙 " + tr("Пополнить GRAM", lang), web_app=WebAppInfo(url=market_url(lang))
         ),
         InlineKeyboardButton(
-            text="🛒 " + tr("Открыть приложение", lang), web_app=WebAppInfo(url=webapp_url())
+            text="🛒 " + tr("Открыть приложение", lang), web_app=WebAppInfo(url=webapp_url(lang=lang))
         ),
     )
     builder.row(InlineKeyboardButton(text=T(lang, "← Назад", "← Back"), callback_data="menu"))
@@ -456,7 +475,7 @@ async def cmd_create(message: Message) -> None:
     builder = InlineKeyboardBuilder()
     builder.row(
         InlineKeyboardButton(
-            text="🛒 " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create"))
+            text="🛒 " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create", lang))
         )
     )
     await message.answer(
@@ -505,12 +524,15 @@ async def cb_set_language(callback: CallbackQuery) -> None:
     lang = "en" if value == "en" else "ru"
     await escrow.set_language(callback.from_user.id, lang)
     await callback.answer("Language set to English" if lang == "en" else "Язык: русский")
-    text = T(
-        lang,
-        f"{pe('🛒')} <b>Gumroad</b> — сделки под контролем\n\nВыберите действие:",
-        f"{pe('🛒')} <b>Gumroad</b> — deals under control\n\nChoose an action:",
-    )
-    await edit_text_or_caption(callback.message, text, main_menu(lang))
+    if callback.message.photo:
+        # У приветствия картинка под язык — старое сообщение убираем и шлём новое.
+        try:
+            await callback.message.delete()
+        except Exception:
+            pass
+        await send_welcome(callback.message, lang)
+        return
+    await edit_text_or_caption(callback.message, welcome_text(lang), welcome_menu(lang))
 
 
 @router.callback_query(F.data == "how")
@@ -727,7 +749,7 @@ async def cb_create_yes(callback: CallbackQuery, state: FSMContext) -> None:
         f"{tr('Деньги будут под защитой до подтверждения покупателем.', lang)}"
     )
     builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text=tr("Открыть сделку", lang), web_app=WebAppInfo(url=deal["webapp_url"])))
+    builder.row(InlineKeyboardButton(text=tr("Открыть сделку", lang), web_app=WebAppInfo(url=with_lang(deal["webapp_url"], lang))))
     builder.row(
         InlineKeyboardButton(text=tr("Скопировать ссылку", lang), copy_text=CopyTextButton(text=invite)),
         InlineKeyboardButton(
@@ -1190,7 +1212,7 @@ async def cmd_disputes(message: Message) -> None:
     )
     for deal in items[:10]:
         builder = InlineKeyboardBuilder()
-        builder.row(InlineKeyboardButton(text=tr("Открыть", lang), web_app=WebAppInfo(url=deal["webapp_url"])))
+        builder.row(InlineKeyboardButton(text=tr("Открыть", lang), web_app=WebAppInfo(url=with_lang(deal["webapp_url"], lang))))
         builder.row(
             InlineKeyboardButton(text=tr("Выплатить продавцу", lang), callback_data=f"arb:release:{deal['code']}"),
             InlineKeyboardButton(text=tr("Вернуть покупателю", lang), callback_data=f"arb:refund:{deal['code']}"),
@@ -1223,7 +1245,7 @@ async def cb_arbitrate(callback: CallbackQuery) -> None:
           f"Decision made on <code>{deal['code']}</code>\nStatus: {deal['status_label']}"),
         reply_markup=blue(
             InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text=tr("Открыть сделку", lang), web_app=WebAppInfo(url=deal["webapp_url"]))]]
+                inline_keyboard=[[InlineKeyboardButton(text=tr("Открыть сделку", lang), web_app=WebAppInfo(url=with_lang(deal["webapp_url"], lang)))]]
             )
         ),
     )

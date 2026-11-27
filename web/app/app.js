@@ -460,6 +460,7 @@
   function renderHome() {
     const me = state.me;
     const user = me?.user;
+    const balances = me?.balances;
     const active = state.deals.filter((deal) => ACTIVE_STATUSES.includes(deal.status));
     const completed = me?.stats?.completed || 0;
     const greeting = state.deals.length === 0 && completed === 0 ? "Приветствуем!" : "С возвращением";
@@ -481,7 +482,7 @@
         <div class="bc-top">
           <span>Баланс</span>
         </div>
-        <div class="bc-value">${gram(me?.gram || 0)}</div>
+        <div class="bc-value">${rub(balances?.total_usd || 0)}</div>
         <div class="bc-actions">
           <button class="btn btn-ghost btn-sm" data-nav="profile">${icon("wallet")} Вывести</button>
         </div>

@@ -6,7 +6,18 @@
 
   const STORAGE_KEY = "atlanta_lang";
 
+  const readQueryLang = () => {
+    try {
+      const value = new URL(window.location.href).searchParams.get("lang");
+      return value === "en" || value === "ru" ? value : "";
+    } catch (_) {
+      return "";
+    }
+  };
+
   const getLang = () => {
+    const query = readQueryLang();
+    if (query) return query;
     try {
       return localStorage.getItem(STORAGE_KEY) === "en" ? "en" : "ru";
     } catch (_) {
@@ -18,6 +29,15 @@
     const next = lang === "en" ? "en" : "ru";
     try {
       localStorage.setItem(STORAGE_KEY, next);
+    } catch (_) {
+      /* noop */
+    }
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("lang")) {
+        url.searchParams.delete("lang");
+        window.history.replaceState(null, "", url);
+      }
     } catch (_) {
       /* noop */
     }
@@ -577,6 +597,157 @@
     "Подпись Telegram недействительна": "Invalid Telegram signature",
     "В данных Telegram нет пользователя": "No user in the Telegram data",
     "Откройте приложение внутри Telegram": "Open the app inside Telegram",
+
+    /* ------------------------------------------------------------- market */
+    "Маркет": "Market",
+    "Аренда": "Rent",
+    "Номера": "Numbers",
+    "Инвентарь": "Inventory",
+    "нажми, чтобы пропустить": "tap to skip",
+    "Подарки · Аренда · +888": "Gifts · Rent · +888",
+    "Превью в оболочке Telegram": "Preview in the Telegram shell",
+    "1 месяц": "1 month",
+    "3 месяца": "3 months",
+    "6 месяцев": "6 months",
+    "за месяц": "per month",
+    "за 3 мес": "for 3 mo",
+    "за 6 мес": "for 6 mo",
+    "1–6 мес": "1–6 mo",
+    "срок аренды": "rental term",
+    "за 6 месяцев": "for 6 months",
+    "мес": "mo",
+    "Подборка": "Curated",
+    "Цена ↑": "Price ↑",
+    "Цена ↓": "Price ↓",
+    "Коллекция": "Collection",
+    "Модель": "Model",
+    "Фон": "Backdrop",
+    "Узор": "Pattern",
+    "Сбросить": "Reset",
+    "В избранное": "Add to favorites",
+    "Ничего не нашлось": "Nothing found",
+    "Попробуй другое название, модель или узор.": "Try another name, model or pattern.",
+    "Показать ещё": "Show more",
+    "Подарок на время": "Gift for a while",
+    "Оплата за срок": "Pay per term",
+    "Подарки в аренду": "Gifts for rent",
+    "цена за срок": "price per term",
+    "Попробуй другое название подарка.": "Try another gift name.",
+    "Анонимные номера": "Anonymous numbers",
+    "в наличии": "in stock",
+    "выдача": "delivery",
+    "Результаты": "Results",
+    "Каталог номеров": "Numbers catalog",
+    "Цены в GRAM · выдача за 2 минуты": "Prices in GRAM · delivery in 2 minutes",
+    "Номеров не найдено": "No numbers found",
+    "Попробуй другой запрос.": "Try another query.",
+    "Анонимный номер": "Anonymous number",
+    "Выдача": "Delivery",
+    "Гарантия": "Warranty",
+    "Пожизненная": "Lifetime",
+    "Цена": "Price",
+    "Аренда / мес": "Rent / mo",
+    "2–5 минут": "2–5 minutes",
+    "Мой инвентарь": "My inventory",
+    "Подарки, аренды и номера": "Gifts, rentals and numbers",
+    "Есть подарок в Telegram?": "Have a gift in Telegram?",
+    "Вы можете продать его на нашем маркете.": "You can sell it on our market.",
+    "Инструкция": "Instructions",
+    "Заказы": "Orders",
+    "Пока пусто": "Empty for now",
+    "Купи подарок, оформи аренду или выбери анонимный номер — заказы появятся здесь.":
+      "Buy a gift, rent one or choose an anonymous number — orders will appear here.",
+    "Перейти в маркет подарков": "Go to the gift market",
+    "Оформить аренду": "Rent a gift",
+    "Купить анонимный номер": "Buy an anonymous number",
+    "подарок": "gift",
+    "подарка": "gifts",
+    "подарков": "gifts",
+    "аренда": "rental",
+    "аренды": "rentals",
+    "аренд": "rentals",
+    "номер": "number",
+    "номера": "numbers",
+    "номеров": "numbers",
+    "ожидает выдачи": "awaiting delivery",
+    "ожидают выдачи": "awaiting delivery",
+    "номер · аренда": "number · rent",
+    "номер · покупка": "number · purchase",
+    "покупка": "purchase",
+    "Пользователь": "User",
+    "Открой в Telegram": "Open in Telegram",
+    "Мои подарки": "My gifts",
+    "Арендованные подарки": "Rented gifts",
+    "Мои номера": "My numbers",
+    "Кошелёк и вывод": "Wallet & withdrawal",
+    "Кэшбэк GRAM с каждой покупки, аренды и номера.":
+      "GRAM cashback on every purchase, rental and number.",
+    "Вступить": "Join",
+    "Комиссия маркета": "Market fee",
+    "В коллекции": "In the collection",
+    "моделей": "models",
+    "фонов": "backdrops",
+    "узоров": "patterns",
+    "Оплата с баланса GRAM. Подарок выдаётся через безопасную сделку Gumroad.":
+      "Payment from the GRAM balance. The gift is delivered through a secure Gumroad deal.",
+    "Арендовать": "Rent",
+    "Купить за": "Buy for",
+    "Оплата с баланса GRAM. Номер выдаётся через Fragment после подтверждения.":
+      "Payment from the GRAM balance. The number is issued via Fragment after confirmation.",
+    "Кошелёк": "Wallet",
+    "Баланс Gumroad": "Gumroad balance",
+    "Доступно": "Available",
+    "Пополнение и вывод": "Top-up & withdrawal",
+    "Пополнить": "Top up",
+    "Пока нет операций. Пополни баланс, чтобы покупать и арендовать.":
+      "No operations yet. Top up your balance to buy and rent.",
+    "Пополнение через @CryptoBot, вывод — заявкой на выплату.":
+      "Top-up via @CryptoBot, withdrawal by payout request.",
+    "Пополнение баланса": "Balance top-up",
+    "Оплата через @CryptoBot": "Pay via @CryptoBot",
+    "Сумма пополнения": "Top-up amount",
+    "оплата в Telegram": "payment in Telegram",
+    "Оплатить через CryptoBot": "Pay via CryptoBot",
+    "Пополнение временно недоступно: администратор не подключил Crypto Pay.":
+      "Top-up is temporarily unavailable: the administrator hasn't connected Crypto Pay.",
+    "Баланс зачисляется автоматически после оплаты счёта.":
+      "The balance is credited automatically after the invoice is paid.",
+    "Вывод средств": "Withdraw funds",
+    "На кошелёк или @username": "To a wallet or @username",
+    "Заявка обрабатывается до 24 часов": "The request is processed within 24 hours",
+    "Сумма вывода": "Withdrawal amount",
+    "Куда вывести": "Where to withdraw",
+    "Заявка сохраняется на сервере, средства резервируются. Выплата вручную, до 24 часов.":
+      "The request is saved on the server and funds are reserved. Manual payout within 24 hours.",
+    "Продажа подарков": "Gift sales",
+    "Передача подарков на маркет пока недоступна":
+      "Gift transfer to the market is not available yet",
+    "В заявке на вывод:": "Pending withdrawal:",
+    "Быстрый поиск": "Quick search",
+    "Поиск в аренде": "Search rentals",
+    "Поиск номера": "Search numbers",
+    "Сначала выберите коллекцию": "Choose a collection first",
+    "Сортировка": "Sorting",
+    "Убрано из избранного": "Removed from favorites",
+    "Добавлено в избранное": "Added to favorites",
+    "Создаём заказ…": "Creating order…",
+    "Заказ оплачен": "Order paid",
+    "Недостаточно средств · пополни кошелёк": "Not enough funds · top up your wallet",
+    "Не удалось создать заказ": "Couldn't create the order",
+    "Список обновлён": "List refreshed",
+    "Минимум": "Minimum",
+    "Создаём счёт…": "Creating invoice…",
+    "Счёт отменён": "Invoice cancelled",
+    "Счёт не оплачен": "Invoice not paid",
+    "Не удалось создать счёт": "Couldn't create the invoice",
+    "Укажи сумму вывода": "Enter the withdrawal amount",
+    "Укажи адрес кошелька": "Enter the wallet address",
+    "Создаём заявку…": "Creating request…",
+    "Заявка на вывод создана": "Withdrawal request created",
+    "Не удалось создать заявку": "Couldn't create the request",
+    "Открой маркет внутри Telegram": "Open the market inside Telegram",
+    "Баланс пополнен": "Balance topped up",
+    "Платёж ещё не подтверждён": "Payment not confirmed yet",
   };
 
   const PATTERNS = [
@@ -606,6 +777,45 @@
     [/^Сделка Gumroad:\s*(.+)$/, "Gumroad deal: $1"],
     [/^Продавец\s*·\s*(.+)$/, "Seller · $1"],
     [/^Покупатель\s*·\s*(.+)$/, "Buyer · $1"],
+
+    /* market dynamic strings */
+    [/^(\d+)\s+мес$/, "$1 mo"],
+    [/^(.+)\s+·\s+(\d+)\s+мес$/, "$1 · $2 mo"],
+    [/^([A-Z]+)\s+·\s+оплата в Telegram$/, "$1 · payment in Telegram"],
+    [/^Счёт в (.+)\. 1 (.+) = (.+) GRAM\.$/, "Invoice in $1. 1 $2 = $3 GRAM."],
+    [/^Аренда от\s+(.+)\s+GRAM в месяц\s+·\s+выдача за пару минут$/,
+      "Rent from $1 GRAM per month · delivery in a couple of minutes"],
+    [/^(\d+)\s+мин$/, "$1 min"],
+    [/^(\d+)\s+минут$/, "$1 minutes"],
+    [/^(\d+)\s+мес\s+·\s+(.+)\s+за\s+(\d+)\s+мес$/, "$1 mo · $2 for $3 mo"],
+    [/^(\d+)\s+(подарок|подарка|подарков)$/, "$1 gifts"],
+    [/^(\d+)\s+(аренда|аренды|аренд)$/, "$1 rentals"],
+    [/^(\d+)\s+(номер|номера|номеров)$/, "$1 numbers"],
+    [/^(\d+)\s+(ожидает|ожидают)\s+выдачи$/, "$1 awaiting delivery"],
+    [/^(\d+)\s+шт\.$/, "$1 pcs"],
+    [/^(\d+)\s+моделей\s+·\s+(\d+)\s+фонов\s+·\s+(\d+)\s+узоров$/,
+      "$1 models · $2 backdrops · $3 patterns"],
+    [/^(\d+)% редкость$/, "$1% rarity"],
+    [/^аренда\s+(.+)\s+GRAM\s+\/\s+мес\s+·\s+(.+)\s+GRAM\s+за\s+(\d+)\s+мес$/,
+      "rent $1 GRAM / mo · $2 GRAM for $3 mo"],
+    [/^аренда\s+(.+)\s+GRAM\s+\/\s+мес$/, "rent $1 GRAM / mo"],
+    [/^Купить за\s+(.+)\s+GRAM$/, "Buy for $1 GRAM"],
+    [/^Арендовать\s+·\s+(.+)\s+GRAM\s+за\s+1 месяц$/, "Rent · $1 GRAM for 1 month"],
+    [/^Арендовать\s+·\s+(.+)\s+GRAM\s+за\s+3 месяца$/, "Rent · $1 GRAM for 3 months"],
+    [/^Арендовать\s+·\s+(.+)\s+GRAM\s+за\s+6 месяцев$/, "Rent · $1 GRAM for 6 months"],
+    [/^За\s+1 месяц$/, "For 1 month"],
+    [/^За\s+3 месяца$/, "For 3 months"],
+    [/^За\s+6 месяцев$/, "For 6 months"],
+    [/^аренда\s+·\s+1 месяц$/, "rent · 1 month"],
+    [/^аренда\s+·\s+3 месяца$/, "rent · 3 months"],
+    [/^аренда\s+·\s+6 месяцев$/, "rent · 6 months"],
+    [/^1 месяц\s+·\s+цена за срок$/, "1 month · price per term"],
+    [/^3 месяца\s+·\s+цена за срок$/, "3 months · price per term"],
+    [/^6 месяцев\s+·\s+цена за срок$/, "6 months · price per term"],
+    [/^Сортировка:\s*(.+)$/, "Sorting: $1"],
+    [/^Скопировано:\s*(.+)$/, "Copied: $1"],
+    [/^Минимум\s+(.+)$/, "Minimum $1"],
+    [/^В заявке на вывод:\s*(.+)$/, "Pending withdrawal: $1"],
   ];
 
   const META = {
@@ -792,6 +1002,8 @@
 
   function boot() {
     injectStyles();
+    const bootLang = readQueryLang();
+    if (bootLang) setLang(bootLang);
     document.querySelectorAll("[data-lang-switch]").forEach(mountSwitcher);
     if (getLang() === "en") apply(document);
     else updateSwitches();
