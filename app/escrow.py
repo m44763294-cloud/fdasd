@@ -590,7 +590,7 @@ async def mark_funded(code: str, ref: str, amount: Decimal | None, provider: str
             raise EscrowError("Статус сделки уже изменился", 409, "conflict")
         await conn.execute(
             "INSERT INTO events (deal_id, kind, text, created_at) VALUES (?, 'funded', ?, ?)",
-            (deal["id"], "Средства заблокированы под защитой ATLANTA", iso()),
+            (deal["id"], "Средства заблокированы под защитой Gumroad", iso()),
         )
 
     deal = await db.fetchone("SELECT * FROM deals WHERE id=?", (deal["id"],))
@@ -603,7 +603,7 @@ async def mark_funded(code: str, ref: str, amount: Decimal | None, provider: str
 
 
 async def pay_from_balance(user: dict, code: str) -> dict:
-    """Оплатить сделку деньгами, уже лежащими на балансе ATLANTA."""
+    """Оплатить сделку деньгами, уже лежащими на балансе Gumroad."""
     deal = await get_deal_raw(code)
     if not deal:
         raise EscrowError("Сделка не найдена", 404, "not_found")
@@ -636,7 +636,7 @@ async def pay_from_balance(user: dict, code: str) -> dict:
         )
         await conn.execute(
             "INSERT INTO events (deal_id, actor_id, kind, text, created_at) VALUES (?, ?, 'funded', ?, ?)",
-            (deal["id"], int(user["id"]), "Оплата списана с баланса и зачислена под защиту ATLANTA", iso()),
+            (deal["id"], int(user["id"]), "Оплата списана с баланса и зачислена под защиту Gumroad", iso()),
         )
 
     deal = await db.fetchone("SELECT * FROM deals WHERE id=?", (deal["id"],))
@@ -704,7 +704,7 @@ async def confirm(user: dict, code: str) -> dict:
             raise EscrowError("Статус сделки уже изменился", 409, "conflict")
         await _wallet_add(conn, deal["seller_id"], deal["currency"], Decimal(deal["net_amount"]))
         await _ledger(conn, deal["seller_id"], deal["id"], deal["currency"], deal["net_amount"], "release", "Выплата по сделке")
-        await _ledger(conn, None, deal["id"], deal["currency"], deal["fee_amount"], "fee", "Комиссия ATLANTA")
+        await _ledger(conn, None, deal["id"], deal["currency"], deal["fee_amount"], "fee", "Комиссия Gumroad")
         await conn.execute(
             "INSERT INTO events (deal_id, actor_id, kind, text, created_at) VALUES (?, ?, 'completed', ?, ?)",
             (deal["id"], user["id"], "Покупатель подтвердил сделку · средства выплачены продавцу", now),
@@ -818,7 +818,7 @@ async def resolve(admin: dict, code: str, outcome: str, note: str = "") -> dict:
         if outcome == "release":
             await _wallet_add(conn, deal["seller_id"], deal["currency"], Decimal(deal["net_amount"]))
             await _ledger(conn, deal["seller_id"], deal["id"], deal["currency"], deal["net_amount"], "release", "Решение арбитра")
-            await _ledger(conn, None, deal["id"], deal["currency"], deal["fee_amount"], "fee", "Комиссия ATLANTA")
+            await _ledger(conn, None, deal["id"], deal["currency"], deal["fee_amount"], "fee", "Комиссия Gumroad")
         else:
             if (deal.get("payment_provider") or "") == "balance" and deal.get("buyer_id"):
                 await _wallet_add(

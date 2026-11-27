@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ATLANTA — RU/EN interface translation (landing + mini app)
+   Gumroad — RU/EN interface translation (landing + mini app)
    ========================================================================== */
 (() => {
   "use strict";
@@ -58,9 +58,9 @@
     "Безопасные сделки в Telegram · крипта и фиат": "Secure deals in Telegram · crypto & fiat",
     "Сделки под контролем": "Deals under control",
     "Сделка под охраной": "Deals under control",
-    "ATLANTA · сделки под контролем": "ATLANTA · deals under control",
+    "Gumroad · сделки под контролем": "Gumroad · deals under control",
     "Интерфейс бота и приложения": "Bot and app interface",
-    "под защитой ATLANTA": "protected by ATLANTA",
+    "под защитой Gumroad": "protected by Gumroad",
     "сейчас": "now",
     "Steam · 50 игр": "Steam · 50 games",
     "≈ 1 250 USD · комиссия 1,5%": "≈ 1,250 USD · fee 1.5%",
@@ -72,8 +72,8 @@
     "Начните": "Start",
     "уже сейчас!": "right now!",
     "Начните уже сейчас!": "Start right now!",
-    "ATLANTA держит оплату под защитой, пока покупатель не получит товар.":
-      "ATLANTA holds the payment until the buyer receives the goods.",
+    "Gumroad держит оплату под защитой, пока покупатель не получит товар.":
+      "Gumroad holds the payment until the buyer receives the goods.",
     "Продавец видит, что деньги уже есть. Покупатель знает, что они уйдут только после подтверждения.":
       "The seller sees the funds are there. The buyer knows they are released only after confirmation.",
     "Как это работает": "How it works",
@@ -117,8 +117,8 @@
     "Продавец описывает товар, сумму и условия. Сервис формирует код и ссылку для покупателя.":
       "The seller describes the item, amount and terms. The service creates a code and a buyer link.",
     "Покупатель платит": "Buyer pays",
-    "Оплата блокируется у ATLANTA, а не уходит продавцу. В сделке появляется подтверждение: деньги под защитой.":
-      "Payment is locked with ATLANTA instead of going to the seller. The deal shows that funds are secured.",
+    "Оплата блокируется у Gumroad, а не уходит продавцу. В сделке появляется подтверждение: деньги под защитой.":
+      "Payment is locked with Gumroad instead of going to the seller. The deal shows that funds are secured.",
     "Передача товара": "Item delivery",
     "Продавец передаёт товар или доступ и фиксирует это в сделке. Покупатель получает уведомление.":
       "The seller delivers the item or access and records it in the deal. The buyer gets a notification.",
@@ -162,8 +162,8 @@
     "Каждый шаг фиксируется: кто, когда и что сделал. История не редактируется участниками.":
       "Every step is recorded: who did what and when. Participants cannot edit the history.",
     "Выплаты на кошелёк": "Wallet payouts",
-    "После завершения деньги попадают на баланс ATLANTA. Вывод — на адрес или реквизиты в пару кликов.":
-      "After completion the money lands in the ATLANTA balance. Withdraw to an address or bank details in a couple of clicks.",
+    "После завершения деньги попадают на баланс Gumroad. Вывод — на адрес или реквизиты в пару кликов.":
+      "After completion the money lands in the Gumroad balance. Withdraw to an address or bank details in a couple of clicks.",
 
     /* -------------------------------------------------------------- fees */
     "Платите только за результат": "Pay only for the result",
@@ -182,8 +182,8 @@
 
     /* ---------------------------------------------------------- security */
     "Деньги не у продавца. И не у покупателя.": "The money is neither with the seller nor the buyer.",
-    "Пока сделка активна, оплата находится под защитой ATLANTA. Доступ к ней появляется только по правилам, которые обе стороны видели заранее.":
-      "While the deal is active, the payment is held by ATLANTA. It is released only by rules both sides saw in advance.",
+    "Пока сделка активна, оплата находится под защитой Gumroad. Доступ к ней появляется только по правилам, которые обе стороны видели заранее.":
+      "While the deal is active, the payment is held by Gumroad. It is released only by rules both sides saw in advance.",
     "Ручное подтверждение": "Manual confirmation",
     "Покупатель сам подтверждает получение — автоматических списаний нет.":
       "The buyer confirms receipt personally — there are no automatic charges.",
@@ -204,11 +204,11 @@
     "Не нашли ответ? Напишите в поддержку — поможем разобраться со сделкой.":
       "Didn't find an answer? Contact support — we'll help with the deal.",
     "Как работает защита оплаты?": "How does payment protection work?",
-    "ATLANTA временно держит деньги покупателя. Покупатель платит не продавцу напрямую, а на защищённый счёт сервиса. Продавец видит, что оплата есть, и передаёт товар. Деньги уходят продавцу только после подтверждения покупателя.":
-      "ATLANTA temporarily holds the buyer's money. The buyer pays the service's protected account, not the seller directly. The seller sees the payment and delivers. The money reaches the seller only after the buyer confirms.",
+    "Gumroad временно держит деньги покупателя. Покупатель платит не продавцу напрямую, а на защищённый счёт сервиса. Продавец видит, что оплата есть, и передаёт товар. Деньги уходят продавцу только после подтверждения покупателя.":
+      "Gumroad temporarily holds the buyer's money. The buyer pays the service's protected account, not the seller directly. The seller sees the payment and delivers. The money reaches the seller only after the buyer confirms.",
     "Когда продавец получает деньги?": "When does the seller get paid?",
-    "Сразу после того, как покупатель нажмёт «Подтвердить получение». Выплата зачисляется на баланс ATLANTA за вычетом комиссии, после чего её можно вывести на кошелёк или реквизиты.":
-      "Right after the buyer taps “Confirm receipt”. The payout is credited to the ATLANTA balance minus the fee, and can then be withdrawn to a wallet or bank details.",
+    "Сразу после того, как покупатель нажмёт «Подтвердить получение». Выплата зачисляется на баланс Gumroad за вычетом комиссии, после чего её можно вывести на кошелёк или реквизиты.":
+      "Right after the buyer taps “Confirm receipt”. The payout is credited to the Gumroad balance minus the fee, and can then be withdrawn to a wallet or bank details.",
     "Что делать, если товар не соответствует описанию?": "What if the item doesn't match the description?",
     "Не подтверждайте сделку. Откройте спор и опишите проблему: арбитр увидит условия, историю статусов и сообщения сторон. По итогам он выплатит деньги продавцу или вернёт их покупателю.":
       "Don't confirm the deal. Open a dispute and describe the problem: the arbitrator will see the terms, status history and both sides' messages, then pay the seller or refund the buyer.",
@@ -222,30 +222,30 @@
     "Продавец отправляет ссылку вида t.me/бот?start=deal_KST-XXXXXX. Покупатель открывает её в Telegram, нажимает «Присоединиться» и оплачивает счёт. Регистрация не нужна.":
       "The seller sends a link like t.me/bot?start=deal_KST-XXXXXX. The buyer opens it in Telegram, taps “Join” and pays the invoice. No sign-up needed.",
     "Кто хранит деньги и это законно?": "Who holds the money and is it legal?",
-    "ATLANTA — технологическая платформа: средства на время сделки находятся под защитой и выплачиваются только по правилам сделки. Перед коммерческим запуском нужна юридическая проверка в вашей юрисдикции.":
-      "ATLANTA is a technology platform: funds stay protected during the deal and are paid out only under the agreed terms. Legal review in your jurisdiction is required before launch.",
+    "Gumroad — технологическая платформа: средства на время сделки находятся под защитой и выплачиваются только по правилам сделки. Перед коммерческим запуском нужна юридическая проверка в вашей юрисдикции.":
+      "Gumroad is a technology platform: funds stay protected during the deal and are paid out only under the agreed terms. Legal review in your jurisdiction is required before launch.",
 
     /* --------------------------------------------------------------- cta */
     "Первый шаг — 30 секунд": "First step — 30 seconds",
     "Проведите сделку,": "Run a deal",
     "за которую не страшно": "you won't worry about",
-    "Откройте ATLANTA в Telegram, создайте сделку и отправьте ссылку покупателю.":
-      "Open ATLANTA in Telegram, create a deal and send the link to the buyer.",
+    "Откройте Gumroad в Telegram, создайте сделку и отправьте ссылку покупателю.":
+      "Open Gumroad in Telegram, create a deal and send the link to the buyer.",
     "Без регистрации": "No sign-up",
     "Арбитраж 24/7": "24/7 arbitration",
 
     /* ------------------------------------------------------------ footer */
     "Сервис безопасных сделок в Telegram. Деньги под защитой до подтверждения.":
       "Secure deal service in Telegram. Money is protected until confirmation.",
-    "© 2026 ATLANTA · Сделки под контролем": "© 2026 ATLANTA · Deals under control",
+    "© 2026 Gumroad · Сделки под контролем": "© 2026 Gumroad · Deals under control",
     "Продукт": "Product",
     "Помощь": "Help",
     "Документы": "Legal",
     "Мини-приложение": "Mini app",
     "Telegram-бот": "Telegram bot",
     "Защищённые сделки": "Protected deals",
-    "ATLANTA не является банком или инвестиционной платформой. Средства на время сделки находятся под защитой сервиса.":
-      "ATLANTA is not a bank or an investment platform. Funds stay protected by the service during the deal.",
+    "Gumroad не является банком или инвестиционной платформой. Средства на время сделки находятся под защитой сервиса.":
+      "Gumroad is not a bank or an investment platform. Funds stay protected by the service during the deal.",
     "Сделано для честных сделок": "Built for fair deals",
 
     /* ------------------------------------------------------------- mini app */
@@ -296,11 +296,11 @@
     "0": "0",
     "24/7": "24/7",
     "Пропустить": "Skip",
-    "ATLANTA держит оплату под защитой, пока покупатель не получит товар. Продавец видит, что деньги уже есть. Покупатель знает, что они уйдут только после подтверждения.":
-      "ATLANTA holds the payment until the buyer receives the item. The seller sees that the money is there. The buyer knows it's paid out only after confirmation.",
+    "Gumroad держит оплату под защитой, пока покупатель не получит товар. Продавец видит, что деньги уже есть. Покупатель знает, что они уйдут только после подтверждения.":
+      "Gumroad holds the payment until the buyer receives the item. The seller sees that the money is there. The buyer knows it's paid out only after confirmation.",
 
     /* ----------------------------------------------------------- create */
-    "Деньги под защитой ATLANTA": "Money protected by ATLANTA",
+    "Деньги под защитой Gumroad": "Money protected by Gumroad",
     "Что продаём": "What are you selling",
     "Предмет сделки": "Deal item",
     "Создать сделку может любая сторона — вы будете её владельцем.":
@@ -330,8 +330,8 @@
     "Комиссия сервиса": "Service fee",
     "Продавец получит": "Seller receives",
     "Покупатель платит": "Buyer pays",
-    "Оплата попадёт под защиту ATLANTA. Продавец получит деньги только после вашего подтверждения или решения арбитра.":
-      "Payment goes under ATLANTA protection. The seller is paid only after your confirmation or an arbitrator's decision.",
+    "Оплата попадёт под защиту Gumroad. Продавец получит деньги только после вашего подтверждения или решения арбитра.":
+      "Payment goes under Gumroad protection. The seller is paid only after your confirmation or an arbitrator's decision.",
     "Название — минимум 5 символов": "Title must be at least 5 characters",
     "Укажите сумму сделки": "Enter the deal amount",
     "Введите код сделки": "Enter the deal code",
@@ -377,7 +377,7 @@
       "You are viewing this deal as an arbitrator. The dispute decision is available in the actions block.",
 
     /* ---------------------------------------------------------- profile */
-    "Аккаунт ATLANTA": "ATLANTA account",
+    "Аккаунт Gumroad": "Gumroad account",
     "без username": "no username",
     "Арбитр": "Arbitrator",
     "сделок": "deals",
@@ -388,10 +388,10 @@
     "Средства появятся после завершённой сделки.":
       "Funds will appear after a completed deal.",
     "Ещё": "More",
-    "Как работает ATLANTA": "How ATLANTA works",
+    "Как работает Gumroad": "How Gumroad works",
     "Арбитраж и споры": "Arbitration & disputes",
-    "ATLANTA не хранит данные карт и ключи кошельков. Все действия по сделке фиксируются в журнале.":
-      "ATLANTA never stores card data or wallet keys. Every deal action is recorded in the log.",
+    "Gumroad не хранит данные карт и ключи кошельков. Все действия по сделке фиксируются в журнале.":
+      "Gumroad never stores card data or wallet keys. Every deal action is recorded in the log.",
     "Язык": "Language",
 
     /* ------------------------------------------------------------ admin */
@@ -469,8 +469,8 @@
     "Комментарий арбитра": "Arbitrator comment",
     "Решение принято": "Decision made",
     "Приложение не открылось": "The app failed to open",
-    "Откройте приложение через Telegram-бота ATLANTA — так безопаснее.":
-      "Open the app through the ATLANTA Telegram bot — it's safer.",
+    "Откройте приложение через Telegram-бота Gumroad — так безопаснее.":
+      "Open the app through the Gumroad Telegram bot — it's safer.",
     "Не удалось загрузить данные": "Failed to load data",
 
     /* ------------------------------------------- backend: statuses */
@@ -529,7 +529,7 @@
     /* ------------------------------------------- backend: events */
     "Покупатель присоединился к сделке": "Buyer joined the deal",
     "Счёт на оплату сформирован": "Invoice created",
-    "Средства заблокированы под защитой ATLANTA": "Funds secured by ATLANTA",
+    "Средства заблокированы под защитой Gumroad": "Funds secured by Gumroad",
     "Продавец отметил передачу товара": "Seller marked the item as delivered",
     "Покупатель подтвердил сделку · средства выплачены продавцу":
       "Buyer confirmed the deal · funds paid to the seller",
@@ -603,7 +603,7 @@
     [/^Платёжный провайдер недоступен:\s*(.+)$/, "Payment provider unavailable: $1"],
     [/^Вывод не выполнен:\s*(.+)$/, "Withdrawal failed: $1"],
     [/^Ошибка\s+(\d+)$/, "Error $1"],
-    [/^Сделка ATLANTA:\s*(.+)$/, "ATLANTA deal: $1"],
+    [/^Сделка Gumroad:\s*(.+)$/, "Gumroad deal: $1"],
     [/^Продавец\s*·\s*(.+)$/, "Seller · $1"],
     [/^Покупатель\s*·\s*(.+)$/, "Buyer · $1"],
   ];
@@ -611,24 +611,24 @@
   const META = {
     landing: {
       ru: {
-        title: "ATLANTA — сделки под контролем",
+        title: "Gumroad — сделки под контролем",
         description:
-          "ATLANTA — безопасные сделки в Telegram. Покупатель платит, деньги блокируются, продавец получает их только после подтверждения. Крипта и фиат, арбитраж 24/7.",
+          "Gumroad — безопасные сделки в Telegram. Покупатель платит, деньги блокируются, продавец получает их только после подтверждения. Крипта и фиат, арбитраж 24/7.",
       },
       en: {
-        title: "ATLANTA — deals under control",
+        title: "Gumroad — deals under control",
         description:
-          "ATLANTA — secure deals in Telegram. The buyer pays, funds are locked, and the seller is paid only after confirmation. Crypto and fiat, 24/7 arbitration.",
+          "Gumroad — secure deals in Telegram. The buyer pays, funds are locked, and the seller is paid only after confirmation. Crypto and fiat, 24/7 arbitration.",
       },
     },
     app: {
       ru: {
-        title: "ATLANTA — сделки под контролем",
+        title: "Gumroad — сделки под контролем",
         description:
           "Безопасные сделки в Telegram: крипта и фиат, арбитраж, прозрачные статусы.",
       },
       en: {
-        title: "ATLANTA — deals under control",
+        title: "Gumroad — deals under control",
         description:
           "Secure deals in Telegram: crypto and fiat, arbitration, transparent statuses.",
       },

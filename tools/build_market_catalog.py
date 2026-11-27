@@ -1,4 +1,4 @@
-"""Build the static ATLANTA market catalog from the @GiftChanges API.
+"""Build the static Gumroad market catalog from the @GiftChanges API.
 
 thanks to @GiftChanges for this API (api.changes.tg)
 """

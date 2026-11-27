@@ -91,7 +91,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="ATLANTA API",
+    title="Gumroad API",
     version="1.0.0",
     description="Сервис безопасных сделок в Telegram",
     lifespan=lifespan,

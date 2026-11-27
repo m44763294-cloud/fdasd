@@ -1,4 +1,4 @@
-﻿/* ATLANTA landing — поведение без зависимостей */
+﻿/* Gumroad landing — поведение без зависимостей */
 (() => {
   "use strict";
 

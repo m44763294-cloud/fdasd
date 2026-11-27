@@ -1,4 +1,4 @@
-"""Telegram-бот ATLANTA: меню, создание сделок, вход по ссылке, арбитраж."""
+"""Telegram-бот Gumroad: меню, создание сделок, вход по ссылке, арбитраж."""
 
 from __future__ import annotations
 
@@ -51,6 +51,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from . import escrow, market
 from .config import settings
+from .emoji import pe
 from .i18n import tr
 from .models import CURRENCIES, fmt_amount, fmt_usd, parse_amount, quantize, split_fee, usd_value
 from .notify import notifier
@@ -112,20 +113,23 @@ def welcome_menu(lang: str = "ru") -> InlineKeyboardMarkup:
 def main_menu(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
-        InlineKeyboardButton(text=tr("Открыть приложение", lang), web_app=WebAppInfo(url=webapp_url())),
-        InlineKeyboardButton(text=tr("Мои сделки", lang), web_app=WebAppInfo(url=webapp_url("tab=deals"))),
+        InlineKeyboardButton(text="🛒 " + tr("Открыть приложение", lang), web_app=WebAppInfo(url=webapp_url())),
+        InlineKeyboardButton(text="📦 " + tr("Мои сделки", lang), web_app=WebAppInfo(url=webapp_url("tab=deals"))),
     )
     builder.row(
-        InlineKeyboardButton(text=tr("Маркет подарков", lang), web_app=WebAppInfo(url=settings.market_url)),
+        InlineKeyboardButton(
+            text="➕ " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create"))
+        ),
+        InlineKeyboardButton(text="💼 " + tr("Баланс", lang), callback_data="balance"),
     )
     builder.row(
-        InlineKeyboardButton(text=tr("Создать сделку", lang), callback_data="create"),
-        InlineKeyboardButton(text=tr("Войти по коду", lang), callback_data="enter_code"),
+        InlineKeyboardButton(text="🎁 " + tr("Маркет подарков", lang), web_app=WebAppInfo(url=settings.market_url)),
     )
     builder.row(
-        InlineKeyboardButton(text=tr("Как это работает", lang), callback_data="how"),
-        InlineKeyboardButton(text=tr("Язык", lang), callback_data="lang"),
+        InlineKeyboardButton(text="🔑 " + tr("Войти по коду", lang), callback_data="enter_code"),
+        InlineKeyboardButton(text="❔ " + tr("Как это работает", lang), callback_data="how"),
     )
+    builder.row(InlineKeyboardButton(text="🌐 " + tr("Язык", lang), callback_data="lang"))
     return builder.as_markup()
 
 
@@ -163,16 +167,16 @@ async def send_welcome(target, lang: str) -> None:
     fee = f"{settings.fee_fiat:g}"
     welcome = T(
         lang,
-        "Добро пожаловать 👋\n\n"
-        "<blockquote>Atlanta Market — Мы специализированный сервис по обеспечению "
+        f"Добро пожаловать 👋\n\n"
+        "<blockquote>Gumroad — Мы специализированный сервис по обеспечению "
         "безопасности внебиржевых сделок. Удобный и быстрый вывод средств.</blockquote>\n\n"
-        f"<blockquote>Комиссия сервиса: {fee.replace('.', ',')}%\n"
-        "Режим работы: 24/7</blockquote>",
-        "Welcome 👋\n\n"
-        "<blockquote>Atlanta Market — We are a specialized service for secure "
+        f"<blockquote>{pe('💼')} Комиссия сервиса: {fee.replace('.', ',')}%\n"
+        f"{pe('🕓')} Режим работы: 24/7</blockquote>",
+        f"Welcome 👋\n\n"
+        "<blockquote>Gumroad — We are a specialized service for secure "
         "over-the-counter deals. Fast and convenient withdrawals.</blockquote>\n\n"
-        f"<blockquote>Service fee: {fee}%\n"
-        "Working hours: 24/7</blockquote>",
+        f"<blockquote>{pe('💼')} Service fee: {fee}%\n"
+        f"{pe('🕓')} Working hours: 24/7</blockquote>",
     )
     markup = welcome_menu(lang)
     if PREVIEW_IMAGE.is_file():
@@ -210,7 +214,7 @@ def deal_keyboard(deal: dict, viewer_id: int | None, lang: str = "ru") -> Inline
             InlineKeyboardButton(text=tr("Скопировать ссылку", lang), copy_text=CopyTextButton(text=invite)),
             InlineKeyboardButton(
                 text=tr("Поделиться", lang),
-                url=f"https://t.me/share/url?url={quote(invite)}&text={quote(T(lang, 'Сделка в ATLANTA: ', 'Deal on ATLANTA: ') + deal['title'])}",
+                url=f"https://t.me/share/url?url={quote(invite)}&text={quote(T(lang, 'Сделка в Gumroad: ', 'Deal on Gumroad: ') + deal['title'])}",
             ),
         )
     return builder.as_markup()
@@ -315,15 +319,15 @@ async def cmd_market(message: Message) -> None:
     lang = await lang_of(message.from_user.id)
     builder = InlineKeyboardBuilder()
     builder.row(
-        InlineKeyboardButton(text=tr("Открыть маркет", lang), web_app=WebAppInfo(url=settings.market_url))
+        InlineKeyboardButton(text="🎁 " + tr("Открыть маркет", lang), web_app=WebAppInfo(url=settings.market_url))
     )
     await message.answer(
         T(
             lang,
-            "<b>ATLANTA Market</b>\n\n"
+            f"{pe('🛒')} <b>Gumroad Market</b>\n\n"
             "Подарки, аренда и анонимные номера +888.\n"
             "Баланс в GRAM, пополнение через @CryptoBot.",
-            "<b>ATLANTA Market</b>\n\n"
+            f"{pe('🛒')} <b>Gumroad Market</b>\n\n"
             "Gifts, rent and anonymous +888 numbers.\n"
             "GRAM balance, top-up via @CryptoBot.",
         ),
@@ -354,9 +358,77 @@ async def cmd_deals(message: Message) -> None:
     await message.answer(tr("Все сделки — в приложении:", lang), reply_markup=builder.as_markup())
 
 
+@router.message(Command("balance"))
+async def cmd_balance(message: Message) -> None:
+    lang = await lang_of(message.from_user.id)
+    await message.answer(
+        await balance_text(message.from_user.id, lang),
+        reply_markup=balance_menu(lang),
+    )
+
+
+@router.callback_query(F.data == "balance")
+async def cb_balance(callback: CallbackQuery) -> None:
+    lang = await lang_of(callback.from_user.id)
+    await callback.message.answer(
+        await balance_text(callback.from_user.id, lang),
+        reply_markup=balance_menu(lang),
+    )
+    await callback.answer()
+
+
+def balance_menu(lang: str = "ru") -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(
+            text="🪙 " + tr("Пополнить GRAM", lang), web_app=WebAppInfo(url=settings.market_url)
+        ),
+        InlineKeyboardButton(
+            text="🛒 " + tr("Открыть приложение", lang), web_app=WebAppInfo(url=webapp_url())
+        ),
+    )
+    builder.row(InlineKeyboardButton(text=T(lang, "← Назад", "← Back"), callback_data="menu"))
+    return builder.as_markup()
+
+
+async def balance_text(uid: int, lang: str = "ru") -> str:
+    """Показать баланс OTC-кошелька и GRAM-кошелёк маркета."""
+    data = await escrow.balances(uid)
+    gram, gram_pending = await market._wallet_state(uid)
+    lines = [f"{pe('💼')} <b>{T(lang, 'Баланс', 'Balance')}</b>", ""]
+    for item in data["items"]:
+        lines.append(f"• <b>{fmt_amount(item['available'], item['currency'])}</b> <i>({fmt_usd(item['usd'])})</i>")
+    if gram > 0 or not data["items"]:
+        lines.append(f"• <b>{gram.normalize():f} GRAM</b> <i>({T(lang, 'маркет', 'market')})</i>")
+    if gram_pending > 0:
+        lines.append(
+            T(
+                lang,
+                f"В заказах маркета: {gram_pending.normalize():f} GRAM",
+                f"In market orders: {gram_pending.normalize():f} GRAM",
+            )
+        )
+    lines += ["", f"{T(lang, 'Всего', 'Total')}: <b>{fmt_usd(data['total_usd'])}</b>"]
+    return "\n".join(lines)
+
+
 @router.message(Command("create"))
-async def cmd_create(message: Message, state: FSMContext) -> None:
-    await start_create(message, state)
+async def cmd_create(message: Message) -> None:
+    lang = await lang_of(message.from_user.id)
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(
+            text="🛒 " + tr("Создать сделку", lang), web_app=WebAppInfo(url=webapp_url("tab=create"))
+        )
+    )
+    await message.answer(
+        T(
+            lang,
+            f"{pe('➕')} Создание сделки — в приложении, там всё наглядно.",
+            f"{pe('➕')} Deal creation is in the app — everything is visual there.",
+        ),
+        reply_markup=builder.as_markup(),
+    )
 
 
 @router.message(Command("cancel"))
@@ -370,7 +442,7 @@ async def cmd_cancel(message: Message, state: FSMContext) -> None:
 async def cb_menu(callback: CallbackQuery, state: FSMContext) -> None:
     lang = await lang_of(callback.from_user.id)
     await state.clear()
-    await callback.message.edit_text(T(lang, "Главное меню ATLANTA:", "ATLANTA main menu:"), reply_markup=main_menu(lang))
+    await callback.message.edit_text(T(lang, "Главное меню Gumroad:", "Gumroad main menu:"), reply_markup=main_menu(lang))
     await callback.answer()
 
 
@@ -392,8 +464,8 @@ async def cb_set_language(callback: CallbackQuery) -> None:
     await callback.answer("Language set to English" if lang == "en" else "Язык: русский")
     text = T(
         lang,
-        "<b>ATLANTA</b> — сделки под контролем\n\nВыберите действие:",
-        "<b>ATLANTA</b> — deals under control\n\nChoose an action:",
+        f"{pe('🛒')} <b>Gumroad</b> — сделки под контролем\n\nВыберите действие:",
+        f"{pe('🛒')} <b>Gumroad</b> — deals under control\n\nChoose an action:",
     )
     await callback.message.edit_text(text, reply_markup=main_menu(lang))
 
@@ -617,7 +689,7 @@ async def cb_create_yes(callback: CallbackQuery, state: FSMContext) -> None:
         InlineKeyboardButton(text=tr("Скопировать ссылку", lang), copy_text=CopyTextButton(text=invite)),
         InlineKeyboardButton(
             text=tr("Поделиться", lang),
-            url=f"https://t.me/share/url?url={quote(invite)}&text={quote(T(lang, 'Сделка в ATLANTA: ', 'Deal on ATLANTA: ') + deal['title'])}",
+            url=f"https://t.me/share/url?url={quote(invite)}&text={quote(T(lang, 'Сделка в Gumroad: ', 'Deal on Gumroad: ') + deal['title'])}",
         ),
     )
     await callback.message.edit_text(text, reply_markup=builder.as_markup())
@@ -908,7 +980,7 @@ async def cmd_stats(message: Message) -> None:
         return
     data = await escrow.stats()
     await message.answer(
-        f"📊 <b>{T(lang, 'ATLANTA · статистика', 'ATLANTA · stats')}</b>\n\n"
+        f"{pe('📊')} <b>{T(lang, 'Gumroad · статистика', 'Gumroad · stats')}</b>\n\n"
         f"{T(lang, 'Пользователи: ', 'Users: ')}<b>{data['users']}</b>\n"
         f"{T(lang, 'Сделки: ', 'Deals: ')}<b>{data['deals']}</b> · {T(lang, 'завершено: ', 'completed: ')}{data['completed']}\n"
         f"{T(lang, 'В спорах: ', 'In dispute: ')}<b>{data['disputed']}</b>\n"
@@ -1125,6 +1197,7 @@ RU_COMMANDS = [
     BotCommand(command="market", description="Маркет подарков"),
     BotCommand(command="create", description="Создать сделку"),
     BotCommand(command="deals", description="Мои сделки"),
+    BotCommand(command="balance", description="Баланс"),
     BotCommand(command="language", description="Сменить язык"),
     BotCommand(command="help", description="Как это работает"),
     BotCommand(command="id", description="Мой Telegram ID"),
@@ -1135,6 +1208,7 @@ EN_COMMANDS = [
     BotCommand(command="market", description="Gift market"),
     BotCommand(command="create", description="Create a deal"),
     BotCommand(command="deals", description="My deals"),
+    BotCommand(command="balance", description="Balance"),
     BotCommand(command="language", description="Change language"),
     BotCommand(command="help", description="How it works"),
     BotCommand(command="id", description="My Telegram ID"),

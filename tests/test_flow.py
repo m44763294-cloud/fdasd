@@ -75,7 +75,7 @@ def complete_deal(client, headers, buyer=BUYER, amount="1000", title="Сделк
 def test_public_endpoints(client):
     assert client.get("/api/health").json()["ok"] is True
     config = client.get("/api/config").json()
-    assert config["brand"] == "ATLANTA"
+    assert config["brand"] == "Gumroad"
     codes = {item["code"] for item in config["currencies"]}
     assert {"USDT", "BTC", "ETH", "TON", "USDC", "RUB", "UAH", "KZT", "USD", "EUR"} <= codes
     stats = client.get("/api/stats").json()
@@ -375,7 +375,7 @@ def test_first_contact_creates_user_once(client):
 def test_web_routes(client):
     landing = client.get("/")
     assert landing.status_code == 200
-    assert "ATLANTA" in landing.text
+    assert "Gumroad" in landing.text
 
     mini_app = client.get("/app/")
     assert mini_app.status_code == 200

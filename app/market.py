@@ -1,4 +1,4 @@
-"""ATLANTA Market: каталог, кошелёк GRAM, заказы и пополнение через Crypto Pay.
+"""Gumroad Market: каталог, кошелёк GRAM, заказы и пополнение через Crypto Pay.
 
 Маркет работает на том же FastAPI-сервере, что и OTC-приложение: Telegram initData
 проверяется один раз, баланс и заказы хранятся в SQLite, счёт на пополнение
@@ -325,7 +325,7 @@ async def market_topup(request: Request, payload: TopupIn) -> dict:
         invoice = await provider.create_market_invoice(
             asset=asset,
             amount=format(units, "f"),
-            description=f"ATLANTA Market · {amount:g} GRAM",
+            description=f"Gumroad Market · {amount:g} GRAM",
             payload=f"market:{user['id']}:{secrets.token_hex(6)}",
             expires_in=max(600, settings.payment_ttl_minutes * 60),
         )
@@ -422,7 +422,7 @@ async def market_crypto_webhook(request: Request) -> dict:
 
     await notifier.send(
         int(row["user_id"]),
-        f"<b>Баланс пополнен</b>\n\n+{gram.normalize():f} GRAM\n<i>ATLANTA Market</i>",
+        f"<b>Баланс пополнен</b>\n\n+{gram.normalize():f} GRAM\n<i>Gumroad Market</i>",
     )
     return {"ok": True, "invoice": invoice_id, "credited": _float(gram)}
 
@@ -548,7 +548,7 @@ async def admin_fulfill_order(admin: dict, order_id: str) -> dict:
     )
     await notifier.send(
         int(row["user_id"]),
-        f"<b>Заказ выдан</b>\n\n{row['title']} · {row['amount']} GRAM\n<i>ATLANTA Market</i>",
+        f"<b>Заказ выдан</b>\n\n{row['title']} · {row['amount']} GRAM\n<i>Gumroad Market</i>",
     )
     return _public_order(await db.fetchone("SELECT * FROM market_orders WHERE id=?", (order_id,)))
 
@@ -580,7 +580,7 @@ async def admin_refund_order(admin: dict, order_id: str) -> dict:
         )
     await notifier.send(
         int(row["user_id"]),
-        f"<b>Возврат по заказу</b>\n\n{row['title']} · +{amount:g} GRAM\n<i>ATLANTA Market</i>",
+        f"<b>Возврат по заказу</b>\n\n{row['title']} · +{amount:g} GRAM\n<i>Gumroad Market</i>",
     )
     return _public_order(await db.fetchone("SELECT * FROM market_orders WHERE id=?", (order_id,)))
 

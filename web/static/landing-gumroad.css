@@ -1,0 +1,80 @@
+/* ==========================================================================
+   Gumroad accents for the dark landing page.
+   Base landing.css stays; only the palette highlights change.
+   ========================================================================== */
+
+:root {
+  --mint: #23a094;
+  --mint-2: #2fbfae;
+  --cyan: #ff90e8;
+  --violet: #ffc4f3;
+  --grad: linear-gradient(120deg, #2fbfae, #23a094);
+}
+
+/* -------------------------------------------------------------------- hero */
+
+.pill {
+  background: rgba(255, 144, 232, 0.1);
+  border-color: rgba(255, 144, 232, 0.34);
+}
+.pill-dot { background: #ff90e8; box-shadow: 0 0 12px rgba(255, 144, 232, 0.8); }
+.hero .grad {
+  background: linear-gradient(100deg, #ff90e8, #ffc4f3);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ----------------------------------------------------------------- buttons */
+
+.btn-primary {
+  background: #23a094;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 40px -20px rgba(35, 160, 148, 0.8);
+}
+.btn-primary:hover { background: #1d8a80; }
+
+/* ------------------------------------------------------------------- facts */
+
+.fact-icon { background: rgba(255, 144, 232, 0.12); color: #ffc4f3; }
+.live-dot { background: #2fbfae; }
+
+/* --------------------------------------------------------------------- fees */
+
+.fee-card:nth-child(2) {
+  background: #ff90e8;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 22px 44px -28px rgba(255, 144, 232, 0.7);
+  color: #0a0a0b;
+}
+.fee-card:nth-child(2) b { color: #0a0a0b; }
+.fee-card:nth-child(2) .fee-tag { color: rgba(0, 0, 0, 0.62); }
+.fee-card:nth-child(2) > span:last-child { color: rgba(0, 0, 0, 0.66); }
+.fee-tag { background: none; }
+
+/* ----------------------------------------------------------------- final cta */
+
+.cta-panel {
+  background: #ff90e8;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 30px 70px -34px rgba(255, 144, 232, 0.55);
+  color: #0a0a0b;
+}
+.cta-content h2, .cta-content p { color: #0a0a0b; }
+.cta-content .eyebrow { color: rgba(0, 0, 0, 0.62); }
+.cta-panel .btn-primary {
+  background: #23a094;
+  color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.cta-panel .btn-ghost {
+  background: rgba(255, 255, 255, 0.5);
+  color: #0a0a0b;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.cta-trust span { color: rgba(0, 0, 0, 0.62); }
+
+/* -------------------------------------------------------------- components */
+
+.faq-plus { color: #ffc4f3; }
+.check-list .icon { color: #2fbfae; }

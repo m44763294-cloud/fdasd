@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ATLANTA — Telegram Mini App
+   Gumroad — Telegram Mini App
    ========================================================================== */
 (() => {
   "use strict";
@@ -189,7 +189,7 @@
 
   function shareLink(deal) {
     const invite = deal?.invite_link || `${location.origin}/app/?deal=${encodeURIComponent(deal?.code || "")}`;
-    const text = `Сделка ATLANTA: ${deal?.title || ""} · ${money(deal?.amount, deal?.currency)}`;
+    const text = `Сделка Gumroad: ${deal?.title || ""} · ${money(deal?.amount, deal?.currency)}`;
     const url = `https://t.me/share/url?url=${encodeURIComponent(invite)}&text=${encodeURIComponent(text)}`;
     try {
       if (tg?.openTelegramLink) {
@@ -338,7 +338,7 @@
   }
 
   function footerBrand() {
-    return `<div class="footer-brand">ATLANTA · сделки под контролем</div>`;
+    return `<div class="footer-brand">Gumroad · сделки под контролем</div>`;
   }
 
   function avatar(user, cls = "avatar") {
@@ -383,8 +383,8 @@
       ["Выплата", "После подтверждения покупателем или арбитром"],
     ];
     const faq = [
-      ["Как работает защита оплаты?", "ATLANTA временно держит деньги покупателя. Покупатель платит не продавцу напрямую, а на защищённый счёт сервиса. Продавец видит, что оплата есть, и передаёт товар. Деньги уходят продавцу только после подтверждения покупателя."],
-      ["Когда продавец получает деньги?", "Сразу после того, как покупатель нажмёт «Подтвердить получение». Выплата зачисляется на баланс ATLANTA за вычетом комиссии, после чего её можно вывести на кошелёк или реквизиты."],
+      ["Как работает защита оплаты?", "Gumroad временно держит деньги покупателя. Покупатель платит не продавцу напрямую, а на защищённый счёт сервиса. Продавец видит, что оплата есть, и передаёт товар. Деньги уходят продавцу только после подтверждения покупателя."],
+      ["Когда продавец получает деньги?", "Сразу после того, как покупатель нажмёт «Подтвердить получение». Выплата зачисляется на баланс Gumroad за вычетом комиссии, после чего её можно вывести на кошелёк или реквизиты."],
       ["Что делать, если товар не соответствует описанию?", "Не подтверждайте сделку. Откройте спор и опишите проблему: арбитр увидит условия, историю статусов и сообщения сторон. По итогам он выплатит деньги продавцу или вернёт их покупателю."],
       ["Сколько стоит сервис?", "1,5% от суммы сделки в криптовалюте и 2,5% в фиате, минимум 0,30 USD. Комиссия удерживается только при успешном завершении. Создание сделки, вход по ссылке и отмена — бесплатно."],
       ["Как покупатель попадает в сделку?", "Продавец отправляет ссылку вида t.me/бот?start=deal_KST-XXXXXX. Покупатель открывает её в Telegram, нажимает «Присоединиться» и оплачивает счёт. Регистрация не нужна."],
@@ -393,7 +393,7 @@
     const content = `
       <div class="welcome">
         <div class="w-top">
-          <div class="w-brand"><b>ATLANTA</b></div>
+          <div class="w-brand"><b>Gumroad</b></div>
           <div class="lang-switch no-i18n" role="group" aria-label="Language">
             <button type="button" data-lang="ru">RU</button>
             <button type="button" data-lang="en">EN</button>
@@ -403,7 +403,7 @@
         <section class="w-hero">
           <span class="w-badge">${icon("shield")} Безопасные сделки в Telegram · крипта и фиат</span>
           <h1>Сделки<br>без риска<em>Начните уже сейчас!</em></h1>
-          <p>ATLANTA держит оплату под защитой, пока покупатель не получит товар. Продавец видит, что деньги уже есть. Покупатель знает, что они уйдут только после подтверждения.</p>
+          <p>Gumroad держит оплату под защитой, пока покупатель не получит товар. Продавец видит, что деньги уже есть. Покупатель знает, что они уйдут только после подтверждения.</p>
           <button class="w-cta" data-action="start-deal">Начать сделку ${icon("arrow-right")}</button>
         </section>
 
@@ -752,7 +752,7 @@
       .join("");
 
     const content = `
-      ${pageHead("Новая сделка", "Деньги под защитой ATLANTA")}
+      ${pageHead("Новая сделка", "Деньги под защитой Gumroad")}
       <form id="createForm" autocomplete="off">
         <div class="form-card">
           <h4>Предмет сделки</h4>
@@ -820,7 +820,7 @@
 
         <div class="note">
           ${icon("shield")}
-          <span>Оплата попадёт под защиту ATLANTA. Продавец получит деньги только после подтверждения покупателя или решения арбитра.</span>
+          <span>Оплата попадёт под защиту Gumroad. Продавец получит деньги только после подтверждения покупателя или решения арбитра.</span>
         </div>
       </form>
       ${footerBrand()}
@@ -1121,7 +1121,7 @@
                 <span class="tl-dot ${tone}"></span>
                 <div class="tl-body">
                   <div class="tl-text">${esc(event.text)}</div>
-                  <div class="tl-meta"><span>${esc(displayName(event.actor || "ATLANTA"))}</span><span>${fmtDate(event.created_at)}</span></div>
+                  <div class="tl-meta"><span>${esc(displayName(event.actor || "Gumroad"))}</span><span>${fmtDate(event.created_at)}</span></div>
                 </div>
               </div>`;
             })
@@ -1263,7 +1263,7 @@
     const balances = me.balances?.items || [];
 
     const content = `
-      ${pageHead("Профиль", "Аккаунт ATLANTA", false)}
+      ${pageHead("Профиль", "Аккаунт Gumroad", false)}
       <section class="profile-hero">
         ${avatar(user, "ph-avatar")}
         <div class="ph-name">${esc(displayName(user.name))}</div>
@@ -1312,7 +1312,7 @@
         <div class="section-head"><h3>Ещё</h3></div>
         <div class="menu-list">
           <button class="menu-item" data-action="how">
-            <span class="menu-icon">${icon("shield")}</span><span>Как работает ATLANTA</span>${icon("chevron", "icon chev")}
+            <span class="menu-icon">${icon("shield")}</span><span>Как работает Gumroad</span>${icon("chevron", "icon chev")}
           </button>
           ${
             user.is_admin
@@ -1330,7 +1330,7 @@
           }
           ${
             !tg
-              ? `<a class="menu-item" href="${esc(state.config?.bot_link || "https://t.me/atlantaotcbot")}" target="_blank" rel="noopener">
+              ? `<a class="menu-item" href="${esc(state.config?.bot_link || "https://t.me/GumroadCoinApp")}" target="_blank" rel="noopener">
                    <span class="menu-icon">${icon("send")}</span><span>Открыть в Telegram</span>${icon("external", "icon chev")}
                  </a>`
               : ""
@@ -1340,7 +1340,7 @@
 
       <div class="note">
         ${icon("lock")}
-        <span>ATLANTA не хранит данные карт и ключи кошельков. Все действия по сделке фиксируются в журнале.</span>
+        <span>Gumroad не хранит данные карт и ключи кошельков. Все действия по сделке фиксируются в журнале.</span>
       </div>
       ${footerBrand()}
     `;
@@ -1422,7 +1422,7 @@
   /* ------------------------------------------------------------------- errors */
 
   function drawError(title, message) {
-    const botUrl = state.config?.bot_link || "https://t.me/atlantaotcbot";
+    const botUrl = state.config?.bot_link || "https://t.me/GumroadCoinApp";
     const content = `
       <div class="error-screen">
         ${icon("alert")}
@@ -1922,7 +1922,7 @@
     } catch (error) {
       const message =
         error.status === 401
-          ? "Откройте приложение через Telegram-бота ATLANTA — так безопаснее."
+          ? "Откройте приложение через Telegram-бота Gumroad — так безопаснее."
           : error.message || "Не удалось загрузить данные";
       drawError("Приложение не открылось", message);
     }

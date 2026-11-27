@@ -1,4 +1,4 @@
-"""Конфигурация ATLANTA. Читается из окружения и .env без внешних зависимостей."""
+"""Конфигурация Gumroad. Читается из окружения и .env без внешних зависимостей."""
 
 from __future__ import annotations
 
@@ -65,7 +65,7 @@ class Settings:
         self._webapp_url: str = os.getenv("WEBAPP_URL", "").strip()
         self._market_url: str = os.getenv("MARKET_URL", "").strip()
         self.gram_receive_address: str = os.getenv("GRAM_RECEIVE_ADDRESS", "").strip()
-        self.gram_receive_comment: str = os.getenv("GRAM_RECEIVE_COMMENT", "ATLANTA GRAM topup").strip()
+        self.gram_receive_comment: str = os.getenv("GRAM_RECEIVE_COMMENT", "Gumroad GRAM topup").strip()
         self.gift_receive_username: str = os.getenv("GIFT_RECEIVE_USERNAME", "").strip().lstrip("@")
 
         # Пополнение маркета: счёт в валюте Crypto Pay, зачисление в GRAM по курсу.
@@ -100,7 +100,7 @@ class Settings:
         self.fee_fiat: float = float(os.getenv("FEE_FIAT", "2.5"))
         self.min_fee_usd: float = float(os.getenv("MIN_FEE_USD", "0.30"))
 
-        self.brand: str = "ATLANTA"
+        self.brand: str = "Gumroad"
         self.tagline: str = "Сделки под контролем"
         self.support_username: str = os.getenv("SUPPORT_USERNAME", "").strip().lstrip("@")
 

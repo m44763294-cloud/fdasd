@@ -1,4 +1,4 @@
-"""HTTP API ATLANTA."""
+"""HTTP API Gumroad."""
 
 from __future__ import annotations
 

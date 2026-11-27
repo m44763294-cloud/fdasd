@@ -1,4 +1,4 @@
-/* Atlanta Market lots. Photos: D:\gifts + Fragment. Metadata: @GiftChanges / api.changes.tg. */
+/* Gumroad Market lots. Photos: D:\gifts + Fragment. Metadata: @GiftChanges / api.changes.tg. */
 window.ATLANTA_META = {"total":4792,"currency":"GRAM","collections":124,"rentSource":"https://api.marketapp.org","rentFetchedAt":"2026-11-26T11:05:06+00:00","rentCollections":124,"priceSource":"https://portal-market.com/partners/collections/preview","priceFetchedAt":"2026-11-26T11:59:20Z","priceCollections":124};
 window.ATLANTA_MARKET = [
 {"id":"eternalrose-30870","name":"Eternal Rose","slug":"eternalrose","num":30870,"image":"assets/lots/eternalrose-30870.webp","price":34.01,"rent":0.43,"model":"Golden Lock","backdrop":"Aquamarine","symbol":"Clover","rarity":{"model":1.3,"backdrop":1.5,"symbol":0.2},"stats":{"models":12,"backdrops":60,"symbols":191},"tint":"#60b195","edge":"#46abb4","accent":"#035f67","cut":"assets/cut/eternalrose__goldenlock.webp"},

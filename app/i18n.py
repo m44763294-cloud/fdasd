@@ -74,7 +74,7 @@ EN: dict[str, str] = {
     "Сделка создана": "Deal created",
     "Покупатель присоединился к сделке": "Buyer joined the deal",
     "Счёт на оплату сформирован": "Invoice created",
-    "Средства заблокированы под защитой ATLANTA": "Funds secured by ATLANTA",
+    "Средства заблокированы под защитой Gumroad": "Funds secured by Gumroad",
     "Продавец отметил передачу товара": "Seller marked the item as delivered",
     "Покупатель подтвердил сделку · средства выплачены продавцу":
         "Buyer confirmed the deal · funds paid to the seller",
@@ -82,7 +82,7 @@ EN: dict[str, str] = {
     "Возврат покупателю": "Refund to buyer",
     "Решение арбитра": "Arbitrator decision",
     "Выплата по сделке": "Deal payout",
-    "Комиссия ATLANTA": "ATLANTA fee",
+    "Комиссия Gumroad": "Gumroad fee",
     "Сделка отменена": "Deal cancelled",
     "Вывод средств": "Withdrawal",
     "Вывод доступен после 3 успешных сделок": "Withdrawal is available after 3 successful deals",
@@ -152,8 +152,8 @@ EN: dict[str, str] = {
     "Не удалось создать код сделки, попробуйте ещё раз":
         "Couldn't create a deal code, please try again",
     "Сделка не ожидает оплаты": "The deal is not awaiting payment",
-    "Оплата списана с баланса и зачислена под защиту ATLANTA":
-        "Payment was charged from the balance and placed under ATLANTA protection",
+    "Оплата списана с баланса и зачислена под защиту Gumroad":
+        "Payment was charged from the balance and placed under Gumroad protection",
     "Покупатель оплатил сделку с баланса. Продавец может передавать товар, покупатель — подтверждать получение.":
         "The buyer paid from their balance. The seller can deliver the item and the buyer can confirm receipt.",
     "Бот не настроен: проверка Telegram недоступна":
@@ -164,7 +164,7 @@ EN: dict[str, str] = {
     "Некорректная сумма": "Invalid amount",
     "Сумма слишком мала для сделки": "The amount is too small for a deal",
     # ------------------------------------------------------------------- бот
-    "Открыть ATLANTA": "Open ATLANTA",
+    "Открыть Gumroad": "Open Gumroad",
     "Создать сделку": "Create deal",
     "Войти по коду": "Join by code",
     "Мои сделки": "My deals",
@@ -191,7 +191,7 @@ EN: dict[str, str] = {
     "Скопировать ссылку": "Copy link",
     "Поделиться": "Share",
     "Открыть мои сделки": "Open my deals",
-    "Главное меню ATLANTA:": "ATLANTA main menu:",
+    "Главное меню Gumroad:": "Gumroad main menu:",
     "Главное меню:": "Main menu:",
     "Ок, отменил. Возвращайтесь, когда будете готовы.":
         "Okay, cancelled. Come back when you're ready.",
@@ -202,6 +202,8 @@ EN: dict[str, str] = {
         "Receive payouts and create deals in the mini app.",
     "Команда доступна только арбитрам.": "This command is available to arbitrators only.",
     "Баланс пополнен": "Balance topped up",
+    "Баланс": "Balance",
+    "Пополнить GRAM": "Top up GRAM",
     "Команда доступна только арбитрам.": "Only arbiters can use this command.",
     "Адрес выглядит некорректно.": "The address looks invalid.",
     "Юзернейм выглядит некорректно.": "The username looks invalid.",
@@ -257,7 +259,7 @@ EN: dict[str, str] = {
         "Enter the deal code or invite link.",
     "Например:": "Example:",
     "Не похоже на код сделки. Пример:": "That doesn't look like a deal code. Example:",
-    "📊 ATLANTA · статистика": "📊 ATLANTA · stats",
+    "📊 Gumroad · статистика": "📊 Gumroad · stats",
     "Пользователи:": "Users:",
     "Сделки:": "Deals:",
     "завершено:": "completed:",

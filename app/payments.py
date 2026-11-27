@@ -78,7 +78,7 @@ def _mock_address(currency: str, code: str) -> str:
     if currency == "TON":
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
         return "UQ" + "".join(secrets.choice(alphabet) for _ in range(46))
-    return f"ATLANTA-{code}"
+    return f"GUMROAD-{code}"
 
 
 def _wallet_uri(currency: str, address: str, amount: str) -> str | None:
@@ -111,7 +111,7 @@ class MockProvider:
             provider=self.name,
             ref=f"mock_{deal['id']}_{token}",
             address=address,
-            memo=deal["code"] if info.kind == "crypto" else "ATLANTA",
+            memo=deal["code"] if info.kind == "crypto" else "Gumroad",
             uri=_wallet_uri(currency, address, deal["amount"]),
             pay_url=None,
             amount=deal["amount"],
@@ -170,7 +170,7 @@ class CryptoPayProvider:
             {
                 "asset": asset,
                 "amount": deal["amount"],
-                "description": f"ATLANTA · {deal['code']} · {deal['title'][:80]}",
+                "description": f"Gumroad · {deal['code']} · {deal['title'][:80]}",
                 "payload": deal["code"],
                 "expires_in": settings.payment_ttl_minutes * 60,
                 "allow_comments": False,
@@ -246,7 +246,7 @@ class CryptoPayProvider:
                 "asset": currency,
                 "amount": amount,
                 "spend_id": f"kustos_{user['id']}_{secrets.token_hex(6)}",
-                "comment": "ATLANTA payout",
+                "comment": "Gumroad payout",
             },
         )
         return PayoutResult(ok=True, ref=str(result.get("transfer_id", "")), status="sent")

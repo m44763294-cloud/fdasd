@@ -13,7 +13,7 @@ import uvicorn
 if __name__ == "__main__":
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "3000"))
-    print(f"ATLANTA: starting on {host}:{port}", flush=True)
+    print(f"Gumroad: starting on {host}:{port}", flush=True)
     uvicorn.run(
         "app.main:app",
         host=host,

@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Atlanta Market — Telegram gifts, rent & anonymous numbers</title>
+<meta name="theme-color" content="#0A0A0B">
+<title>Gumroad Market — Telegram gifts, rent & anonymous numbers</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600;700&amp;family=Unbounded:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
@@ -712,7 +713,7 @@ a{color:inherit}
 .attr i{font-size:6.9px}
 .small-note{font-size:7.4px}
 
-/* ============ ATLANTA · darker theme ============ */
+/* ============ Gumroad · darker theme ============ */
 body{background:#000}
 body::before{
   background:
@@ -977,6 +978,7 @@ button{position:relative;overflow:hidden}
 }
 
 </style>
+<link rel="stylesheet" href="gumroad.css?v=1">
 </head>
 <body>
 
@@ -992,13 +994,13 @@ button{position:relative;overflow:hidden}
 
 <div class="stage">
   <div class="stage-brand">
-    <img class="smark" src="assets/logo-a.png" alt="ATLANTA">
-    <div><b>ATLANTA MARKET</b><i>NFT · RENT · NUMBERS</i></div>
+    <img class="smark" src="assets/logo-a.png" alt="Gumroad">
+    <div><b>GUMROAD MARKET</b><i>NFT · RENT · NUMBERS</i></div>
   </div>
   <div class="stage-pill"><i></i>Превью в оболочке Telegram</div>
 
   <div class="phone">
-    <div class="screen" role="group" aria-label="ATLANTA phone preview">
+    <div class="screen" role="group" aria-label="Gumroad phone preview">
       <div class="bg"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
 
       <div class="statusbar">
@@ -1014,8 +1016,8 @@ button{position:relative;overflow:hidden}
       <div class="app">
         <header class="topbar">
           <div class="logo">
-            <img src="assets/logo-a.png" alt="ATLANTA">
-            <span class="logo-txt"><b>ATLANTA</b><i>MARKET</i></span>
+            <img src="assets/logo-a.png" alt="Gumroad">
+            <span class="logo-txt"><b>Gumroad</b><i>MARKET</i></span>
           </div>
           <button class="bal" data-wallet aria-label="Кошелёк GRAM">
             <b data-balance>0</b><span>GRAM</span>
@@ -1064,13 +1066,13 @@ button{position:relative;overflow:hidden}
       <div class="loader" id="loader">
         <div class="ld-grid"></div>
         <div class="ld-center">
-          <div class="ld-mark"><img src="assets/logo-a.png" alt="ATLANTA"></div>
-          <div class="ld-name">ATLANTA</div>
+          <div class="ld-mark"><img src="assets/logo-a.png" alt="Gumroad"></div>
+          <div class="ld-name">Gumroad</div>
           <div class="ld-tag">MARKET PLACE</div>
         </div>
         <div class="ld-foot">
           <div class="ld-track"><i id="loadBar"></i></div>
-          <div class="ld-meta"><span id="loadPct">0%</span><span id="loadLots">ATLANTA MARKET</span></div>
+          <div class="ld-meta"><span id="loadPct">0%</span><span id="loadLots">GUMROAD MARKET</span></div>
           <div class="ld-skip">нажми, чтобы пропустить</div>
         </div>
       </div>
@@ -1578,10 +1580,10 @@ const profileView = () => {
   </div>
   <div class="club">
     <span class="big">2%</span>
-    <span><b>ATLANTA Club</b><p>Кэшбэк GRAM с каждой покупки, аренды и номера.</p></span>
-    <button class="club-btn" data-toast="ATLANTA Club · скоро">Вступить</button>
+    <span><b>Gumroad Club</b><p>Кэшбэк GRAM с каждой покупки, аренды и номера.</p></span>
+    <button class="club-btn" data-toast="Gumroad Club · скоро">Вступить</button>
   </div>
-  <div style="text-align:center;color:#5b6378;font-size:7px;letter-spacing:.2em;margin:0 0 12px;font-weight:700">ATLANTA MARKET · NFT · RENT · NUMBERS · 2026</div>`;
+  <div style="text-align:center;color:#5b6378;font-size:7px;letter-spacing:.2em;margin:0 0 12px;font-weight:700">GUMROAD MARKET · NFT · RENT · NUMBERS · 2026</div>`;
 };
 
 /* ============ sheets ============ */
@@ -1624,7 +1626,7 @@ function giftSheet(id) {
     ${rentMode
       ? `<button class="buy" data-buy="Аренда оплачена" data-order="${orderJson({ type: 'gift', mode: 'rent', giftId: g.id, months: state.term })}">${I.key} Арендовать · ${num(termTotal(g))} GRAM за ${TERMS[state.term].label}</button>`
       : `<button class="buy" data-buy="Заказ оплачен" data-order="${orderJson({ type: 'gift', mode: 'buy', giftId: g.id, months: 1 })}">Купить за ${num(g.price)} GRAM ${I.arrow}</button>`}
-    <p class="small-note">Оплата с баланса GRAM. Подарок выдаётся через безопасную сделку ATLANTA.</p>`);
+    <p class="small-note">Оплата с баланса GRAM. Подарок выдаётся через безопасную сделку Gumroad.</p>`);
 }
 
 function numberSheet(index) {
@@ -1662,7 +1664,7 @@ function walletSheet() {
   showSheet(`
     <div class="sheet-grab"></div>
     <div class="sheet-head">
-      <div><h3>Кошелёк</h3><p>GRAM · баланс ATLANTA</p></div>
+      <div><h3>Кошелёк</h3><p>GRAM · баланс Gumroad</p></div>
       <button class="close" data-close>${I.close}</button>
     </div>
     <div class="wallet-card">
