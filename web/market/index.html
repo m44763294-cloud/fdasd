@@ -1293,12 +1293,16 @@ async function startTopup(amount) {
 
 async function fetchMe() { return api('/me'); }
 
-function waitTopup() {
+function waitTopup(invoiceId) {
   const start = wallet.balance;
   let tries = 0;
   const tick = async () => {
     tries++;
     try {
+      if (invoiceId) {
+        // Просим сервер перепроверить счёт в Crypto Pay — на случай, если вебхук не дошёл.
+        await api('/topup/' + encodeURIComponent(invoiceId)).catch(() => null);
+      }
       const data = await fetchMe();
       if (typeof data.balance === 'number' && data.balance > start) {
         applyMe(data);
@@ -1328,7 +1332,7 @@ const TERMS = { 1: { label: '1 месяц', short: 'за месяц', disc: 1 },
 const SORT_LABEL = { curated: 'Подборка', asc: 'Цена ↑', desc: 'Цена ↓' };
 
 const state = {
-  tab: 'store', query: '', term: 1, sort: 'curated', limit: 24, deposit: 10,
+  tab: 'store', query: '', term: 1, sort: 'curated', limit: 24, deposit: 25,
   collection: '', model: '', backdrop: '', symbol: '',
   favs: (() => { try { return new Set(JSON.parse(localStorage.getItem('atlanta-market:favs:v1') || '[]')); } catch (e) { return new Set(); } })()
 };
@@ -1702,7 +1706,7 @@ function walletSheet() {
     <p class="pay-note">Пополнение через @CryptoBot, вывод — заявкой на выплату.</p>`);
 }
 
-const TOPUP_PRESETS = [10, 25, 50, 100];
+const TOPUP_PRESETS = [25, 50, 100, 250];
 
 function depositSheet() {
   showSheet(`
@@ -2017,7 +2021,7 @@ document.addEventListener('click', async e => {
     startTopup(amount).then(inv => {
       if (tg && tg.openInvoice && inv.miniAppUrl) {
         tg.openInvoice(inv.miniAppUrl, status => {
-          if (status === 'paid') { waitTopup(); return; }
+          if (status === 'paid') { waitTopup(inv.invoiceId); return; }
           paySubmit.disabled = false;
           paySubmit.textContent = 'Оплатить через CryptoBot';
           toast(status === 'cancelled' ? 'Счёт отменён' : 'Счёт не оплачен');
@@ -2025,7 +2029,7 @@ document.addEventListener('click', async e => {
         return;
       }
       if (inv.payUrl) window.open(inv.payUrl, '_blank');
-      waitTopup();
+      waitTopup(inv.invoiceId);
     }).catch(err => {
       paySubmit.disabled = false;
       paySubmit.textContent = 'Оплатить через CryptoBot';

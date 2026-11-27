@@ -76,7 +76,7 @@ class Settings:
             self.gram_per_unit = 1000.0
         if self.gram_per_unit <= 0:
             self.gram_per_unit = 1000.0
-        self.market_min_topup: float = float(os.getenv("MARKET_MIN_TOPUP", "10"))
+        self.market_min_topup: float = float(os.getenv("MARKET_MIN_TOPUP", "25"))
         self.market_min_withdraw: float = float(os.getenv("MARKET_MIN_WITHDRAW", "10"))
 
         self.admin_ids: tuple[int, ...] = tuple(

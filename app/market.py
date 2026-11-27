@@ -19,7 +19,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from . import payments
+from . import escrow, payments
 from .auth import current_user
 from .config import settings
 from .db import db
@@ -361,31 +361,24 @@ async def market_topup_status(request: Request, invoice_id: str) -> dict:
     )
     if not row:
         raise EscrowError("Счёт не найден", 404, "invoice_not_found")
+    if row["status"] == "active":
+        # Вебхук может не дойти — проверяем счёт прямо в Crypto Pay.
+        try:
+            await _credit_market_invoice(invoice_id)
+        except HTTPException as exc:
+            if exc.status_code != 400:  # 400 — просто ещё не оплачен
+                log.warning("Проверка счёта %s: %s", invoice_id, exc.detail)
+        except Exception as exc:  # noqa: BLE001 — статус всё равно вернём
+            log.warning("Не удалось проверить счёт %s: %s", invoice_id, exc)
+        row = await db.fetchone(
+            "SELECT id, gram, status FROM market_invoices WHERE id=? AND user_id=?",
+            (invoice_id, int(user["id"])),
+        ) or row
     return {"invoiceId": row["id"], "amount": _float(row["gram"]), "status": row["status"]}
 
 
-@router.post("/crypto/webhook")
-async def market_crypto_webhook(request: Request) -> dict:
-    """Вебхук Crypto Pay. Подпись проверяется по сырому телу, статус — в API."""
-    if not settings.cryptopay_token:
-        raise HTTPException(status_code=503, detail="Crypto Pay не настроен")
-    raw = await request.body()
-    signature = request.headers.get("crypto-pay-api-signature", "")
-    secret = hashlib.sha256(settings.cryptopay_token.encode()).digest()
-    calculated = hmac.new(secret, raw, hashlib.sha256).hexdigest()
-    if not signature or not hmac.compare_digest(calculated, signature):
-        raise HTTPException(status_code=401, detail="Неверная подпись вебхука")
-
-    try:
-        update = json.loads(raw or b"{}")
-    except json.JSONDecodeError as exc:
-        raise HTTPException(status_code=400, detail="Некорректный JSON") from exc
-
-    if update.get("update_type") != "invoice_paid":
-        return {"ok": True, "ignored": True}
-
-    invoice = update.get("payload") or {}
-    invoice_id = str(invoice.get("invoice_id") or "")
+async def _credit_market_invoice(invoice_id: str) -> dict:
+    """Проверить счёт в Crypto Pay и зачислить GRAM, если он оплачен."""
     row = await db.fetchone("SELECT * FROM market_invoices WHERE id=?", (invoice_id,))
     if not row:
         return {"ok": True, "ignored": "unknown_invoice"}
@@ -425,6 +418,45 @@ async def market_crypto_webhook(request: Request) -> dict:
         f"<b>Баланс пополнен</b>\n\n+{gram.normalize():f} GRAM\n<i>Gumroad Market</i>",
     )
     return {"ok": True, "invoice": invoice_id, "credited": _float(gram)}
+
+
+@router.post("/crypto/webhook")
+async def market_crypto_webhook(request: Request) -> dict:
+    """Единый вебхук Crypto Pay: пополнения маркета и оплата OTC-сделок."""
+    if not settings.cryptopay_token:
+        raise HTTPException(status_code=503, detail="Crypto Pay не настроен")
+    raw = await request.body()
+    signature = request.headers.get("crypto-pay-api-signature", "")
+    secret = hashlib.sha256(settings.cryptopay_token.encode()).digest()
+    calculated = hmac.new(secret, raw, hashlib.sha256).hexdigest()
+    if not signature or not hmac.compare_digest(calculated, signature):
+        raise HTTPException(status_code=401, detail="Неверная подпись вебхука")
+
+    try:
+        update = json.loads(raw or b"{}")
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=400, detail="Некорректный JSON") from exc
+
+    if update.get("update_type") != "invoice_paid":
+        return {"ok": True, "ignored": True}
+
+    invoice = update.get("payload") or {}
+    invoice_id = str(invoice.get("invoice_id") or "")
+    payload_text = str(invoice.get("payload") or "")
+
+    if not payload_text.startswith("market:"):
+        # Счёт OTC-сделки: в payload лежит код сделки.
+        provider = payments.get_provider()
+        try:
+            event = await provider.parse_webhook(dict(request.headers), raw, update)
+        except payments.PaymentError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        if event is None:
+            return {"ok": True, "ignored": True}
+        deal = await escrow.mark_funded(event.deal_code, event.ref, event.amount, event.provider)
+        return {"ok": True, "deal": deal["code"], "status": deal["status"]}
+
+    return await _credit_market_invoice(invoice_id)
 
 
 @router.get("/orders")

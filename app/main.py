@@ -74,6 +74,8 @@ async def _run_bot_background() -> None:
 async def lifespan(app: FastAPI):
     await db.connect()
     init_provider()
+    if settings.payment_provider == "cryptopay" and settings.cryptopay_token:
+        log.info("Crypto Pay включён. Вебхук: %s/api/market/crypto/webhook", settings.public_url)
     task: asyncio.Task | None = None
     if settings.bot_token:
         task = asyncio.create_task(_run_bot_background(), name="kustos-bot")
