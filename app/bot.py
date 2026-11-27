@@ -37,7 +37,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import (
-    BotCommand,
     BotCommandScopeChat,
     CallbackQuery,
     FSInputFile,
@@ -1084,7 +1083,7 @@ async def cmd_anlantachief(message: Message, bot: Bot) -> None:
     except escrow.EscrowError as exc:
         await message.answer(tr(exc.message, lang))
         return
-    await refresh_admin_commands(bot)
+    await clear_command_menu(bot)
     await message.answer(
         T(
             lang,
@@ -1116,7 +1115,7 @@ async def cmd_arbiter_role(message: Message, command: CommandObject, bot: Bot) -
     except ValueError as exc:
         await message.answer(str(exc))
         return
-    await refresh_admin_commands(bot)
+    await clear_command_menu(bot)
     name = html.escape(escrow.user_name(target))
     if enabled:
         text = T(lang, f"<b>{name}</b> назначен арбитром.", f"<b>{name}</b> is now an arbiter.")
@@ -1259,68 +1258,21 @@ async def fallback(message: Message, state: FSMContext) -> None:
     await message.answer(tr("Не понял команду. Вот меню:", lang), reply_markup=main_menu(lang))
 
 
-RU_COMMANDS = [
-    BotCommand(command="start", description="Главное меню"),
-    BotCommand(command="market", description="Маркет подарков"),
-    BotCommand(command="create", description="Создать сделку"),
-    BotCommand(command="deals", description="Мои сделки"),
-    BotCommand(command="balance", description="Баланс"),
-    BotCommand(command="language", description="Сменить язык"),
-    BotCommand(command="help", description="Как это работает"),
-    BotCommand(command="id", description="Мой Telegram ID"),
-]
-
-EN_COMMANDS = [
-    BotCommand(command="start", description="Main menu"),
-    BotCommand(command="market", description="Gift market"),
-    BotCommand(command="create", description="Create a deal"),
-    BotCommand(command="deals", description="My deals"),
-    BotCommand(command="balance", description="Balance"),
-    BotCommand(command="language", description="Change language"),
-    BotCommand(command="help", description="How it works"),
-    BotCommand(command="id", description="My Telegram ID"),
-]
-
-RU_ADMIN_COMMANDS = RU_COMMANDS + [
-    BotCommand(command="anlantamoney", description="Начислить баланс"),
-    BotCommand(command="anlantagive", description="Выдать баланс арбитром"),
-    BotCommand(command="anlantachief", description="Стать главным арбитром"),
-    BotCommand(command="anlantaset", description="Назначить арбитра"),
-    BotCommand(command="anlantarevoke", description="Забрать статус арбитра"),
-    BotCommand(command="anlantawallet", description="Адрес для GRAM"),
-    BotCommand(command="anlantastore", description="Аккаунт для подарков"),
-    BotCommand(command="marketorders", description="Заказы маркета"),
-    BotCommand(command="marketdone", description="Выдать заказ маркета"),
-    BotCommand(command="marketrefund", description="Вернуть GRAM за заказ"),
-    BotCommand(command="marketpayouts", description="Выплаты маркета"),
-    BotCommand(command="marketpaid", description="Отметить выплату"),
-]
-EN_ADMIN_COMMANDS = EN_COMMANDS + [
-    BotCommand(command="anlantamoney", description="Credit balance"),
-    BotCommand(command="anlantagive", description="Grant balance as arbiter"),
-    BotCommand(command="anlantachief", description="Become chief arbiter"),
-    BotCommand(command="anlantaset", description="Appoint arbiter"),
-    BotCommand(command="anlantarevoke", description="Revoke arbiter"),
-    BotCommand(command="anlantawallet", description="GRAM wallet address"),
-    BotCommand(command="anlantastore", description="Gift receiving account"),
-    BotCommand(command="marketorders", description="Market orders"),
-    BotCommand(command="marketdone", description="Fulfill market order"),
-    BotCommand(command="marketrefund", description="Refund market order"),
-    BotCommand(command="marketpayouts", description="Market payouts"),
-    BotCommand(command="marketpaid", description="Mark payout"),
-]
-
-
-async def refresh_admin_commands(bot: Bot) -> None:
-    """Обновить скрытые команды у владельца и всех арбитров."""
+async def clear_command_menu(bot: Bot) -> None:
+    """Убрать список команд по «/»: сами команды работают, но меню не показывается."""
+    try:
+        await bot.delete_my_commands()
+        await bot.delete_my_commands(language_code="en")
+    except Exception as exc:
+        log.warning("Не удалось очистить список команд: %s", exc)
     privileged = sorted(set(settings.admin_ids) | set(await escrow.privileged_ids()))
     for admin_id in privileged:
         try:
             scope = BotCommandScopeChat(chat_id=admin_id)
-            await bot.set_my_commands(RU_ADMIN_COMMANDS, scope=scope)
-            await bot.set_my_commands(EN_ADMIN_COMMANDS, scope=scope, language_code="en")
+            await bot.delete_my_commands(scope=scope)
+            await bot.delete_my_commands(scope=scope, language_code="en")
         except Exception as exc:
-            log.warning("Не удалось задать команды арбитру %s: %s", admin_id, exc)
+            log.warning("Не удалось очистить команды арбитра %s: %s", admin_id, exc)
 
 
 def _telegram_session() -> AiohttpSession | None:
@@ -1364,9 +1316,7 @@ async def run_bot() -> None:
         dp = Dispatcher(storage=MemoryStorage())
         dp.include_router(router)
 
-        await bot.set_my_commands(RU_COMMANDS)
-        await bot.set_my_commands(EN_COMMANDS, language_code="en")
-        await refresh_admin_commands(bot)
+        await clear_command_menu(bot)
 
         await bot.delete_webhook(drop_pending_updates=True)
         log.info("Бот @%s запущен", me.username)

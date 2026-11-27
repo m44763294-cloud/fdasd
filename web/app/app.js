@@ -414,7 +414,7 @@
 
         <div class="w-stats">
           <div><b>1,5%</b><span>комиссия в крипте</span></div>
-          <div><b>0</b><span>за создание сделки</span></div>
+          <div><b>0 ₽</b><span>за создание сделки</span></div>
           <div><b>24/7</b><span>арбитраж</span></div>
         </div>
 
@@ -752,7 +752,7 @@
     const currencies = state.config?.currencies || [];
     const categories = state.config?.categories || [];
     const currencyOptions = currencies
-      .map((c) => `<option value="${c.code}">${c.code}</option>`)
+      .map((c) => `<option value="${c.code}"${c.code === "RUB" ? " selected" : ""}>${c.code}</option>`)
       .join("");
 
     const content = `
@@ -866,7 +866,7 @@
       terms: String(data.get("terms") || "").trim(),
       category: String(data.get("category") || "other"),
       amount: String(data.get("amount") || "").replace(/\s/g, "").replace(",", "."),
-      currency: String(data.get("currency") || "USDT"),
+      currency: String(data.get("currency") || "RUB"),
       creator_role: String(data.get("creator_role") || "seller"),
     };
     if (payload.title.length < 5) {
